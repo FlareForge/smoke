@@ -1,6 +1,7 @@
+### Smoke Launcher
+*Smoke Presentation, future Releases & Update Notes*
 
-# Smoke Launcher
-Smoke Presentation, future Releases & Update Notes
+![dd7d6048-725b-4dba-9a1d-d5f4230a81e6](https://github.com/FlareForge/smoke-release/assets/137607414/67103f06-906b-4963-b803-6dac92002719)
 
 - [What is Smoke?](#what-is-smoke)
 - [Feature Set](#feature-set)
