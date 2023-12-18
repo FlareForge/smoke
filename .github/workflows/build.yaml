@@ -1,0 +1,39 @@
+name: Build and Release
+
+on: 
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Extract Version
+        id: package_version
+        run: |
+          $version = cat package.json | ConvertFrom-Json | Select -ExpandProperty version
+          echo "PACKAGE_VERSION=$version" >> $env:GITHUB_ENV
+          echo "::set-output name=version::$version"
+      - name: Install Dependencies
+        run: npm install
+      - name: Setup Code Signing
+        run: |
+          $CertContent = '${{ secrets.CERTIFICATE }}'
+          $CertBytes = [Convert]::FromBase64String($CertContent)
+          [IO.File]::WriteAllBytes('.\cert.pfx', $CertBytes)
+      - name: Build App
+        env:
+          CSC_KEY_PASSWORD: ${{ secrets.CERT_PASSWORD }}
+          CSC_LINK: .\cert.pfx
+        run: npm run build
+      - name: Upload Release
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+        run: |
+          # this will throw an error if the version already exists but that's fine as we don't want to overwrite it
+          curl --location --request POST "${{ secrets.SUPABASE_URL }}/storage/v1/object/delivery/smoke-${{ steps.package_version.outputs.version }}-x64.nsis.7z" --header "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" --header "Content-Type: application/octet-stream" --data-binary "@./.build/nsis-web/smoke-${{ steps.package_version.outputs.version }}-x64.nsis.7z"
+          curl --location --request POST "${{ secrets.SUPABASE_URL }}/storage/v1/object/delivery/smoke-installer-${{ steps.package_version.outputs.version }}.exe" --header "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" --header "Content-Type: application/octet-stream" --data-binary "@./.build/nsis-web/smoke Web Setup ${{ steps.package_version.outputs.version }}.exe"
+          curl --location --request PUT "${{ secrets.SUPABASE_URL }}/storage/v1/object/delivery/latest.yml" --header "Authorization: Bearer ${{ secrets.SUPABASE_KEY }}" --header "Content-Type: application/octet-stream" --data-binary "@./.build/nsis-web/latest.yml"
