@@ -12,14 +12,21 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Verify Package Version
         with:
           fetch-depth: 0
+      - name: Verify Package Version
         run: |
-          set -e
           old_version=$(git show origin/main:package.json | grep "version" | cut -d'"' -f4)
           new_version=$(grep "version" package.json | cut -d'"' -f4)
           if [[ "$old_version" == "$new_version" ]]; then
             echo "Version is unchanged"
             exit 1
           fi
+      - name: Set check status
+        if: ${{ failure() }}
+        run: |
+          echo "check_conclusion=failure" >>$GITHUB_OUTPUT
+      - name: Set check output
+        if: ${{ failure() }}
+        run: |
+          echo "check_output=Version is unchanged" >>$GITHUB_OUTPUT
