@@ -114,7 +114,7 @@ ipcMain.handle("maximize-app", (_) => appWindow.isMaximized() ? appWindow.restor
 ipcMain.handle("fullscreen-app", (_) => appWindow.setFullScreen(!appWindow.isFullScreen()));
 ipcMain.handle("open-url", (_, arg) => openurl(arg));
 ipcMain.handle("get-app-path", (_, arg) => app.getPath(arg));
-ipcMain.handle("get-bin-path", (_, __) => app.isPackaged ? path.join(app.getPath('resources'), "../bin") : path.join(__dirname, "bin"));
+ipcMain.handle("get-bin-path", (_, __) => app.isPackaged ? path.join(process.resourcesPath, "../bin") : path.join(__dirname, "bin"));
 ipcMain.handle("open-file-dialog", async (_) => (await dialog.showOpenDialog({properties:["openFile"]})).filePaths[0]);
 ipcMain.handle("open-folder-dialog", async (_) => (await dialog.showOpenDialog({properties:["openDirectory"]})).filePaths[0]);
 ipcMain.handle("gamechange", (_, arg) => currentGameData = arg);
@@ -152,15 +152,23 @@ ipcMain.handle("kill-process", (_, arg) => {
     });
 });
 
+ipcMain.handle("is-process-running", (_, arg) => {
+    const path = safePath(arg);
+    return new Promise((resolve) => {
+        exec(`tasklist /fi "imagename eq ${path}"`, (error, stdout, _stderr) => {
+            if (error) {
+                console.error('Error:', error);
+                return;
+            }
+            const isRunning = stdout.split("\n").length > 3;
+            resolve(isRunning);
+        });
+    });
+});
+
 ipcMain.handle("start-process", (_, arg) => {
     const path = safePath(arg.path);
     if (!path.endsWith(".exe")) return;
-    console.log({
-        path,
-        ppath: arg.path,
-        args: arg.args,
-        detached: arg.detach,
-    });
     if(arg.detach){
         spawn(path, arg.args, {
             detached: true,
@@ -210,9 +218,7 @@ ipcMain.handle("download", (_, arg) => {
                         response.statusCode < 400 &&
                         response.headers.location
                     ) {
-                        console.log(
-                            `Redirecting to ${response.headers.location}`
-                        );
+                        console.log(`Redirecting to ${response.headers.location}`);
                         downloadFile(
                             response.headers.location,
                             destination,
@@ -220,9 +226,7 @@ ipcMain.handle("download", (_, arg) => {
                         );
                     } else if (response.statusCode !== 200) {
                         reject(
-                            new Error(
-                                `Download failed: HTTP Status Code: ${response.statusCode}`
-                            )
+                            new Error(`Download failed: HTTP Status Code: ${response.statusCode}`)
                         );
                     } else {
                         response.pipe(file);

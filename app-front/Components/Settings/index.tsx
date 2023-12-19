@@ -283,6 +283,16 @@ function EmulatorsSettings() {
     const [emulators, setEmulators] = useState([]);
     const [loadings, setLoadings] = useState({});
     const [openedEmulator, setOpenedEmulator] = useState(null);
+    const [ newEmulatorData, setNewEmulatorData ] = useState({
+        name: "",
+        platform: "",
+        icon: "",
+        path: "",
+        ext: "",
+        args: [
+            "{path}"
+        ],
+    });
 
     useEffect(() => {
         updateEmulators();
@@ -292,19 +302,146 @@ function EmulatorsSettings() {
         window.app.Services.Emulator.getEmulators().then(setEmulators);
     };
 
-    if (openedEmulator) {
+    
+    if(openedEmulator && openedEmulator === 'add') {
+
+        return (
+            <>
+                <SettingEntry>
+                    <div>Add emulator</div>
+                    <InstallBtn
+                        onClick={() => setOpenedEmulator(null)}
+                        style={{width: '135px'}}
+                    >
+                        Return
+                    </InstallBtn>
+                    <InstallBtn onClick={async () => {
+                        await window.app.Services.Emulator.addCustomEmulator({
+                            ...newEmulatorData,
+                            link: "",
+                            installed: true,
+                        });
+                        setOpenedEmulator(null);
+                        updateEmulators();
+                    }}>
+                        Add
+                    </InstallBtn>
+                </SettingEntry>
+                <SettingEntry>
+                    <div>Name</div>
+                    <input
+                        type="text"
+                        name="body"
+                        placeholder="emulator"
+                        value={newEmulatorData.name}
+                        onChange={(e) => setNewEmulatorData({ ...newEmulatorData, name: e.target.value })}
+                    />
+                </SettingEntry>
+                <SettingEntry>
+                    <div>Platform</div>
+                    <input
+                        type="text"
+                        name="body"
+                        placeholder="PLATFORM"
+                        value={newEmulatorData.platform}
+                        onChange={(e) => setNewEmulatorData({ ...newEmulatorData, platform: e.target.value })}
+                    />
+                </SettingEntry>
+                <SettingEntry>
+                    <div>Extension</div>
+                    <input
+                        type="text"
+                        name="body"
+                        placeholder=".gba"
+                        value={newEmulatorData.ext}
+                        onChange={(e) => setNewEmulatorData({ ...newEmulatorData, ext: e.target.value })}
+                    />
+                </SettingEntry>
+                <SettingEntry>
+                    <div>Path</div>
+                    <input
+                        type="text"
+                        name="body"
+                        placeholder={"C:\\...\\emulator.exe"}
+                        value={newEmulatorData.path}
+                        onChange={(e) => setNewEmulatorData({ ...newEmulatorData, path: e.target.value })}
+                    />
+                </SettingEntry>
+                <SettingEntry>
+                    <div>Command Arguments</div>
+                    <div
+                        onClick={() => {
+                            const _args = [...newEmulatorData.args];
+                            _args.push("");
+                            setNewEmulatorData({ ...newEmulatorData, args: _args });
+                        }}
+                    >
+                        Add
+                    </div>
+                </SettingEntry>
+                {newEmulatorData.args.map((arg, i) => (
+                    <SettingEntry
+                        key={i}
+                    >
+                        <div>Argument {i}</div>
+                        <input
+                            type="text"
+                            name="body"
+                            value={arg}
+                            style={{width: '300px'}}
+                            onChange={(e) => {
+                                const _args = [...newEmulatorData.args];
+                                _args[i] = e.target.value;
+                                setNewEmulatorData({ ...newEmulatorData, args: _args });
+                            }}
+                        />
+                        <div
+                            style={{ width: "40px", padding: "10px" }}
+                            onClick={() => {
+                                const _args = [...newEmulatorData.args];
+                                _args.splice(i, 1);
+                                setNewEmulatorData({ ...newEmulatorData, args: _args });
+                            }}
+                        >
+                            <Icon name="close" />
+                        </div>
+                    </SettingEntry>
+                ))}
+                <SettingEntry>
+                    <div>Icon</div>
+                    <input
+                        type="text"
+                        name="body"
+                        placeholder="https://..."
+                        value={newEmulatorData.icon}
+                        onChange={(e) => setNewEmulatorData({ ...newEmulatorData, icon: e.target.value })}
+                    />
+                </SettingEntry>
+            </>
+        );
+    } else if (openedEmulator) {
         const emulator = emulators.find((e) => e.id === openedEmulator);
         const platform = emulator.platform;
         const name = emulator.name;
 
         return (
             <>
-                <InstallBtn onClick={() => setOpenedEmulator(null)}>
-                    Return
-                </InstallBtn>
-                <h2>
-                    {platform.toUpperCase()} - {name.toLowerCase()}
-                </h2>
+                <SettingEntry>
+                    <div>{platform.toUpperCase()} - {name.toLowerCase()}</div>
+                    <InstallBtn
+                        onClick={() => setOpenedEmulator(null)}
+                        style={{width: '135px'}}
+                    >
+                        Return
+                    </InstallBtn>
+                    <InstallBtn onClick={async () => {
+                        await window.app.Services.Emulator.uninstall(emulator.id);
+                        setOpenedEmulator(null);
+                        updateEmulators();
+                    }}>
+                        {emulator.custom ? "Remove" : "Uninstall"}
+                    </InstallBtn>
+                </SettingEntry>
                 <div
                     onClick={() => {
                         window.app.open(emulator.link);
@@ -367,6 +504,17 @@ function EmulatorsSettings() {
                     )}
                 </div>
             ))}
+            <div
+                onClick={() => setOpenedEmulator('add')}
+            >
+                <img
+                    src={"./svgs/plus.svg"}
+                    alt={"plus"}
+                />
+                <div>Add emulator</div>
+                <div></div>
+                <div></div>
+            </div>
         </EmulatorList>
     );
 }
@@ -623,13 +771,13 @@ const EmulatorList = styled.div`
 const SettingEntry = styled.div`
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
     padding: 5px 5px;
     position: relative;
     height: 40px;
 
-    & > *:last-child {
+    & > *:not(:first-child) {
         box-sizing: border-box;
         /* border: 1px solid rgba(255, 255, 255, 0.1); */
         border: 1px solid rgb(131, 131, 131);
@@ -669,7 +817,7 @@ const SettingEntry = styled.div`
         }
     }
 
-    & > input[type="color"]:last-child {
+    & > input[type="color"]:not(:first-child) {
         padding: 0;
         height: 100%;
         overflow: hidden;
@@ -682,7 +830,7 @@ const SettingEntry = styled.div`
         }
     }
 
-    & > input[type="checkbox"]:last-child {
+    & > input[type="checkbox"]:not(:first-child) {
         width: 30px;
     }
 
@@ -710,6 +858,7 @@ const SettingsContainer = styled.div`
 const Layout = styled.div`
     display: flex;
     height: 100%;
+    height: calc(100% - 65px);
     width: 100%;
     padding: 0 !important;
     margin: 0 !important;
@@ -747,6 +896,7 @@ const Page = styled.div`
     padding: 20px;
     font-size: 20px;
     box-sizing: border-box;
+    overflow-y: overlay;
 `;
 
 const defaultSettings = {
@@ -759,7 +909,7 @@ const defaultSettings = {
     enableBlur: true,
     coverSize: 300,
     orientation: "portrait",
-    startOnBoot: true,
+    startOnBoot: false,
 };
 
 const SettingsContext = createContext<any>({
