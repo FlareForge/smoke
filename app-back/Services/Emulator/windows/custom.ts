@@ -15,19 +15,39 @@ export default class CustomEmulator extends AbstractEmulator{
     layoutGuide = "./layouts/nds.png"
     custom = true;
     
+    schema = {
+        name: {
+            type: 'string',
+            label: 'Name'
+        },
+        platform: {
+            type: 'string',
+            label: 'Platform'
+        },
+        ext: {
+            type: 'string',
+            label: 'Extension'
+        },
+        path: {
+            type: 'string',
+            label: 'Path'
+        },
+        args: {
+            type: 'array',
+            label: 'Arguments'
+        },
+        icon: {
+            type: 'string',
+            label: 'Icon'
+        },
+    }
+
     private path = "";
     private args = [];
 
     constructor(emulator: Emulator){
         super();
-        this.id = emulator.id;
-        this.name = emulator.name;
-        this.platform = emulator.platform;
-        this.icon = emulator.icon;
-        this.path = emulator.path;
-        this.ext = emulator.ext;
-        this.args = emulator.args;
-        if(!this.args.length && this.args?.[0]) this.args = Object.values(this.args);
+        this.setConfiguration(emulator);
     }
 
     async startWithGame(game, _path){
@@ -59,7 +79,28 @@ export default class CustomEmulator extends AbstractEmulator{
         return null;
     }
 
-    async configure(){
-        return null;
+    async getConfiguration(): Promise<Emulator> {
+        return {
+            id: this.id,
+            name: this.name,
+            platform: this.platform,
+            icon: this.icon,
+            link: this.link,
+            installed: true,
+            path: this.path,
+            args: this.args,
+            ext: this.ext,
+        }
+    }
+
+    async setConfiguration(_configuration) {
+        this.id = _configuration.id;
+        this.name = _configuration.name;
+        this.platform = _configuration.platform;
+        this.icon = _configuration.icon;
+        this.path = _configuration.path;
+        this.ext = _configuration.ext;
+        this.args = _configuration.args;
+        if(!this.args.length && this.args?.[0]) this.args = Object.values(this.args);
     }
 }

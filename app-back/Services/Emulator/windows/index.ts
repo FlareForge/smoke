@@ -122,6 +122,22 @@ export default class WindowsEmulatorManager extends AbstractEmulatorManager {
         this.#emulators[_emulator.id] = new CustomEmulator(_emulator);
     }
 
+    async getConfiguration(_id: any): Promise<any> {
+        return {
+            schema: this.#emulators[_id].schema,
+            data: await this.#emulators[_id].getConfiguration(),
+        }
+    }
+
+    async setConfiguration(_id: any, _configuration: any): Promise<any> {
+        await this.#emulators[_id].setConfiguration(_configuration);
+        if(this.#emulators[_id].custom){
+            const customEmulators = await this.services.Storage.get('customEmulators', {});
+            customEmulators[_id] = await this.#emulators[_id].getConfiguration();
+            await this.services.Storage.store('customEmulators', customEmulators);
+        }
+    }
+
     recusiveScanFolder(_path, emulators, callback){
         const files = fs.readdirSync(_path);
         files.forEach((file) => {
