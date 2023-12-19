@@ -13,10 +13,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Verify Package Version
+        with:
+          fetch-depth: 0
         run: |
-          old_version=$(git show main:package.json | grep "version" | cut -d'"' -f4)
+          set -e
+          old_version=$(git show origin/main:package.json | grep "version" | cut -d'"' -f4)
           new_version=$(grep "version" package.json | cut -d'"' -f4)
-
           if [[ "$old_version" == "$new_version" ]]; then
             echo "Version is unchanged"
             exit 1
