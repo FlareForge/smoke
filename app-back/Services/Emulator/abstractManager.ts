@@ -50,4 +50,12 @@ export default class AbstractEmulatorManager extends Service {
     async removeCustomEmulator(_id) {
         return null;
     }
+
+    async getConfiguration(_id): Promise<any> {
+        return null;
+    }
+
+    async setConfiguration(_id, _configuration) {
+        return null;
+    }
 }

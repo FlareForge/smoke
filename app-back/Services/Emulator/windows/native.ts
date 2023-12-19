@@ -44,9 +44,6 @@ export default class NativeEmulator extends AbstractEmulator{
         return null;
     }
 
-    async configure(){
-        return null;
-    }
 }
 
 
