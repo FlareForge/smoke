@@ -27,6 +27,10 @@ export default class AbstractStorage extends Service {
         return null;
     }
 
+    async setGame(_game: Game){
+        return null;
+    }
+
     async removeGame(_game: Game){
         return null;
     }
