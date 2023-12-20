@@ -307,9 +307,8 @@ function EmulatorsSettings() {
     useEffect(() => {updateEmulators()}, []);
 
     useEffect(() => {
-        if(openedEmulator && openedEmulator !== 'add') {
-            window.app.Services.Emulator.getConfiguration(openedEmulator).then(setEmulatorData);
-        }
+        if(openedEmulator && openedEmulator !== 'add') window.app.Services.Emulator.getConfiguration(openedEmulator).then(setEmulatorData);
+        if(!openedEmulator) updateEmulators();
     }, [openedEmulator]);
 
     const updateEmulators = () => {
@@ -479,97 +478,11 @@ function EmulatorsSettings() {
                         {emulator.custom ? "Remove" : "Uninstall"}
                     </InstallBtn>
                 </SettingEntry>
-                {
-                    Object.entries(schema).map(([key, value]: [string, any]) => {
-                        let input = null;
-                        switch(value.type) {
-                            case "string":
-                                input = <input
-                                    type="text"
-                                    name="body"
-                                    value={data[key]}
-                                    onChange={(e) => setEmulatorConfig({ [key]: e.target.value})}
-                                />
-                                break;
-                            case "number":
-                                input = <input
-                                    type="number"
-                                    name="body"
-                                    value={data[key]}
-                                    onChange={(e) => setEmulatorConfig({ [key]: e.target.value})}
-                                />
-                                break;
-                            case "boolean":
-                                input = <input
-                                    type="checkbox"
-                                    name="body"
-                                    checked={data[key]}
-                                    onChange={(e) => setEmulatorConfig({ [key]: e.target.checked})}
-                                />
-                                break;
-                            case "array":
-                                let elements = [];
-                                if(data[key] && !data[key].length && data[key]?.[0]) elements = Object.values(data[key]);
-                                if(data[key] && data[key].length) elements = data[key];
-                                return <div key={key}>
-                                    <SettingEntry>
-                                        <div>{value.label}</div>
-                                        <div
-                                            onClick={() => {
-                                                const _args = data[key];
-                                                if(_args.push){
-                                                    _args.push("");
-                                                }else{
-                                                    _args[Object.keys(_args).length] = "";
-                                                }
-                                                setEmulatorConfig({ [key]: _args });
-                                            }}
-                                        >
-                                            Add
-                                        </div>
-                                    </SettingEntry>
-                                    {elements.map((arg, i) => (
-                                        <SettingEntry key={i}>
-                                            <div>{value.label + " " + i}</div>
-                                            <input
-                                                type="text"
-                                                name="body"
-                                                value={arg}
-                                                style={{width: '300px'}}
-                                                onChange={(e) => {
-                                                    const _args = data[key];
-                                                    _args[i] = e.target.value;
-                                                    setEmulatorConfig({ [key]: _args });
-                                                }}
-                                            />
-                                            <div
-                                                style={{ width: "40px", padding: "10px" }}
-                                                onClick={() => {
-                                                    let _args = data[key];
-                                                    if(_args.splice){
-                                                        _args.splice(i, 1);
-                                                    }else{
-                                                        delete _args[i];
-                                                        _args = Object.values(_args);
-                                                    }
-                                                    setEmulatorConfig({ [key]: _args });
-                                                }}
-                                            >
-                                                <Icon name="close" />
-                                            </div>
-                                        </SettingEntry>
-                                    ))}
-                                </div>
-                            default:
-                                return null;
-                        }
-
-                        return <SettingEntry key={key}>
-                            <div>{value.label}</div>
-                            {input}
-                        </SettingEntry>
-                    })
-                }
+                <SchemaSettings
+                    schema={schema}
+                    data={data}
+                    setData={setEmulatorConfig}
+                />
             </>
         );
     }
@@ -639,16 +552,119 @@ function EmulatorsSettings() {
     );
 }
 
+function SchemaSettings({ schema, data, setData }) {
+    return <>
+        {Object.entries(schema).map(([key, value]: [string, any]) => {
+            let input = null;
+            switch(value.type) {
+                case "string":
+                    input = <input
+                        type="text"
+                        name="body"
+                        value={data[key]}
+                        onChange={(e) => setData({ [key]: e.target.value})}
+                    />
+                    break;
+                case "number":
+                    input = <input
+                        type="number"
+                        name="body"
+                        value={data[key]}
+                        onChange={(e) => setData({ [key]: e.target.value})}
+                    />
+                    break;
+                case "boolean":
+                    input = <input
+                        type="checkbox"
+                        name="body"
+                        checked={data[key]}
+                        onChange={(e) => setData({ [key]: e.target.checked})}
+                    />
+                    break;
+                case "array":
+                    let elements = [];
+                    if(data[key] && !data[key].length && data[key]?.[0]) elements = Object.values(data[key]);
+                    if(data[key] && data[key].length) elements = data[key];
+                    return <div key={key}>
+                        <SettingEntry>
+                            <div>{value.label}</div>
+                            <div
+                                onClick={() => {
+                                    const _args = data[key];
+                                    if(_args.push){
+                                        _args.push("");
+                                    }else{
+                                        _args[Object.keys(_args).length] = "";
+                                    }
+                                    setData({ [key]: _args });
+                                }}
+                            >
+                                Add
+                            </div>
+                        </SettingEntry>
+                        {elements.map((arg, i) => (
+                            <SettingEntry key={i}>
+                                <div>{value.label + " " + i}</div>
+                                <input
+                                    type="text"
+                                    name="body"
+                                    value={arg}
+                                    style={{width: '300px'}}
+                                    onChange={(e) => {
+                                        const _args = data[key];
+                                        _args[i] = e.target.value;
+                                        setData({ [key]: _args });
+                                    }}
+                                />
+                                <div
+                                    style={{ width: "40px", padding: "10px" }}
+                                    onClick={() => {
+                                        let _args = data[key];
+                                        if(_args.splice){
+                                            _args.splice(i, 1);
+                                        }else{
+                                            delete _args[i];
+                                            _args = Object.values(_args);
+                                        }
+                                        setData({ [key]: _args });
+                                    }}
+                                >
+                                    <Icon name="close" />
+                                </div>
+                            </SettingEntry>
+                        ))}
+                    </div>
+                default:
+                    return null;
+            }
+
+            return <SettingEntry key={key}>
+                <div>{value.label}</div>
+                {input}
+            </SettingEntry>
+        })}
+    </>
+}
+
 function GamesSettings() {
     const [emulators, setEmulators] = useState([]);
+    const [emulatorConfig, setEmulatorConfig] = useState(null);
     const [games, setGames] = useState(null);
     const [openedGame, setOpenedGame] = useState(null);
 
     useEffect(() => {updateData()}, []);
 
+    useEffect(() => {updateEmulatorConfig()}, [openedGame]);
+
     const updateData = () => {
         window.app.Services.Storage.getGames().then(setGames);
         window.app.Services.Emulator.getEmulators().then(setEmulators);
+    }
+
+    const updateEmulatorConfig = () => {
+        if(!openedGame || openedGame === 'add') return;
+        const game = games[openedGame]
+        window.app.Services.Emulator.getConfiguration(game.emulator).then(setEmulatorConfig);
     }
     
     if(openedGame && openedGame !== 'add') {
@@ -783,6 +799,47 @@ function GamesSettings() {
                     }}
                 />
             </SettingEntry>
+            <SettingEntry
+                style={{marginTop: "20px"}}
+            >
+                <div>Emulator settings</div>
+                <InstallBtn
+                    onClick={() => {
+                        updateEmulatorConfig();
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                emulatorConfig: {},
+                            }
+                        });
+                        window.app.Services.Storage.setGame({...game, emulatorConfig: {}})
+                    }}
+                >
+                    Reset
+                </InstallBtn>
+            </SettingEntry>
+            {emulatorConfig && <SchemaSettings
+                schema={emulatorConfig?.schema || {}}
+                data={{
+                    ...emulatorConfig?.data || {},
+                    ...game.emulatorConfig || {}
+                }}
+                setData={(config) => {
+                    const _config = {
+                        ...game.emulatorConfig || {},
+                        ...config,
+                    }
+                    setGames({
+                        ...games,
+                        [openedGame]: {
+                            ...game,
+                            emulatorConfig: _config,
+                        }
+                    });
+                    window.app.Services.Storage.setGame({...game, emulatorConfig: _config})
+                }}
+            />}
         </>
     }
 
