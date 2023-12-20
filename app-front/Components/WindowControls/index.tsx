@@ -33,7 +33,6 @@ export default function WindowControls({fullscreen = false}) {
                 </div>
                 <div
                     onClick={() => {
-                        console.log(window.app);
                         window.app.maximize();
                     }}
                 >

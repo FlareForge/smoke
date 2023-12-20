@@ -7,6 +7,10 @@ export type Emulator = {
     icon: string;
     link: string;
     installed: boolean;
+
+    path?: string;
+    args?: string[];
+    ext?: string;
 };
 
 export default class AbstractEmulatorManager extends Service {
@@ -36,6 +40,22 @@ export default class AbstractEmulatorManager extends Service {
     }
 
     async getEmulatorPath(_id): Promise<string> {
+        return null;
+    }
+
+    async addCustomEmulator(_emulator: Omit<Emulator, 'id'>) {
+        return null;
+    }
+
+    async removeCustomEmulator(_id) {
+        return null;
+    }
+
+    async getConfiguration(_id): Promise<any> {
+        return null;
+    }
+
+    async setConfiguration(_id, _configuration) {
         return null;
     }
 }

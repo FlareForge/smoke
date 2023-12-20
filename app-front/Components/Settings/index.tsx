@@ -28,6 +28,9 @@ function Settings({ page: _page }) {
         case "account":
             pageContent = <AccountSettings />;
             break;
+        case "games":
+            pageContent = <GamesSettings />;
+            break;
         default:
             pageContent = <GeneralSettings />;
             break;
@@ -56,7 +59,12 @@ function Settings({ page: _page }) {
                     >
                         Library
                     </Section>
-                    <Section className="soon">Games</Section>
+                    <Section
+                        onClick={() => setPage("games")}
+                        $selected={page === "games"}
+                    >
+                        Games
+                    </Section>
                     <Section
                         onClick={() => setPage("emulators")}
                         $selected={page === "emulators"}
@@ -283,36 +291,198 @@ function EmulatorsSettings() {
     const [emulators, setEmulators] = useState([]);
     const [loadings, setLoadings] = useState({});
     const [openedEmulator, setOpenedEmulator] = useState(null);
+    const [emulatorData, setEmulatorData] = useState(null);
+    const [lastTimeout, setLastTimeout] = useState(null);
+    const [newEmulatorData, setNewEmulatorData] = useState({
+        name: "",
+        platform: "",
+        icon: "",
+        path: "",
+        ext: "",
+        args: [
+            "{path}"
+        ],
+    });
+
+    useEffect(() => {updateEmulators()}, []);
 
     useEffect(() => {
-        updateEmulators();
-    }, []);
+        if(openedEmulator && openedEmulator !== 'add') window.app.Services.Emulator.getConfiguration(openedEmulator).then(setEmulatorData);
+        if(!openedEmulator) updateEmulators();
+    }, [openedEmulator]);
 
     const updateEmulators = () => {
         window.app.Services.Emulator.getEmulators().then(setEmulators);
     };
+    
+    if(openedEmulator && openedEmulator === 'add') {
 
-    if (openedEmulator) {
+        return (
+            <>
+                <SettingEntry>
+                    <div>Add emulator</div>
+                    <InstallBtn
+                        onClick={() => setOpenedEmulator(null)}
+                        style={{width: '135px'}}
+                    >
+                        Return
+                    </InstallBtn>
+                    <InstallBtn onClick={async () => {
+                        await window.app.Services.Emulator.addCustomEmulator({
+                            ...newEmulatorData,
+                            link: "",
+                            installed: true,
+                        });
+                        setOpenedEmulator(null);
+                        updateEmulators();
+                    }}>
+                        Add
+                    </InstallBtn>
+                </SettingEntry>
+                <SettingEntry>
+                    <div>Name</div>
+                    <input
+                        type="text"
+                        name="body"
+                        placeholder="emulator"
+                        value={newEmulatorData.name}
+                        onChange={(e) => setNewEmulatorData({ ...newEmulatorData, name: e.target.value })}
+                    />
+                </SettingEntry>
+                <SettingEntry>
+                    <div>Platform</div>
+                    <input
+                        type="text"
+                        name="body"
+                        placeholder="PLATFORM"
+                        value={newEmulatorData.platform}
+                        onChange={(e) => setNewEmulatorData({ ...newEmulatorData, platform: e.target.value })}
+                    />
+                </SettingEntry>
+                <SettingEntry>
+                    <div>Extension</div>
+                    <input
+                        type="text"
+                        name="body"
+                        placeholder=".gba"
+                        value={newEmulatorData.ext}
+                        onChange={(e) => setNewEmulatorData({ ...newEmulatorData, ext: e.target.value })}
+                    />
+                </SettingEntry>
+                <SettingEntry>
+                    <div>Path</div>
+                    <input
+                        type="text"
+                        name="body"
+                        placeholder={"C:\\...\\emulator.exe"}
+                        value={newEmulatorData.path}
+                        onChange={(e) => setNewEmulatorData({ ...newEmulatorData, path: e.target.value })}
+                    />
+                </SettingEntry>
+                <SettingEntry>
+                    <div>Command Arguments</div>
+                    <div
+                        onClick={() => {
+                            const _args = [...newEmulatorData.args];
+                            _args.push("");
+                            setNewEmulatorData({ ...newEmulatorData, args: _args });
+                        }}
+                    >
+                        Add
+                    </div>
+                </SettingEntry>
+                {newEmulatorData.args.map((arg, i) => (
+                    <SettingEntry
+                        key={i}
+                    >
+                        <div>Argument {i}</div>
+                        <input
+                            type="text"
+                            name="body"
+                            value={arg}
+                            style={{width: '300px'}}
+                            onChange={(e) => {
+                                const _args = [...newEmulatorData.args];
+                                _args[i] = e.target.value;
+                                setNewEmulatorData({ ...newEmulatorData, args: _args });
+                            }}
+                        />
+                        <div
+                            style={{ width: "40px", padding: "10px" }}
+                            onClick={() => {
+                                const _args = [...newEmulatorData.args];
+                                _args.splice(i, 1);
+                                setNewEmulatorData({ ...newEmulatorData, args: _args });
+                            }}
+                        >
+                            <Icon name="close" />
+                        </div>
+                    </SettingEntry>
+                ))}
+                <SettingEntry>
+                    <div>Icon</div>
+                    <input
+                        type="text"
+                        name="body"
+                        placeholder="https://..."
+                        value={newEmulatorData.icon}
+                        onChange={(e) => setNewEmulatorData({ ...newEmulatorData, icon: e.target.value })}
+                    />
+                </SettingEntry>
+            </>
+        );
+    } else if (openedEmulator) {
         const emulator = emulators.find((e) => e.id === openedEmulator);
         const platform = emulator.platform;
         const name = emulator.name;
 
+        const schema = emulatorData?.schema || {};
+        const data = emulatorData?.data || {};
+
+
+        const setEmulatorConfig = (config) => {
+            setEmulatorData({
+                ...emulatorData,
+                data: {
+                    ...data,
+                    ...config,
+                }
+            });
+            if(lastTimeout) clearTimeout(lastTimeout);
+            let timeout = setTimeout(() => {
+                window.app.Services.Emulator.setConfiguration(openedEmulator, {
+                    ...data,
+                    ...config,
+                });
+            }, 200);
+            setLastTimeout(timeout);
+        }
+
         return (
             <>
-                <InstallBtn onClick={() => setOpenedEmulator(null)}>
-                    Return
-                </InstallBtn>
-                <h2>
-                    {platform.toUpperCase()} - {name.toLowerCase()}
-                </h2>
-                <div
-                    onClick={() => {
-                        window.app.open(emulator.link);
-                    }}
-                >
-                    Author
-                </div>
-                <div>No settings available yet</div>
+                <SettingEntry>
+                    <div
+                        onClick={() => { emulator.link && window.app.open(emulator.link) }}
+                    >{platform.toUpperCase()} - {name.toLowerCase()}</div>
+                    <InstallBtn
+                        onClick={() => setOpenedEmulator(null)}
+                        style={{width: '135px'}}
+                    >
+                        Return
+                    </InstallBtn>
+                    <InstallBtn onClick={async () => {
+                        await window.app.Services.Emulator.uninstall(emulator.id);
+                        setOpenedEmulator(null);
+                        updateEmulators();
+                    }}>
+                        {emulator.custom ? "Remove" : "Uninstall"}
+                    </InstallBtn>
+                </SettingEntry>
+                <SchemaSettings
+                    schema={schema}
+                    data={data}
+                    setData={setEmulatorConfig}
+                />
             </>
         );
     }
@@ -365,6 +535,329 @@ function EmulatorsSettings() {
                             Install
                         </InstallBtn>
                     )}
+                </div>
+            ))}
+            <div
+                onClick={() => setOpenedEmulator('add')}
+            >
+                <img
+                    src={"./svgs/plus.svg"}
+                    alt={"plus"}
+                />
+                <div>Add emulator</div>
+                <div></div>
+                <div></div>
+            </div>
+        </EmulatorList>
+    );
+}
+
+function SchemaSettings({ schema, data, setData }) {
+    return <>
+        {Object.entries(schema).map(([key, value]: [string, any]) => {
+            let input = null;
+            switch(value.type) {
+                case "string":
+                    input = <input
+                        type="text"
+                        name="body"
+                        value={data[key]}
+                        onChange={(e) => setData({ [key]: e.target.value})}
+                    />
+                    break;
+                case "number":
+                    input = <input
+                        type="number"
+                        name="body"
+                        value={data[key]}
+                        onChange={(e) => setData({ [key]: e.target.value})}
+                    />
+                    break;
+                case "boolean":
+                    input = <input
+                        type="checkbox"
+                        name="body"
+                        checked={data[key]}
+                        onChange={(e) => setData({ [key]: e.target.checked})}
+                    />
+                    break;
+                case "array":
+                    let elements = [];
+                    if(data[key] && !data[key].length && data[key]?.[0]) elements = Object.values(data[key]);
+                    if(data[key] && data[key].length) elements = data[key];
+                    return <div key={key}>
+                        <SettingEntry>
+                            <div>{value.label}</div>
+                            <div
+                                onClick={() => {
+                                    const _args = data[key];
+                                    if(_args.push){
+                                        _args.push("");
+                                    }else{
+                                        _args[Object.keys(_args).length] = "";
+                                    }
+                                    setData({ [key]: _args });
+                                }}
+                            >
+                                Add
+                            </div>
+                        </SettingEntry>
+                        {elements.map((arg, i) => (
+                            <SettingEntry key={i}>
+                                <div>{value.label + " " + i}</div>
+                                <input
+                                    type="text"
+                                    name="body"
+                                    value={arg}
+                                    style={{width: '300px'}}
+                                    onChange={(e) => {
+                                        const _args = data[key];
+                                        _args[i] = e.target.value;
+                                        setData({ [key]: _args });
+                                    }}
+                                />
+                                <div
+                                    style={{ width: "40px", padding: "10px" }}
+                                    onClick={() => {
+                                        let _args = data[key];
+                                        if(_args.splice){
+                                            _args.splice(i, 1);
+                                        }else{
+                                            delete _args[i];
+                                            _args = Object.values(_args);
+                                        }
+                                        setData({ [key]: _args });
+                                    }}
+                                >
+                                    <Icon name="close" />
+                                </div>
+                            </SettingEntry>
+                        ))}
+                    </div>
+                default:
+                    return null;
+            }
+
+            return <SettingEntry key={key}>
+                <div>{value.label}</div>
+                {input}
+            </SettingEntry>
+        })}
+    </>
+}
+
+function GamesSettings() {
+    const [emulators, setEmulators] = useState([]);
+    const [emulatorConfig, setEmulatorConfig] = useState(null);
+    const [games, setGames] = useState(null);
+    const [openedGame, setOpenedGame] = useState(null);
+
+    useEffect(() => {updateData()}, []);
+
+    useEffect(() => {updateEmulatorConfig()}, [openedGame]);
+
+    const updateData = () => {
+        window.app.Services.Storage.getGames().then(setGames);
+        window.app.Services.Emulator.getEmulators().then(setEmulators);
+    }
+
+    const updateEmulatorConfig = () => {
+        if(!openedGame || openedGame === 'add') return;
+        const game = games[openedGame]
+        window.app.Services.Emulator.getConfiguration(game.emulator).then(setEmulatorConfig);
+    }
+    
+    if(openedGame && openedGame !== 'add') {
+        const game = games[openedGame] 
+
+        return <>
+            <SettingEntry>
+                <div></div>
+                <InstallBtn
+                    onClick={() => setOpenedGame(null)}
+                    style={{width: '135px'}}
+                >
+                    Return
+                </InstallBtn>
+                <InstallBtn onClick={async () => {
+                    await window.app.Services.Storage.removeGame(openedGame);
+                    setOpenedGame(null);
+                    updateData();
+                }}>
+                    Remove
+                </InstallBtn>
+            </SettingEntry>
+            <h2>{game.name}</h2>
+            {game.emulator !== "native" && <SettingEntry>
+                <div>Emulator</div>
+                <select
+                    value={game.emulator}
+                    onChange={async (e) => {
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                emulator: e.target.value,
+                            }
+                        });
+                        await window.app.Services.Storage.setGame({...game, emulator: e.target.value})
+                        updateData();
+                    }}
+                >
+                    {emulators.map((emulator, i) => (
+                        <option key={i} value={emulator.id}>{emulator.name}</option>
+                    ))}
+                </select>
+            </SettingEntry>}
+            <SettingEntry>
+                <div>Title</div>
+                <input
+                    type="text"
+                    name="body"
+                    value={game.name}
+                    onChange={(e) => {
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                name: e.target.value,
+                            }
+                        });
+                        window.app.Services.Storage.setGame({...game, name: e.target.value})
+                    }}
+                />
+            </SettingEntry>
+            <SettingEntry>
+                <div>Description</div>
+                <input
+                    type="text"
+                    name="body"
+                    value={game.description}
+                    onChange={(e) => {
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                description: e.target.value,
+                            }
+                        });
+                        window.app.Services.Storage.setGame({...game, description: e.target.value})
+                    }}
+                />
+            </SettingEntry>
+            <SettingEntry>
+                <div>Image</div>
+                <input
+                    type="text"
+                    name="body"
+                    value={game.image}
+                    onChange={(e) => {
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                image: e.target.value,
+                            }
+                        });
+                        window.app.Services.Storage.setGame({...game, image: e.target.value})
+                    }}
+                />
+            </SettingEntry>
+            <SettingEntry>
+                <div>Banner</div>
+                <input
+                    type="text"
+                    name="body"
+                    value={game.banner}
+                    onChange={(e) => {
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                banner: e.target.value,
+                            }
+                        });
+                        window.app.Services.Storage.setGame({...game, banner: e.target.value})
+                    }}
+                />
+            </SettingEntry>
+            <SettingEntry>
+                <div>Path</div>
+                <input
+                    type="text"
+                    name="body"
+                    value={game.path}
+                    onChange={(e) => {
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                path: e.target.value,
+                            }
+                        });
+                        window.app.Services.Storage.setGame({...game, path: e.target.value})
+                    }}
+                />
+            </SettingEntry>
+            <SettingEntry
+                style={{marginTop: "20px"}}
+            >
+                <div>Emulator settings</div>
+                <InstallBtn
+                    onClick={() => {
+                        updateEmulatorConfig();
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                emulatorConfig: {},
+                            }
+                        });
+                        window.app.Services.Storage.setGame({...game, emulatorConfig: {}})
+                    }}
+                >
+                    Reset
+                </InstallBtn>
+            </SettingEntry>
+            {emulatorConfig && <SchemaSettings
+                schema={emulatorConfig?.schema || {}}
+                data={{
+                    ...emulatorConfig?.data || {},
+                    ...game.emulatorConfig || {}
+                }}
+                setData={(config) => {
+                    const _config = {
+                        ...game.emulatorConfig || {},
+                        ...config,
+                    }
+                    setGames({
+                        ...games,
+                        [openedGame]: {
+                            ...game,
+                            emulatorConfig: _config,
+                        }
+                    });
+                    window.app.Services.Storage.setGame({...game, emulatorConfig: _config})
+                }}
+            />}
+        </>
+    }
+
+    return (
+        <EmulatorList>
+            {Object.values(games || {}).map((game: any, i) => (
+                <div
+                    key={i}
+                    onClick={() => setOpenedGame(game.id)}
+                >
+                    <img
+                        src={game.image || "./platforms/nds.svg"}
+                        alt={game.name}
+                    />
+                    <div>{game.name}</div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
                 </div>
             ))}
         </EmulatorList>
@@ -623,13 +1116,13 @@ const EmulatorList = styled.div`
 const SettingEntry = styled.div`
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: 10px;
     align-items: center;
     padding: 5px 5px;
     position: relative;
     height: 40px;
 
-    & > *:last-child {
+    & > *:not(:first-child) {
         box-sizing: border-box;
         /* border: 1px solid rgba(255, 255, 255, 0.1); */
         border: 1px solid rgb(131, 131, 131);
@@ -669,7 +1162,7 @@ const SettingEntry = styled.div`
         }
     }
 
-    & > input[type="color"]:last-child {
+    & > input[type="color"]:not(:first-child) {
         padding: 0;
         height: 100%;
         overflow: hidden;
@@ -682,7 +1175,7 @@ const SettingEntry = styled.div`
         }
     }
 
-    & > input[type="checkbox"]:last-child {
+    & > input[type="checkbox"]:not(:first-child) {
         width: 30px;
     }
 
@@ -710,6 +1203,7 @@ const SettingsContainer = styled.div`
 const Layout = styled.div`
     display: flex;
     height: 100%;
+    height: calc(100% - 65px);
     width: 100%;
     padding: 0 !important;
     margin: 0 !important;
@@ -747,6 +1241,7 @@ const Page = styled.div`
     padding: 20px;
     font-size: 20px;
     box-sizing: border-box;
+    overflow-y: overlay;
 `;
 
 const defaultSettings = {
@@ -759,7 +1254,7 @@ const defaultSettings = {
     enableBlur: true,
     coverSize: 300,
     orientation: "portrait",
-    startOnBoot: true,
+    startOnBoot: false,
 };
 
 const SettingsContext = createContext<any>({

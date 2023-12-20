@@ -27,6 +27,15 @@ export default class LocalStorage extends AbstractStorage {
         this.#store.set('games', currentGames);
     }
 
+    async setGame(game){
+        const currentGames = this.#store.get('games', {});
+        currentGames[game.id] = {
+            ...currentGames[game.id],
+            ...game,
+        }
+        this.#store.set('games', currentGames);
+    }
+
     async removeGame(game){
         const currentGames = this.#store.get('games', {});
         delete currentGames[game.id];

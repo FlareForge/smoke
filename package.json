@@ -3,11 +3,11 @@
     "author": "Flare, Forge.",
     "description": "all-in-one game launcher",
     "license": "CC-BY-SA-4.0",
-    "version": "0.0.0",
+    "version": "0.0.1",
     "main": "./app-back/.build/index.js",
     "scripts": {
         "dev": "concurrently \"npm run dev:web\" \"npm run dev:app\"",
-        "dev:app": "nodemon --watch \"./app-back/**/*\" --ext js,ts --exec \"npm run build:back && set DEV=1 && electron ./app-back/.build/index.js\"",
+        "dev:app": "nodemon --watch \"./app-back/**/*\" --ext js,ts --exec \"npm run dev:transpile && set DEV=1 && electron ./app-back/.dev/index.js\"",
         "dev:web": "vite",
         "dev:transpile": "npx tsc ./app-back/index.ts ./app-back/preload.ts --outDir ./app-back/.dev --module commonjs --target es6 --esModuleInterop",
         "build": "npm run build:front && npm run build:back && npm run build:app",

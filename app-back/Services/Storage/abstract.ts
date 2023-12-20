@@ -8,9 +8,11 @@ export type Game = {
     image: string;
     banner: string;
     emulator: string;
+
     timePlayed?: number;
     emulatorPath?: string;
     commands?: string[];
+    emulatorConfig?: any;
 };
 
 export default class AbstractStorage extends Service {
@@ -24,6 +26,10 @@ export default class AbstractStorage extends Service {
     }
 
     async addGame(_game: Game){
+        return null;
+    }
+
+    async setGame(_game: Game){
         return null;
     }
 
