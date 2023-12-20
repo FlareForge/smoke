@@ -28,6 +28,9 @@ function Settings({ page: _page }) {
         case "account":
             pageContent = <AccountSettings />;
             break;
+        case "games":
+            pageContent = <GamesSettings />;
+            break;
         default:
             pageContent = <GeneralSettings />;
             break;
@@ -56,7 +59,12 @@ function Settings({ page: _page }) {
                     >
                         Library
                     </Section>
-                    <Section className="soon">Games</Section>
+                    <Section
+                        onClick={() => setPage("games")}
+                        $selected={page === "games"}
+                    >
+                        Games
+                    </Section>
                     <Section
                         onClick={() => setPage("emulators")}
                         $selected={page === "emulators"}
@@ -627,6 +635,174 @@ function EmulatorsSettings() {
                 <div></div>
                 <div></div>
             </div>
+        </EmulatorList>
+    );
+}
+
+function GamesSettings() {
+    const [emulators, setEmulators] = useState([]);
+    const [games, setGames] = useState(null);
+    const [openedGame, setOpenedGame] = useState(null);
+
+    useEffect(() => {updateData()}, []);
+
+    const updateData = () => {
+        window.app.Services.Storage.getGames().then(setGames);
+        window.app.Services.Emulator.getEmulators().then(setEmulators);
+    }
+    
+    if(openedGame && openedGame !== 'add') {
+        const game = games[openedGame] 
+
+        return <>
+            <SettingEntry>
+                <div></div>
+                <InstallBtn
+                    onClick={() => setOpenedGame(null)}
+                    style={{width: '135px'}}
+                >
+                    Return
+                </InstallBtn>
+                <InstallBtn onClick={async () => {
+                    await window.app.Services.Storage.removeGame(openedGame);
+                    setOpenedGame(null);
+                    updateData();
+                }}>
+                    Remove
+                </InstallBtn>
+            </SettingEntry>
+            <h2>{game.name}</h2>
+            {game.emulator !== "native" && <SettingEntry>
+                <div>Emulator</div>
+                <select
+                    value={game.emulator}
+                    onChange={async (e) => {
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                emulator: e.target.value,
+                            }
+                        });
+                        await window.app.Services.Storage.setGame({...game, emulator: e.target.value})
+                        updateData();
+                    }}
+                >
+                    {emulators.map((emulator, i) => (
+                        <option key={i} value={emulator.id}>{emulator.name}</option>
+                    ))}
+                </select>
+            </SettingEntry>}
+            <SettingEntry>
+                <div>Title</div>
+                <input
+                    type="text"
+                    name="body"
+                    value={game.name}
+                    onChange={(e) => {
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                name: e.target.value,
+                            }
+                        });
+                        window.app.Services.Storage.setGame({...game, name: e.target.value})
+                    }}
+                />
+            </SettingEntry>
+            <SettingEntry>
+                <div>Description</div>
+                <input
+                    type="text"
+                    name="body"
+                    value={game.description}
+                    onChange={(e) => {
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                description: e.target.value,
+                            }
+                        });
+                        window.app.Services.Storage.setGame({...game, description: e.target.value})
+                    }}
+                />
+            </SettingEntry>
+            <SettingEntry>
+                <div>Image</div>
+                <input
+                    type="text"
+                    name="body"
+                    value={game.image}
+                    onChange={(e) => {
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                image: e.target.value,
+                            }
+                        });
+                        window.app.Services.Storage.setGame({...game, image: e.target.value})
+                    }}
+                />
+            </SettingEntry>
+            <SettingEntry>
+                <div>Banner</div>
+                <input
+                    type="text"
+                    name="body"
+                    value={game.banner}
+                    onChange={(e) => {
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                banner: e.target.value,
+                            }
+                        });
+                        window.app.Services.Storage.setGame({...game, banner: e.target.value})
+                    }}
+                />
+            </SettingEntry>
+            <SettingEntry>
+                <div>Path</div>
+                <input
+                    type="text"
+                    name="body"
+                    value={game.path}
+                    onChange={(e) => {
+                        setGames({
+                            ...games,
+                            [openedGame]: {
+                                ...game,
+                                path: e.target.value,
+                            }
+                        });
+                        window.app.Services.Storage.setGame({...game, path: e.target.value})
+                    }}
+                />
+            </SettingEntry>
+        </>
+    }
+
+    return (
+        <EmulatorList>
+            {Object.values(games || {}).map((game: any, i) => (
+                <div
+                    key={i}
+                    onClick={() => setOpenedGame(game.id)}
+                >
+                    <img
+                        src={game.image || "./platforms/nds.svg"}
+                        alt={game.name}
+                    />
+                    <div>{game.name}</div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            ))}
         </EmulatorList>
     );
 }
