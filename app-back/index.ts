@@ -61,7 +61,6 @@ function createWindows() {
         },
     });
 
-    autoUpdater.checkForUpdates();
     appWindow.setMenuBarVisibility(false);
     overlayWindow.setFullScreen(true);
 
@@ -79,6 +78,27 @@ function createWindows() {
     appWindow.on("closed", () => {
         try{overlayWindow.close()}catch(e){}
         app.quit()
+    });
+
+    autoUpdater.autoDownload = false;
+    autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.on('update-available', () => {
+        dialog.showMessageBox({
+            type: 'info',
+            title: 'Update Available',
+            message: 'A new smoke version is available!',
+            buttons: ['Install now', 'Update at restart', 'Skip']
+        }).then((buttonIndex) => {
+            if (buttonIndex.response === 0) {
+                autoUpdater.on('update-downloaded', () => {
+                    autoUpdater.quitAndInstall();
+                });
+                autoUpdater.downloadUpdate();
+            }
+            if (buttonIndex.response === 1) {
+                autoUpdater.downloadUpdate();
+            }
+        });
     });
 }
 
