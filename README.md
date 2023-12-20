@@ -1,4 +1,4 @@
-### Smoke Launcher
+### Smoke Launcher Test
 
 <p align="center">
   <img width="150" height="150" src="https://github.com/FlareForge/smoke/assets/137607414/33a8a6c7-4d0f-40c9-82c8-9eaaf67d9446">
