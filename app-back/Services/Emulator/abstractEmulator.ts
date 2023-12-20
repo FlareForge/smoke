@@ -6,12 +6,11 @@ export default class AbstractEmulator{
     link = "";
     layoutGuide = "";
     ext = "";
+    schema = {};
 
     async uninstall(){}
 
     async update(){}
-
-    async configure(){}
 
     async startWithGame(_game, _path){}
 
@@ -24,6 +23,14 @@ export default class AbstractEmulator{
     }
 
     async isGameRunning(_game, _path): Promise<boolean> {
+        return null;
+    }
+
+    async getConfiguration(): Promise<any> {
+        return null;
+    }
+
+    async setConfiguration(_configuration) {
         return null;
     }
 }

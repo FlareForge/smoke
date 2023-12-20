@@ -1,8 +1,10 @@
-import AbstractEmulatorManager from '../abstractManager';
+import AbstractEmulatorManager, { Emulator } from '../abstractManager';
 import NativeEmulator from './native';
+import CustomEmulator from './custom';
 const fs = require('fs');
 const path = require('path');
 const { ipcRenderer } = require('electron');
+const crypto = require('crypto');
 
 export default class WindowsEmulatorManager extends AbstractEmulatorManager {
 
@@ -22,6 +24,12 @@ export default class WindowsEmulatorManager extends AbstractEmulatorManager {
         return installedPath;
     }
 
+    async init(){
+        super.init();
+        const customEmulators = await this.services.Storage.get('customEmulators', {}) as Record<string, Emulator>;
+        Object.values(customEmulators).forEach((emulator) => this.initCustomEmulator(emulator));
+    }
+
     async install(id){
         if(this.#instaling[id]) return;
         this.#instaling[id] = true;
@@ -31,8 +39,13 @@ export default class WindowsEmulatorManager extends AbstractEmulatorManager {
     }
 
     async uninstall(id){
-        await this.#emulators[id].uninstall();
-        this.services.Storage.delete('emulator.'+id);
+        if(this.#emulators[id].custom){
+            this.services.Storage.delete('emulator.'+id);
+            await this.removeCustomEmulator(id);
+        }else{
+            this.services.Storage.delete('emulator.'+id);
+            await this.#emulators[id].uninstall();
+        }
     }
     
     async startGame(game){
@@ -69,6 +82,7 @@ export default class WindowsEmulatorManager extends AbstractEmulatorManager {
             platform: this.#emulators[key].platform,	
             icon: this.#emulators[key].icon,
             link: this.#emulators[key].link,
+            custom: !!this.#emulators[key].custom,
             installed: !!(await this.services.Storage.get('emulator.'+key, null)),
         })));
         return emulators.filter((emulator) => emulator.id !== 'native');
@@ -86,6 +100,42 @@ export default class WindowsEmulatorManager extends AbstractEmulatorManager {
 
     async getCurrentLayoutGuide(){ 
         return this.#currentLayoutGuide;
+    }
+    
+    async addCustomEmulator(_emulator: Emulator) {
+        const customEmulators = await this.services.Storage.get('customEmulators', {});
+        _emulator.id = crypto.createHash('sha256').update(JSON.stringify({path: _emulator.path, args: _emulator.args})).digest('hex');
+        customEmulators[_emulator.id] = _emulator;
+        await this.initCustomEmulator(_emulator);
+        await this.install(_emulator.id);
+        await this.services.Storage.store('customEmulators', customEmulators);
+    }
+
+    async removeCustomEmulator(_id: string) {
+        const customEmulators = await this.services.Storage.get('customEmulators', {});
+        delete customEmulators[_id];
+        delete this.#emulators[_id];
+        await this.services.Storage.store('customEmulators', customEmulators);
+    }
+
+    async initCustomEmulator(_emulator: Emulator) {
+        this.#emulators[_emulator.id] = new CustomEmulator(_emulator);
+    }
+
+    async getConfiguration(_id: any): Promise<any> {
+        return {
+            schema: this.#emulators[_id].schema,
+            data: await this.#emulators[_id].getConfiguration(),
+        }
+    }
+
+    async setConfiguration(_id: any, _configuration: any): Promise<any> {
+        await this.#emulators[_id].setConfiguration(_configuration);
+        if(this.#emulators[_id].custom){
+            const customEmulators = await this.services.Storage.get('customEmulators', {});
+            customEmulators[_id] = await this.#emulators[_id].getConfiguration();
+            await this.services.Storage.store('customEmulators', customEmulators);
+        }
     }
 
     recusiveScanFolder(_path, emulators, callback){
