@@ -155,10 +155,12 @@ export default class WindowsEmulatorManager extends AbstractEmulatorManager {
                 const ext = path.extname(filePath);
                 const find = emulators.find((emu) => emu.ext === ext);
                 if(find){
+                    const name = path.basename(filePath, ext);
+                    const cleanName = name.replace(/^[0-9]{4} - /, '').replace(/\(.*\)/, '');
                     callback({
                         emulator: find.id,
                         path: filePath,
-                        name: path.basename(filePath, ext),
+                        name: cleanName,
                     });
                 }
             }
