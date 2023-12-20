@@ -50,13 +50,19 @@ export default class WindowsEmulatorManager extends AbstractEmulatorManager {
     
     async startGame(game){
         const id = game.emulator;
+        let emulatorConfig = structuredClone(await this.#emulators[id].getConfiguration());
+        if(game.emulatorConfig) await this.#emulators[id].setConfiguration({
+            ...emulatorConfig,
+            ...game.emulatorConfig,
+        });
         const emulatorPath = await this.getEmulatorPath(id);
         this.#currentLayoutGuide = this.#emulators[id].layoutGuide;
         await ipcRenderer.invoke('gamechange', {
             game: game,
             layout: this.#emulators[id].layoutGuide,
         });
-        return await this.#emulators[id].startWithGame(game, emulatorPath);
+        await this.#emulators[id].startWithGame(game, emulatorPath);
+        if(game.emulatorConfig) await this.#emulators[id].setConfiguration(emulatorConfig);
     }
 
     async uninstallGame(game){
