@@ -1,0 +1,17 @@
+[package]
+name = "smoke"
+version = "0.0.0"
+license = "CC-BY-SA-4.0"
+edition = "2018"
+exclude = ["index.node"]
+
+[lib]
+crate-type = ["cdylib"]
+path = "app-bin/index.rs"
+
+[dependencies]
+
+[dependencies.neon]
+version = "0.10"
+default-features = false
+features = ["napi-6"]
