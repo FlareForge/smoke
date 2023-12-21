@@ -27,6 +27,7 @@
         },
     },
     "include": [
+        "app-bin",
         "app-front",
         "app-back",
     ]

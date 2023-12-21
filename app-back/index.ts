@@ -71,7 +71,6 @@ function createWindows() {
         appWindow.loadFile("./app-front/.build/index.html");
         overlayWindow.loadFile("./app-front/.build/overlay.html");
     }
-    if (process.env.DEV) appWindow.openDevTools();
 
     appWindow.on("enter-full-screen", () => appWindow.webContents.send("fullscreen", true));
     appWindow.on("leave-full-screen", () => appWindow.webContents.send("fullscreen", false));
@@ -210,14 +209,18 @@ ipcMain.handle("start-process", (_, arg) => {
 });
 
 ipcMain.handle("fetch", async (_, arg) => {
-    const result = await fetch(arg.url, arg.options);
-    switch (arg.result) {
-        case "text":
-            return await result.text();
-        case "json":
-            return await result.json();
-        default:
-            return null;
+    try{
+        const result = await fetch(arg.url, arg.options);
+        switch (arg.result) {
+            case "text":
+                return await result.text();
+            case "json":
+                return await result.json();
+            default:
+                return null;
+        }
+    }catch(e){
+        return null;
     }
 });
 

@@ -4,6 +4,7 @@ import AbstractEmulatorManager from "./Emulator/abstractManager";
 import AbstractMetadata from "./Metadata/abstract";
 import AbstractModManager from "./Mods/abstractManager";
 import AbstractAccount from "./Account/abstract";
+import AbstractController from "./Controller/abstract";
 
 import EqualGamesScanner from "./Scanner/equalGames";
 import LocalStorage from "./Storage/local";
@@ -11,6 +12,7 @@ import WindowsEmulatorManager from "./Emulator/windows";
 import SmokeMetadata from "./Metadata/smoke";
 import WindowsModManager from "./Mods/windows";
 import AccountManager from "./Account/smoke";
+import WindowsController from "./Controller/windows";
 
 const availableServices = {
     Account: {
@@ -37,21 +39,29 @@ const availableServices = {
         abstract: AbstractStorage,
         Local: LocalStorage,
     },
+    Controller: {
+        abstract: AbstractController,
+        Windows: WindowsController,
+    }
 }
-const Store = require('electron-store');
-const crypto = require('crypto');
-const store = new Store();
 
-const selectedServicesData = store.get('services', {
+const defaultServices = {
     Account: ['Smoke'],
     Emulator: ['Windows'],
     Metadata: ['Smoke'],
     Mods: ['Windows'],
     Scanner: ['EqualGames'],
     Storage: ['Local'],
-});
+    Controller: ['Windows'],
+}
 
-Object.keys(availableServices).forEach(serviceName => selectedServicesData[serviceName] ||= []);
+const Store = require('electron-store');
+const crypto = require('crypto');
+const store = new Store();
+
+const selectedServicesData = store.get('services', defaultServices);
+
+Object.keys(availableServices).forEach(serviceName => selectedServicesData[serviceName] ||= defaultServices[serviceName]);
 Object.values(availableServices).forEach(services => Object.values(services).forEach(service => service.id = crypto.createHash('sha256').update(service.toString()).digest('hex')));
 
 const selectedServices = Object.fromEntries(

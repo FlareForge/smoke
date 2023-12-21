@@ -10,6 +10,11 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v2
+      - name: Set up Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
       - name: Extract Version
         id: package_version
         run: |
@@ -27,7 +32,7 @@ jobs:
         env:
           CSC_KEY_PASSWORD: ${{ secrets.CERT_PASSWORD }}
           CSC_LINK: .\cert.pfx
-        run: npm run build
+        run: npm run build:full
       - name: Upload Release
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
