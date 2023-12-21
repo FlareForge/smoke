@@ -3,7 +3,7 @@
     "author": "Flare, Forge.",
     "description": "all-in-one game launcher",
     "license": "CC-BY-SA-4.0",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "main": "./app-back/.build/index.js",
     "scripts": {
         "   DEVELOPMENT SCRIPTS --------------": "",
@@ -27,7 +27,7 @@
         "   UTILS SCRIPTS --------------------": "",
         "analyze:back": "set ANALYZE=1 && npm run build:back",
         "analyze:front": "npm run build:front && npx vite-bundle-visualizer",
-        "clean": "rimraf .build && rimraf app-back/.build && rimraf app-front/.build && rimraf app-back/.dev && rimraf app-bin/.build"
+        "clean": "npx rimraf .build && npx rimraf app-back/.build && npx rimraf app-front/.build && npx rimraf app-back/.dev && npx rimraf app-bin/.build"
     },
     "build": {
         "appId": "com.flareforge.smoke",
@@ -101,6 +101,7 @@
         "neon-cli": "^0.10.1",
         "node-loader": "^2.0.0",
         "nodemon": "^3.0.2",
+        "rimraf": "^5.0.5",
         "styled-components": "^6.1.1",
         "terser-webpack-plugin": "^5.3.9",
         "ts-loader": "^9.5.1",
