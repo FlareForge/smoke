@@ -6,22 +6,33 @@
     "version": "0.0.2",
     "main": "./app-back/.build/index.js",
     "scripts": {
-        "dev": "concurrently \"npm run dev:web\" \"npm run dev:app\"",
-        "dev:app": "nodemon --watch \"./app-back/**/*\" --ext js,ts --exec \"npm run dev:transpile && set DEV=1 && electron ./app-back/.dev/index.js\"",
-        "dev:web": "vite",
-        "dev:transpile": "npx tsc ./app-back/index.ts ./app-back/preload.ts --outDir ./app-back/.dev --module commonjs --target es6 --esModuleInterop",
+        "   DEVELOPMENT SCRIPTS --------------": "",
+        "dev": "concurrently \"npm run dev:front\" \"npm run dev:back\"",
+        "dev:full": "concurrently \"npm run dev:front\" \"npm run dev:bin\"",
+        "   DEVELOPMENT SUB-SCRIPTS ----------": "",
+        "dev:back": "nodemon --watch \"./app-back/**/*\" --ext js,ts --exec \"npm run dev:back:transpile && electron ./app-back/.dev/build/index.js\"",
+        "dev:back:transpile": "npx tsc ./app-back/index.ts ./app-back/preload.ts --outDir ./app-back/.dev/build --module commonjs --target es6 --esModuleInterop && copyfiles ./app-bin/index.node ./app-back/.dev/",
+        "dev:bin": "nodemon --watch \"./app-bin/**/*\" --ext rs --exec \"npm run dev:bin:build && npm run dev:back\"",
+        "dev:bin:build": "npx cargo-cp-artifact -nc app-bin/index.node -- cargo build --target-dir app-bin/.build --message-format=json-render-diagnostics",
+        "dev:front": "vite",
+        "   BUILD SCRIPTS --------------------": "",
         "build": "npm run build:front && npm run build:back && npm run build:app",
+        "build:full": "npm run clean && npm run build:front && npm run build:bin && npm run build:back && npm run build:app",
+        "   BUILD SUB SCRIPTS ----------------": "",
         "build:back": "webpack --mode production",
+        "build:bin": "npm run dev:bin:build -- --release",
         "build:front": "vite build",
         "build:app": "electron-builder -p never",
         "build:run": "npm run build && npm run start",
+        "   UTILS SCRIPTS --------------------": "",
         "analyze:back": "set ANALYZE=1 && npm run build:back",
         "analyze:front": "npm run build:front && npx vite-bundle-visualizer",
-        "clean": "rimraf .build && rimraf app-back/.build && rimraf app-front/.build && rimraf app-back/.dev"
+        "clean": "rimraf .build && rimraf app-back/.build && rimraf app-front/.build && rimraf app-back/.dev && rimraf app-bin/.build"
     },
     "build": {
         "appId": "com.flareforge.smoke",
         "productName": "smoke",
+        "npmRebuild": "false",
         "directories": {
             "buildResources": "app-back/Assets",
             "output": ".build"
@@ -40,7 +51,7 @@
         },
         "extraFiles": [
             {
-                "from": "app-back/bin/",
+                "from": "app-bin/Static/",
                 "to": "bin/",
                 "filter": [
                     "**/*"
@@ -79,12 +90,15 @@
         "@typescript-eslint/parser": "^6.14.0",
         "@vitejs/plugin-react": "^4.2.0",
         "babel-loader": "^9.1.3",
+        "cargo-cp-artifact": "^0.1",
         "concurrently": "^8.2.2",
+        "copyfiles": "^2.4.1",
         "electron": "^27.1.2",
         "electron-builder": "^24.6.4",
         "eslint": "^8.53.0",
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-react-refresh": "^0.4.4",
+        "neon-cli": "^0.10.1",
         "node-loader": "^2.0.0",
         "nodemon": "^3.0.2",
         "styled-components": "^6.1.1",

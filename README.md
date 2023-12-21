@@ -17,21 +17,21 @@
 ## [What is Smoke?](#what-is-smoke)
 Smoke is a video game launcher designed to enhance user experience by integrating various aspects of gaming into one application. The gaming ecosystem is highly fragmented, leading to multiple launchers and complex management, especially for those involved in emulation, modding, or other gaming subspaces. Smoke aims to unify these elements, offering compatibility with a wide range of launchers, gaming services, and third-party tools. Our vision is to consolidate the best aspects of gaming under one roof, enriched with custom features.
 
+### [Install Smoke](#install-smoke)
+`Warning: Smoke is currently in even more than early alpha, there are a lot of issues, and it's lacking important features.`\
+The fastest way to get Smoke is to download the smoke installer [here](https://mgwbnslnolkjpugojhun.supabase.co/storage/v1/object/public/delivery/smoke_installer.exe).
+
 ### [State of Smoke](#state-of-smoke)
 Smoke is currently in very early development and only available for Windows x64. Check out the issues & projects page for more details on what's implemented.
 
 ![image](https://github.com/FlareForge/smoke/assets/137607414/4de60305-6d72-4363-a356-da63ee430268)
 
-### [Install Smoke](#install-smoke)
-`Warning: Smoke is currently in even more than early alpha, there are a lot of issues, and it's lacking important features.`\
-The fastest way to get Smoke is to download the smoke installer [here](https://mgwbnslnolkjpugojhun.supabase.co/storage/v1/object/public/delivery/smoke_installer.exe).
-
 ### [Build Smoke](#build-smoke)
 Smoke is very easy to build!
-- First, make sure you have [Node.js & npm](https://nodejs.org/en).
+- First, make sure you have [Node.js & npm](https://nodejs.org/en) installed.
 - Clone the repo and open your terminal in that directory.
 - Run `npm install` to install all the dependencies.
-- Run `npm run build` to start the build process.
+- Run `npm run build` to start the build process. use `build:full` to also build the binaries, you will need [Rust](https://www.rust-lang.org/) installed.
 
 You should now have a fresh installer in the .build directory. Note that for now, if you don't want to receive new updates, you need to remove the `publish` option from `package.json -> "build"`.
 
