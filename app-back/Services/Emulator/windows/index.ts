@@ -55,12 +55,11 @@ export default class WindowsEmulatorManager extends AbstractEmulatorManager {
             ...emulatorConfig,
             ...game.emulatorConfig,
         });
-        if(game.mapping){
-            await this.services.Controller.loadMapping(game.mapping);
-        } else {
-            const mapping = await this.#emulators[id].getMapping();
-            await this.services.Controller.loadMapping(mapping);
-        }
+        const mapping = await this.#emulators[id].getMapping();
+        await this.services.Controller.loadMapping({
+            ...mapping,
+            ...game.mapping || {},
+        });
         const emulatorPath = await this.getEmulatorPath(id);
         this.#currentLayoutGuide = this.#emulators[id].layoutGuide;
         await ipcRenderer.invoke('gamechange', {

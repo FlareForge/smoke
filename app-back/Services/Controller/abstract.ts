@@ -13,4 +13,8 @@ export default class AbstractController extends Service {
     async loadMapping(_mapping: any){
         return null;
     }
+
+    async detectInput(_callback: (input: string) => void){
+        return null;
+    }
 }

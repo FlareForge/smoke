@@ -4,7 +4,10 @@ use std::thread;
 use std::collections::HashMap;
 use lazy_static::lazy_static;
 use gilrs::{Gilrs, Event, EventType};
+use std::time::{Instant, Duration};
 use enigo::*;
+use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 #[derive(PartialEq, Eq, Clone)]
 enum CharOrString {
@@ -13,7 +16,7 @@ enum CharOrString {
 }
 
 struct Mapper {
-    handler: Option<thread::JoinHandle<()>>,
+    running: Arc<AtomicBool>,
     mapping: HashMap<String, CharOrString>,
 }
 
@@ -21,7 +24,7 @@ impl Mapper {
 
     pub fn new() -> Mapper {
         Mapper {
-            handler: None,
+            running: Arc::new(AtomicBool::new(false)),            
             mapping: HashMap::new(),
         }
     }
@@ -48,15 +51,16 @@ impl Mapper {
     }
 
     pub fn stop_task(&mut self) {
-        self.handler.take().unwrap().join().unwrap();
-        self.handler = None;
+        self.running.store(false, Ordering::Relaxed);
     }
 
     pub fn start_task(&mut self) {
 
         let _mapping = self.mapping.clone();
-    
-        let thread_handler = thread::spawn(move || {
+        let running = self.running.clone();
+
+        thread::spawn(move || {
+            running.store(true, Ordering::Relaxed);
             let mut gilrs = Gilrs::new().unwrap();
             let mut virtual_input = Enigo::new();
 
@@ -98,7 +102,7 @@ impl Mapper {
                 }
             }
 
-            loop {
+            while running.load(Ordering::Relaxed) {
                 while let Some(Event { id: _, event, time: _ }) = gilrs.next_event() {
 
                     match event {
@@ -125,10 +129,10 @@ impl Mapper {
                         _ => {}
                     }
                 }
+
+                std::thread::sleep(std::time::Duration::from_millis(1000/120));
             }
         });
-
-        self.handler = Some(thread_handler);
     }
 }
 
@@ -150,5 +154,47 @@ pub fn stop_task(mut cx: FunctionContext) -> JsResult<JsUndefined> {
 pub fn load_mapping(mut cx: FunctionContext) -> JsResult<JsUndefined> {
     let result = cx.undefined();
     MAPPER.lock().unwrap().load_mapping(cx);
+    return Result::Ok(result);
+}
+
+pub fn detect_input(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+
+    let callback = cx.argument::<JsFunction>(0).unwrap().root(&mut cx);
+    let channel = cx.channel();
+    let result = cx.undefined();
+
+    thread::spawn(move || {
+
+        let mut gilrs = Gilrs::new().unwrap();
+        let start_time = Instant::now();
+        let timeout = Duration::from_secs(5);
+
+        fn reply(channel: Channel, callback: Root<JsFunction>, result: String) {
+            channel.send(move |mut cx| {
+                let result = cx.string(result);
+                let callback = callback.into_inner(&mut cx);
+                let _: Handle<'_, JsValue> = callback.call_with(&mut cx).arg(result).apply(&mut cx).unwrap();
+                Ok(())
+            });
+        }
+
+        loop {
+            while let Some(Event { id: _, event, time: _ }) = gilrs.next_event() {
+                if start_time.elapsed() >= timeout {
+                    return reply(channel, callback, "".to_string());
+                }
+
+                match event {
+                    EventType::ButtonPressed(_, x) => return reply(channel, callback, x.into_u32().to_string()),
+                    EventType::ButtonReleased(_, x) => return reply(channel, callback, x.into_u32().to_string()),
+                    EventType::AxisChanged(_, axis_value , axis) if axis_value > 0.0  => return reply(channel, callback, "AxisP".to_string()+&axis.into_u32().to_string()),
+                    EventType::AxisChanged(_, axis_value , axis) if axis_value < 0.0  => return reply(channel, callback, "AxisN".to_string()+&axis.into_u32().to_string()),
+                    _ => {}
+                }
+            }
+        }
+
+    });
+
     return Result::Ok(result);
 }
