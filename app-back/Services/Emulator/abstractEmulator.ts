@@ -33,4 +33,8 @@ export default class AbstractEmulator{
     async setConfiguration(_configuration) {
         return null;
     }
+
+    async getMapping(): Promise<any> {
+        return {};
+    }
 }

@@ -13,6 +13,7 @@ export type Game = {
     emulatorPath?: string;
     commands?: string[];
     emulatorConfig?: any;
+    mapping?: any;
 };
 
 export default class AbstractStorage extends Service {

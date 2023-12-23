@@ -1,4 +1,4 @@
-import Services, { getServicesData, toggleService, changePriority } from './Services';
+import Services, { getServicesData, toggleService, changePriority, cleanServices } from './Services';
 const { contextBridge, ipcRenderer } = require('electron');
 
 const context = {
@@ -33,4 +33,5 @@ Services.Scanner.scanGames((game) => Services.Metadata.scrapGame(game).then(Serv
 
 ipcRenderer.on('fullscreen', (_, fullscreen) => window.dispatchEvent(new CustomEvent('fullscreen',{detail:{fullscreen}})));
 ipcRenderer.on('overlay-open', (_, arg) => window.dispatchEvent(new CustomEvent('overlay-open',{detail:arg})));
+ipcRenderer.on('clean', (_) => cleanServices());
 

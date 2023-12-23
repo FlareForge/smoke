@@ -181,3 +181,7 @@ export function changePriority(serviceName, serviceIndex, newPriority) {
     selectedServicesData[serviceName].splice(newPriority, 0, serviceId);
     store.set('services', selectedServicesData);
 }
+
+export function cleanServices() {
+    Object.values(selectedServices).forEach((services) => services.forEach(service => service.clean()));
+}

@@ -1,11 +1,11 @@
 use neon::prelude::*;
 
-fn hello(mut cx: FunctionContext) -> JsResult<JsString> {
-    Ok(cx.string("hello node"))
-}
+mod mapper;
 
 #[neon::main]
 fn main(mut cx: ModuleContext) -> NeonResult<()> {
-    cx.export_function("hello", hello)?;
-    Ok(())
+    cx.export_function("mapperStart", mapper::start_task)?;
+    cx.export_function("mapperStop", mapper::stop_task)?;
+    cx.export_function("mapperLoadMapping", mapper::load_mapping)?;
+    return Ok(());
 }

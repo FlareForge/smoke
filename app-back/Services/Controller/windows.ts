@@ -1,19 +1,22 @@
 import AbstractController from "./abstract";
-import { binHello } from "../../binaries";
+import { binMapperStart, binMapperStop, binMapperLoadMapping } from "../../binaries";
 
 export default class WindowsController extends AbstractController {
-    
-    async init(){
-        console.info(binHello())
+
+    async loadMapping(_mapping: any){
+        binMapperLoadMapping(Object.keys(_mapping).map((key) => `${key} ${_mapping[key]}`).join("\n"));
     }
 
-    async setCallback(_callback: Function){
+    async startMapping(){
+        binMapperStart();
     }
 
-    async callbackWrapper(_data){
+    async stopMapping(){
+        binMapperStop();
     }
 
     async clean() {
+        super.clean();
+        binMapperStop();
     }
-
 }
