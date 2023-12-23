@@ -72,6 +72,8 @@ function createWindows() {
         overlayWindow.loadFile("./app-front/.build/overlay.html");
     }
 
+    overlayWindow.on('close', (_e) =>  overlayWindow.webContents.send("clean", false))
+    appWindow.on('close', (_e) =>  appWindow.webContents.send("clean", false))
     appWindow.on("enter-full-screen", () => appWindow.webContents.send("fullscreen", true));
     appWindow.on("leave-full-screen", () => appWindow.webContents.send("fullscreen", false));
     appWindow.on("closed", () => {

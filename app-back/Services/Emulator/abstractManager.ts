@@ -11,6 +11,7 @@ export type Emulator = {
     path?: string;
     args?: string[];
     ext?: string;
+    mapping?: any;
 };
 
 export default class AbstractEmulatorManager extends Service {
