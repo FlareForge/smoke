@@ -1,6 +1,6 @@
 import { Game } from "../Storage/abstract";
 import { Mod } from "./abstractManager";
-import { Service } from "../abstract";
+import { Service } from "../service";
 
 export default class AbstractInjection extends Service {
 

@@ -1,5 +1,53 @@
-import { availableServices, defaultServices } from "./available";
+import { abstractServices } from "./abstract";
 
+import EqualGamesScanner from "./Scanner/equalGames";
+import LocalStorage from "./Storage/local";
+import WindowsEmulatorManager from "./Emulator/windows";
+import SmokeMetadata from "./Metadata/smoke";
+import WindowsModManager from "./Mods/windows";
+import AccountManager from "./Account/smoke";
+import WindowsController from "./Controller/windows";
+
+export const availableServices = {
+    Account: {
+        abstract: abstractServices.Account,
+        Smoke: AccountManager,
+    },
+    Emulator: {
+        abstract: abstractServices.Emulator,
+        Windows: WindowsEmulatorManager,
+    },
+    Metadata: {
+        abstract: abstractServices.Metadata,
+        Smoke: SmokeMetadata,
+    },
+    Mods: {
+        abstract: abstractServices.Mods,
+        Windows: WindowsModManager,
+    },
+    Scanner: {
+        abstract: abstractServices.Scanner,
+        EqualGames: EqualGamesScanner,
+    },
+    Storage: {
+        abstract: abstractServices.Storage,
+        Local: LocalStorage,
+    },
+    Controller: {
+        abstract: abstractServices.Controller,
+        Windows: WindowsController,
+    }
+}
+
+export const defaultServices = {
+    Account: ['Smoke'],
+    Emulator: ['Windows'],
+    Metadata: ['Smoke'],
+    Mods: ['Windows'],
+    Scanner: ['EqualGames'],
+    Storage: ['Local'],
+    Controller: ['Windows'],
+}
 
 const Store = require('electron-store');
 const crypto = require('crypto');

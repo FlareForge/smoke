@@ -1,4 +1,4 @@
-import { Service } from "../abstract";
+import { Service } from "../service";
 
 export default class AbstractController extends Service {
 

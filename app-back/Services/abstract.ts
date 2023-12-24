@@ -1,18 +1,17 @@
-type Services = typeof window.app.Services;
+import AbstractScanner from "./Scanner/abstract";
+import AbstractStorage from "./Storage/abstract";
+import AbstractEmulatorManager from "./Emulator/abstractManager";
+import AbstractMetadata from "./Metadata/abstract";
+import AbstractModManager from "./Mods/abstractManager";
+import AbstractAccount from "./Account/abstract";
+import AbstractController from "./Controller/abstract";
 
-export class Service {
-    protected services: Services = null;
-    static id: string = "";
-    
-    public setServices(services: Services) {
-        this.services = services;
-        this.init();
-    }
-
-    public init() {}
-
-    public clean() {
-        this.services = null;
-    }
-
+export const abstractServices = {
+    Account: AbstractAccount,
+    Emulator: AbstractEmulatorManager,
+    Metadata: AbstractMetadata,
+    Mods: AbstractModManager,
+    Scanner: AbstractScanner,
+    Storage: AbstractStorage,
+    Controller: AbstractController,
 }

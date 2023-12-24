@@ -1,4 +1,4 @@
-import { Service } from "../abstract";
+import { Service } from "../service";
 import { Game } from "../Storage/abstract";
 
 export type Mod = {
