@@ -47,12 +47,22 @@ module.exports = [
     },
     {
         ...defaultConfig,
-        entry: "./app-back/preload.ts",
+        entry: "./app-back/preloadApp.ts",
         target: "electron-preload",
         plugins: [...(process.env.ANALYZE ? [new BundleAnalyzerPlugin({analyzerPort:'auto'})] : [])],
         output: {
             path: path.resolve(__dirname, "app-back/.build"),
-            filename: "preload.js",
+            filename: "preloadApp.js",
+        },
+    },
+    {
+        ...defaultConfig,
+        entry: "./app-back/preloadOverlay.ts",
+        target: "electron-preload",
+        plugins: [...(process.env.ANALYZE ? [new BundleAnalyzerPlugin({analyzerPort:'auto'})] : [])],
+        output: {
+            path: path.resolve(__dirname, "app-back/.build"),
+            filename: "preloadOverlay.js",
         },
     }
 ]

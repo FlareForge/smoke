@@ -11,7 +11,7 @@
         "dev:full": "concurrently \"npm run dev:front\" \"npm run dev:bin\"",
         "   DEVELOPMENT SUB-SCRIPTS ----------": "",
         "dev:back": "nodemon --watch \"./app-back/**/*\" --ext js,ts --exec \"npm run dev:back:transpile && electron ./app-back/.dev/build/index.js\"",
-        "dev:back:transpile": "npx tsc ./app-back/index.ts ./app-back/preload.ts --outDir ./app-back/.dev/build --module commonjs --target es6 --esModuleInterop && copyfiles ./app-bin/index.node ./app-back/.dev/",
+        "dev:back:transpile": "npx tsc ./app-back/index.ts ./app-back/preloadApp.ts ./app-back/preloadOverlay.ts --outDir ./app-back/.dev/build --module commonjs --target es6 --esModuleInterop && copyfiles ./app-bin/index.node ./app-back/.dev/",
         "dev:bin": "nodemon --watch \"./app-bin/**/*\" --ext rs --exec \"npm run dev:bin:build && npm run dev:back\"",
         "dev:bin:build": "npx cargo-cp-artifact -nc app-bin/index.node -- cargo build --target-dir app-bin/.build --message-format=json-render-diagnostics",
         "dev:front": "vite",

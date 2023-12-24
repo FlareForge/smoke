@@ -38,12 +38,10 @@ export default class SmokeAccount extends AbstractAccount {
 
     private async saveSession(token) {
         this.#token = token;
-        await keytar.setPassword("app://flareforgesmoke", "smoketoken", token);
     }
 
     private async getSession() {
-        const token = await keytar.getPassword("app://flareforgesmoke", "smoketoken");
-        return token;
+        return this.#token;
     }
 
     private async saveCreditentials(email, password) {

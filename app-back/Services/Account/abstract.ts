@@ -1,4 +1,4 @@
-import { Service } from "../abstract";
+import { Service } from "../service";
 
 export default class AbstractAuth extends Service {
     async login(_type: string, _options: any): Promise<boolean> {
