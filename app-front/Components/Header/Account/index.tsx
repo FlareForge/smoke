@@ -91,7 +91,6 @@ export default ({ icon = null, action = null }) => {
 
     return (
         <AccountContainer>
-            <HrLine color={"var(--grey)"} />
             <RoundedBtnsContainer>
                 {!!icon && <RoundedBtn
                     notifs={0}
@@ -116,8 +115,8 @@ export default ({ icon = null, action = null }) => {
                     <Icon name="heart" />
                 </RoundedBtn> */}
             </RoundedBtnsContainer>
-            <HrLine color={"var(--main)"} />
-            <AccountAvatar />
+            {/* <HrLine color={"var(--main)"} />
+            <AccountAvatar /> */}
         </AccountContainer>
     );
 };
@@ -139,22 +138,22 @@ const LoginContainer = styled.div`
     align-items: center;
 `;
 
-const HrLine = styled.div`
-    width: 1px;
-    height: 60px;
-    border-radius: 50px;
-    opacity: 0.5;
-    margin: 0 20px;
-    ${({ color = "#3A3B44" }) =>
-        `
-    background: linear-gradient(
-        180deg,
-        rgba(255, 107, 39, 0) 0.79%,
-        ${color} 57.69%,
-        rgba(255, 107, 39, 0) 99.21%
-    );
-  `}
-`;
+// const HrLine = styled.div`
+//     width: 1px;
+//     height: 60px;
+//     border-radius: 50px;
+//     opacity: 0.5;
+//     margin: 0 20px;
+//     ${({ color = "#3A3B44" }) =>
+//         `
+//     background: linear-gradient(
+//         180deg,
+//         rgba(255, 107, 39, 0) 0.79%,
+//         ${color} 57.69%,
+//         rgba(255, 107, 39, 0) 99.21%
+//     );
+//   `}
+// `;
 
 const AvatarContainer = styled.div`
     display: flex;

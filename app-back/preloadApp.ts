@@ -1,8 +1,10 @@
 import Services, { getServicesData, toggleService, changePriority, cleanServices } from './Services';
 const { contextBridge, ipcRenderer } = require('electron');
+const crypto = require('crypto');
 
 Services.Scanner.scanGames(async (game) => {
-    const storedGame = await Services.Storage.getGame(game.id);
+    const id = crypto.createHash('sha256').update(JSON.stringify({path: game.path})).digest('hex');
+    const storedGame = await Services.Storage.getGame(id);
     if(storedGame.id) return;
     Services.Metadata.scrapGame(game).then(Services.Storage.addGame);
 })
