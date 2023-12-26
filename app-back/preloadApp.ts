@@ -1,7 +1,11 @@
 import Services, { getServicesData, toggleService, changePriority, cleanServices } from './Services';
 const { contextBridge, ipcRenderer } = require('electron');
 
-Services.Scanner.scanGames((game) => Services.Metadata.scrapGame(game).then(Services.Storage.addGame))
+Services.Scanner.scanGames(async (game) => {
+    const storedGame = await Services.Storage.getGame(game.id);
+    if(storedGame.id) return;
+    Services.Metadata.scrapGame(game).then(Services.Storage.addGame);
+})
 
 const context = {
     isApp: true,
