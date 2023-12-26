@@ -42,6 +42,25 @@ export default class CustomEmulator extends AbstractEmulator{
         },
     }
 
+    mapping = {
+        "AxisP65537": "z",
+        "AxisN65537": "s",
+        "AxisN65536": "q",
+        "AxisP65536": "d",
+        "4294967292": "z",
+        "4294967294": "s",
+        "4294967295": "q",
+        "4294967293": "d",
+        "1": "a",
+        "2": "b",
+        "3": "y",
+        "0": "x",
+        "4": "l",
+        "5": "r",
+        "8": "o",
+        "9": "u",
+    }
+
     private path = "";
     private args = [];
 
@@ -90,6 +109,7 @@ export default class CustomEmulator extends AbstractEmulator{
             path: this.path,
             args: this.args,
             ext: this.ext,
+            mapping: this.mapping,
         }
     }
 
@@ -101,6 +121,11 @@ export default class CustomEmulator extends AbstractEmulator{
         this.path = _configuration.path;
         this.ext = _configuration.ext;
         this.args = _configuration.args;
+        this.mapping = _configuration.mapping || this.mapping;
         if(!this.args.length && this.args?.[0]) this.args = Object.values(this.args);
+    }
+
+    async getMapping() {
+        return this.mapping;
     }
 }

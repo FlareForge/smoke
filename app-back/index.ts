@@ -33,7 +33,7 @@ function createWindows() {
         frame: false,
         backgroundColor: "#010B0E",
         webPreferences: {
-            preload: path.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "preloadApp.js"),
             contextIsolation: true,
             nodeIntegration: true, // ! after plugins this should be changed
         },
@@ -55,7 +55,7 @@ function createWindows() {
         // closable: false,
         fullscreen: true,
         webPreferences: {
-            preload: path.join(__dirname, "preload.js"),
+            preload: path.join(__dirname, "preloadOverlay.js"),
             contextIsolation: true,
             nodeIntegration: true, // ! after plugins this should be changed
         },
@@ -72,6 +72,8 @@ function createWindows() {
         overlayWindow.loadFile("./app-front/.build/overlay.html");
     }
 
+    overlayWindow.on('close', (_e) =>  overlayWindow.webContents.send("clean", false))
+    appWindow.on('close', (_e) =>  appWindow.webContents.send("clean", false))
     appWindow.on("enter-full-screen", () => appWindow.webContents.send("fullscreen", true));
     appWindow.on("leave-full-screen", () => appWindow.webContents.send("fullscreen", false));
     appWindow.on("closed", () => {
@@ -139,6 +141,21 @@ ipcMain.handle("open-folder-dialog", async (_) => (await dialog.showOpenDialog({
 ipcMain.handle("gamechange", (_, arg) => currentGameData = arg);
 ipcMain.handle('toggle-startup', (_, arg) => app.setLoginItemSettings({openAtLogin:arg,path:path.join(app.getPath('exe'),'/smoke.exe')}));
 
+let nonce = 0;
+ipcMain.handle('subway-track', async (_, arg) => {
+    return await new Promise((resolve, reject) => {
+        nonce = (nonce + 1) % 1000000;
+        ipcMain.handleOnce("subway-track-reply-"+nonce, (_, { result, error }) => {
+            if(error) reject(error);
+            else resolve(result);
+        });
+        appWindow.webContents.send("subway-track", {
+            ...arg,
+            nonce: nonce
+        });
+    });
+});
+
 const banned = [ "\\Windows\\" ]
 const safePath = (_path) => {
     _path = path.normalize(_path);
@@ -162,7 +179,7 @@ ipcMain.handle("unzip", async (_, arg) => {
 
 // TODO should be using uid
 ipcMain.handle("kill-process", (_, arg) => {
-    const path = safePath(arg);
+    const path = safePath(arg).split("\\").pop();
     exec(`taskkill /f /im "${path}"`, (error, _stdout, _stderr) => {
         if (error) {
             console.error('Error:', error);

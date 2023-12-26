@@ -1,4 +1,4 @@
-import { Service } from "../abstract";
+import { Service } from "../service";
 
 export type Game = {
     id: string;
@@ -13,6 +13,7 @@ export type Game = {
     emulatorPath?: string;
     commands?: string[];
     emulatorConfig?: any;
+    mapping?: any;
 };
 
 export default class AbstractStorage extends Service {

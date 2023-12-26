@@ -1,10 +1,4 @@
-import AbstractScanner from "./Scanner/abstract";
-import AbstractStorage from "./Storage/abstract";
-import AbstractEmulatorManager from "./Emulator/abstractManager";
-import AbstractMetadata from "./Metadata/abstract";
-import AbstractModManager from "./Mods/abstractManager";
-import AbstractAccount from "./Account/abstract";
-import AbstractController from "./Controller/abstract";
+import { abstractServices } from "./abstract";
 
 import EqualGamesScanner from "./Scanner/equalGames";
 import LocalStorage from "./Storage/local";
@@ -14,38 +8,38 @@ import WindowsModManager from "./Mods/windows";
 import AccountManager from "./Account/smoke";
 import WindowsController from "./Controller/windows";
 
-const availableServices = {
+export const availableServices = {
     Account: {
-        abstract: AbstractAccount,
+        abstract: abstractServices.Account,
         Smoke: AccountManager,
     },
     Emulator: {
-        abstract: AbstractEmulatorManager,
+        abstract: abstractServices.Emulator,
         Windows: WindowsEmulatorManager,
     },
     Metadata: {
-        abstract: AbstractMetadata,
+        abstract: abstractServices.Metadata,
         Smoke: SmokeMetadata,
     },
     Mods: {
-        abstract: AbstractModManager,
+        abstract: abstractServices.Mods,
         Windows: WindowsModManager,
     },
     Scanner: {
-        abstract: AbstractScanner,
+        abstract: abstractServices.Scanner,
         EqualGames: EqualGamesScanner,
     },
     Storage: {
-        abstract: AbstractStorage,
+        abstract: abstractServices.Storage,
         Local: LocalStorage,
     },
     Controller: {
-        abstract: AbstractController,
+        abstract: abstractServices.Controller,
         Windows: WindowsController,
     }
 }
 
-const defaultServices = {
+export const defaultServices = {
     Account: ['Smoke'],
     Emulator: ['Windows'],
     Metadata: ['Smoke'],
@@ -180,4 +174,8 @@ export function changePriority(serviceName, serviceIndex, newPriority) {
     const serviceId = Object.keys(availableServices[serviceName]).find(key => availableServices[serviceName][key].id === service.constructor.id);
     selectedServicesData[serviceName].splice(newPriority, 0, serviceId);
     store.set('services', selectedServicesData);
+}
+
+export function cleanServices() {
+    Object.values(selectedServices).forEach((services) => services.forEach(service => service.clean()));
 }

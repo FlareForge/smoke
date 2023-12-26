@@ -55,12 +55,18 @@ export default class WindowsEmulatorManager extends AbstractEmulatorManager {
             ...emulatorConfig,
             ...game.emulatorConfig,
         });
+        const mapping = await this.#emulators[id].getMapping();
+        await this.services.Controller.loadMapping({
+            ...mapping,
+            ...game.mapping || {},
+        });
         const emulatorPath = await this.getEmulatorPath(id);
         this.#currentLayoutGuide = this.#emulators[id].layoutGuide;
         await ipcRenderer.invoke('gamechange', {
             game: game,
             layout: this.#emulators[id].layoutGuide,
         });
+        await this.services.Controller.startMapping();
         await this.#emulators[id].startWithGame(game, emulatorPath);
         if(game.emulatorConfig) await this.#emulators[id].setConfiguration(emulatorConfig);
     }
@@ -69,10 +75,11 @@ export default class WindowsEmulatorManager extends AbstractEmulatorManager {
         return this.#emulators[game.emulator].uninstallGame(game);
     }
 
-    shutdownGame(game){
+    async shutdownGame(game){
         const path = this.services.Storage.get('emulator.'+game.emulator, null);
-        if(!path) return false;
-        return this.#emulators[game.emulator].shutdownGame(game, path);
+        await this.services.Controller.stopMapping();
+        if(!path) return;
+        await this.#emulators[game.emulator].shutdownGame(game, path);
     }
 
     async isGameRunning(game){

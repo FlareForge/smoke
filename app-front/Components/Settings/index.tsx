@@ -483,6 +483,17 @@ function EmulatorsSettings() {
                     data={data}
                     setData={setEmulatorConfig}
                 />
+                <MappingSettings
+                    data={data?.mapping || {}}
+                    setData={(mapping) => {
+                        setEmulatorConfig({
+                            mapping: {
+                                ...data?.mapping || {},
+                                ...mapping,
+                            }
+                        });
+                    }}
+                />
             </>
         );
     }
@@ -641,6 +652,76 @@ function SchemaSettings({ schema, data, setData }) {
             return <SettingEntry key={key}>
                 <div>{value.label}</div>
                 {input}
+            </SettingEntry>
+        })}
+    </>
+}
+
+
+function MappingSettings({ data, setData }) {
+    const [detectText, setDetectText] = useState("Detect");
+
+    return <>
+        <h2>Mapping</h2>
+        <SettingEntry
+            style={{marginTop: "20px"}}
+        >
+            <div>Add a new input button</div>
+            <div
+                onClick={async () => {
+                    if(detectText !== "Detect") return;
+                    let stop = false
+                    window.app.Services.Controller.detectInput(async (key) => {
+                        if(!key) return;
+                        if(stop) return;
+
+                        stop = true;
+                        if(data[key]) {
+                            setDetectText("Already mapped");
+                            await new Promise((resolve) => setTimeout(resolve, 2000));
+                            setDetectText("Detect");
+                            return;
+                        }
+                        const _mapping = {
+                            ...data,
+                            [key]: "",
+                        }
+                        setDetectText(key + " - added");
+                        setData(_mapping);
+                        await new Promise((resolve) => setTimeout(resolve, 2000));
+                        setDetectText("Detect");
+                    })
+                    for(let i = 5; i > 0; i--){
+                        if(stop) return;
+                        setDetectText(`Press a key - ${i}s`);
+                        await new Promise((resolve) => setTimeout(resolve, 1000));
+                    }
+                    setDetectText("Detect");
+                    stop = true;
+                }}
+            >
+                {detectText}
+            </div>
+        </SettingEntry>
+        {Object.entries(data).map(([key, value]: [string, any]) => {
+            return <SettingEntry key={key}>
+                <div>{key}</div>
+                <input
+                    type="text"
+                    name="body"
+                    value={value}
+                    onChange={(e) => setData({ [key]: e.target.value})}
+                />
+                <div
+                    style={{ width: "40px", padding: "10px" }}
+                    onClick={() => {
+                        let _args = data;
+                        delete _args[key];
+                        setData(_args);
+                    }}
+                >
+                    <Icon name="close" />
+                </div>
             </SettingEntry>
         })}
     </>
@@ -839,6 +920,26 @@ function GamesSettings() {
                     });
                     window.app.Services.Storage.setGame({...game, emulatorConfig: _config})
                 }}
+            />}
+            {emulatorConfig && <MappingSettings
+                data={{
+                    ...emulatorConfig?.data?.mapping || {},
+                    ...game.mapping || {},
+                }}
+                setData={(mapping) => {
+                    const data = {
+                        ...game,
+                        mapping: {
+                            ...game.mapping || {},
+                            ...mapping,
+                        },
+                    }
+                    setGames({
+                        ...games,
+                        [openedGame]: data
+                    });
+                    window.app.Services.Storage.setGame({...data})
+                }}    
             />}
         </>
     }
