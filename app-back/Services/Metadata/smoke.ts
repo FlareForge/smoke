@@ -19,15 +19,12 @@ const fetch = async (url, data): Promise<any> => {
 
 export default class SmokeMetadata extends AbstractScanner {
 
+    // TODO save images locally
     async scrapGame(game) {
         const data = await fetch(`/search-game/${game.id}`, {
             query: game.name
         });
 
-        console.log(data);
-
-        // TODO save images locally
-        
         const cover = data?.result?.cover ? `${BASE_STORE}/${data?.result?.cover}` : null;
         const banner = data?.result?.banner ? `${BASE_STORE}/${data?.result?.banner}` : null;
 
