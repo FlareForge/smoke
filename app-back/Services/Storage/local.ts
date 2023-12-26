@@ -2,7 +2,7 @@ import AbstractStorage from "./abstract";
 import { Game } from "./abstract";
 const Store = require('electron-store');
 const crypto = require('crypto');
-
+const { ipcRenderer } = require("electron");
 export default class LocalStorage extends AbstractStorage {
 
     #store = new Store();
@@ -23,21 +23,48 @@ export default class LocalStorage extends AbstractStorage {
         if(!game.id) return;
         const currentGame = currentGames[game.id];
         if(currentGame) for (const key in currentGame) game[key] = currentGame[key] || game[key];
-        currentGames[game.id] = game;
-        this.#store.set('games', currentGames);
+        if(game.image?.startsWith?.('http')) game.image = await ipcRenderer.invoke('create-local-image', {
+            url: game.image,
+            name: game.image.split('/').pop()
+        });
+        if(game.banner?.startsWith?.('http')) game.banner = await ipcRenderer.invoke('create-local-image', {
+            url: game.banner,
+            name: game.banner.split('/').pop()
+        });
+        this.#store.set('games', {
+            ...this.#store.get('games', {}),
+            [game.id]: game,
+        });
     }
 
     async setGame(game){
         const currentGames = this.#store.get('games', {});
-        currentGames[game.id] = {
-            ...currentGames[game.id],
-            ...game,
-        }
-        this.#store.set('games', currentGames);
+        if(game.image?.startsWith?.('http')) game.image = await ipcRenderer.invoke('create-local-image', {
+            url: game.image,
+            name: game.image.split('/').pop()
+        });
+        if(game.banner?.startsWith?.('http')) game.banner = await ipcRenderer.invoke('create-local-image', {
+            url: game.banner,
+            name: game.banner.split('/').pop()
+        });
+        this.#store.set('games', {
+            ...this.#store.get('games', {}),
+            [game.id]: {
+                ...currentGames[game.id],
+                ...game,
+            },
+        });
     }
 
     async removeGame(game){
         const currentGames = this.#store.get('games', {});
+        if(!currentGames[game.id]) return;
+        if(currentGames[game.id].image?.startsWith?.('file://')) ipcRenderer.invoke('delete-local-image', {
+            path: currentGames[game.id].image,
+        });
+        if(currentGames[game.id].banner?.startsWith?.('file://')) ipcRenderer.invoke('delete-local-image', {
+            path: currentGames[game.id].banner,
+        });
         delete currentGames[game.id];
         this.#store.set('games', currentGames);
     }
