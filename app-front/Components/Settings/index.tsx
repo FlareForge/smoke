@@ -8,8 +8,10 @@ function Settings({ page: _page }) {
     const [page, setPage] = useState(_page || "general");
 
     let pageContent = null;
+    const pageId = page.split("/")[0];
+    const pageArgs = page.split("/").slice(1);
 
-    switch (page) {
+    switch (pageId) {
         case "interface":
             pageContent = <InterfaceSettings />;
             break;
@@ -29,7 +31,9 @@ function Settings({ page: _page }) {
             pageContent = <AccountSettings />;
             break;
         case "games":
-            pageContent = <GamesSettings />;
+            pageContent = <GamesSettings
+                game={pageArgs[0]}
+            />;
             break;
         default:
             pageContent = <GeneralSettings />;
@@ -727,13 +731,16 @@ function MappingSettings({ data, setData }) {
     </>
 }
 
-function GamesSettings() {
+function GamesSettings({ game }) {
     const [emulators, setEmulators] = useState([]);
     const [emulatorConfig, setEmulatorConfig] = useState(null);
     const [games, setGames] = useState(null);
     const [openedGame, setOpenedGame] = useState(null);
 
-    useEffect(() => {updateData()}, []);
+    useEffect(() => {
+        if(game) setOpenedGame(game);
+        updateData()
+    }, []);
 
     useEffect(() => {updateEmulatorConfig()}, [openedGame]);
 
