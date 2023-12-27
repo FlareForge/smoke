@@ -4,6 +4,8 @@ const {
     ipcMain,
     globalShortcut,
     dialog,
+    protocol,
+    net,
     screen: electronScreen,
 } = require("electron");
 const path = require("path");
@@ -101,6 +103,11 @@ function createWindows() {
             }
         });
     });
+
+
+    app.whenReady().then(() => {
+        protocol.handle('smokedata', (request) => net.fetch('file://' + path.join(app.getPath("userData"), "data/", request.url.slice('smokedata://'.length))))
+    })
 }
 
 function hideOverlay() {
@@ -186,6 +193,27 @@ ipcMain.handle("kill-process", (_, arg) => {
             return;
         }
     });
+});
+
+ipcMain.handle("create-local-image", async (_, arg) => {
+    const url = arg.url;
+    const name = arg.name;
+    if(!url || !url.startsWith("http") || !url.endsWith(".jpg")) return null;
+    const result = await fetch(url).then((res) => res.blob());
+    const imagePath = path.join(app.getPath("userData"), "data/images", name);
+    const directory = path.dirname(imagePath);
+    if(!fs.existsSync(directory)) fs.mkdirSync(directory, { recursive: true });
+    fs.writeFileSync(imagePath, Buffer.from(await result.arrayBuffer()));
+    return "smokedata://images/"+name;
+});
+
+ipcMain.handle("delete-local-image", async (_, arg) => {
+    const imagePath = arg.path;
+    if(!imagePath || !imagePath.endsWith(".jpg")) return null;
+    const filePath = path.join(app.getPath("userData"), "data/images", imagePath.split("/").pop());
+    if(!fs.existsSync(filePath)) return null;
+    fs.unlinkSync(filePath);
+    return 1;
 });
 
 ipcMain.handle("is-process-running", (_, arg) => {
