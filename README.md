@@ -13,6 +13,7 @@
 - [Goal/WIP](#goalwip)
 - [Credits](#credits)
 - [License](#license)
+- [Gallery](#gallery)
 
 ## [What is Smoke?](#what-is-smoke)
 Smoke is a video game launcher designed to enhance user experience by integrating various aspects of gaming into one application. The gaming ecosystem is highly fragmented, leading to multiple launchers and complex management, especially for those involved in emulation, modding, or other gaming subspaces. Smoke aims to unify these elements, offering compatibility with a wide range of launchers, gaming services, and third-party tools. Our vision is to consolidate the best aspects of gaming under one roof, enriched with custom features.
@@ -25,6 +26,7 @@ The fastest way to get Smoke is to download the smoke installer [here](https://m
 Smoke is currently in very early development and only available for Windows x64. Check out the issues & projects page for more details on what's implemented.
 
 ![image](https://github.com/FlareForge/smoke/assets/137607414/4de60305-6d72-4363-a356-da63ee430268)
+more screenshots here [Gallery](#gallery) 
 
 ### [Build Smoke](#build-smoke)
 Smoke is very easy to build!
@@ -77,3 +79,12 @@ Game Scanner: https://github.com/EqualGames/game-scanner
 
 This project is licensed under the CC BY-SA 4.0 License, Creative Commons Attribution-ShareAlike 4.0 International.\
 For details, see the [LICENSE](LICENSE) file.
+
+## [Gallery](#gallery)
+
+![image](https://github.com/FlareForge/smoke/assets/137607414/90497aeb-2fa2-4409-a8c9-780983b4792e)
+![image](https://github.com/FlareForge/smoke/assets/137607414/22b5ab2c-afa6-4239-aa7b-190ffdbbb502)
+![image](https://github.com/FlareForge/smoke/assets/137607414/454cc518-c0fe-4704-a45d-51e4fb6ee7b2)
+![image](https://github.com/FlareForge/smoke/assets/137607414/3a485541-0577-4059-b428-568900443847)
+![image](https://github.com/FlareForge/smoke/assets/137607414/ef55c529-9a0b-46c0-a344-aa5776a3ab68)
+![image](https://github.com/FlareForge/smoke/assets/137607414/413627eb-6adf-458f-881d-a38cdd3a3003)

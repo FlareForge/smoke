@@ -8,12 +8,13 @@ import Loader from "../../Components/Loader";
 import Posts from "./posts";
 import Mods from "./mods";
 import { Game } from "../../../app-back/Services/Storage/abstract";
+import { useSettingsMenu } from "@Components/Settings";
 
 export default function GamePage() {
     let { id } = useParams();
     const navigate = useTransition();
     const contentTransition = useContentTransition();
-
+    const { openSettings } = useSettingsMenu();
     const [gameData, setGameData] = useState<Game>(null);
     const [gameLoading, setGameLoading] = useState(false);
     const [gameRunning, setGameRunning] = useState(false);
@@ -123,8 +124,9 @@ export default function GamePage() {
                     <p>News</p>
                 </div>
                 <div
-                    className="focusable"
-                    onClick={() => setPage('mods')}
+                    // className="focusable"
+                    className="soon"
+                    // onClick={() => setPage('mods')}
                 >
                     <p>Mods</p>
                 </div>
@@ -152,6 +154,12 @@ export default function GamePage() {
                     }}
                 >
                     <p>Uninstall</p>
+                </div>
+                <div
+                    className="focusable"
+                    onClick={() => openSettings("games/"+gameData?.id)}
+                >
+                    <p>Settings</p>
                 </div>
                 <Last
                     className="soon"
