@@ -10,6 +10,7 @@ import Header from "@Components/Header";
 
 import Library from "@Pages/Library";
 import Game from "@Pages/Game";
+import Profile from "@Pages/Profile";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <StrictMode>
@@ -59,6 +60,8 @@ function App() {
                         <Route path="/library" element={<Library changeAction={changeMainAction} />} />
                         <Route path="/social" element={<>Social</>} />
                         <Route path="/game/:id" element={<Game />} />
+                        <Route path="/profile/:id" element={<Profile />} />
+                        <Route path="/profile" element={<Profile />} />
                     </Routes>
                 </PageContainer>
             </HashRouter>
