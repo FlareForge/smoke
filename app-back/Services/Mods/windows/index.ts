@@ -8,8 +8,8 @@ export default class WindowsModManager extends AbstractModManager {
         // xdelta: new XDeltaInjection(),
     }
 
-    init(){
-        super.init();
+    async init(){
+        await super.init();
         Object.values(this.#injections).forEach(injection => injection.setServices(this.services));
     }
 

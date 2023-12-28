@@ -7,6 +7,7 @@ import SmokeMetadata from "./Metadata/smoke";
 import WindowsModManager from "./Mods/windows";
 import AccountManager from "./Account/smoke";
 import WindowsController from "./Controller/windows";
+import SmokeFriends from "./Friends/smoke";
 
 export const availableServices = {
     Account: {
@@ -36,7 +37,11 @@ export const availableServices = {
     Controller: {
         abstract: abstractServices.Controller,
         Windows: WindowsController,
-    }
+    },
+    Friends: {
+        abstract: abstractServices.Friends,
+        Smoke: SmokeFriends,
+    },
 }
 
 export const defaultServices = {
@@ -47,6 +52,7 @@ export const defaultServices = {
     Scanner: ['EqualGames'],
     Storage: ['Local'],
     Controller: ['Windows'],
+    Friends: ['Smoke'],
 }
 
 const Store = require('electron-store');
@@ -118,7 +124,12 @@ const Services = Object.fromEntries(
     [key in keyof typeof availableServices]: InstanceType<typeof availableServices[key]["abstract"]>
 }
 
-Object.values(selectedServices).forEach((services) => services.forEach(service => service.setServices(Services)));
+(async () => {
+    const services = Object.values(selectedServices).flat();
+    for (const service of services) {
+        await service.setServices(Services);
+    }
+})();
 
 export default Services;
 

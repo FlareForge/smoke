@@ -1,17 +1,7 @@
 import styled from "styled-components";
 import Icon from "../Icon";
 
-export default function WindowControls({fullscreen = false}) {
-
-    if(fullscreen) return (
-        <FullscreenControls
-            onClick={() => {
-                window.app.fullscreen();
-            }}
-        >
-            <Icon name="minimize" />
-        </FullscreenControls>
-    );
+export default function WindowControls() {
 
     return (
         <ControlsContainer>
@@ -50,7 +40,20 @@ export default function WindowControls({fullscreen = false}) {
     );
 }
 
-const FullscreenControls = styled.div`
+export function FullscreenControls() {
+
+    return (
+        <FullscreenControlsContainer
+            onClick={() => {
+                window.app.fullscreen();
+            }}
+        >
+            <Icon name="minimize" />
+        </FullscreenControlsContainer>
+    );
+}
+
+const FullscreenControlsContainer = styled.div`
     transition-duration: revert;
     height: 30px;
     width: 30px;
@@ -72,12 +75,11 @@ const FullscreenControls = styled.div`
 
 const ControlsContainer = styled.div`
     transition-duration: revert;
-    width: calc(100% + 0px);
     height: 30px;
     display: flex;
     background-color: rgba(255, 255, 255, 0.05);
     background-color: rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     z-index: 10000;
 
@@ -88,8 +90,6 @@ const ControlsContainer = styled.div`
         top: 0;
         width: 100%;
         height: 1px;
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0.00) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.00) 100%);
-        background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.00) 100%);
     }
 
     & > div:first-child {
