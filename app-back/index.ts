@@ -63,6 +63,10 @@ function createWindows() {
         },
     });
 
+    appWindow.once('ready-to-show', () => {
+        appWindow.webContents.setZoomFactor(0.65);
+    });
+
     appWindow.setMenuBarVisibility(false);
     overlayWindow.setFullScreen(true);
 
@@ -104,10 +108,7 @@ function createWindows() {
         });
     });
 
-
-    app.whenReady().then(() => {
-        protocol.handle('smokedata', (request) => net.fetch('file://' + path.join(app.getPath("userData"), "data/", request.url.slice('smokedata://'.length))))
-    })
+    protocol.handle('smokedata', (request) => net.fetch('file://' + path.join(app.getPath("userData"), "data/", request.url.slice('smokedata://'.length))))
 }
 
 function hideOverlay() {
