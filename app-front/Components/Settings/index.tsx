@@ -1015,7 +1015,19 @@ function DeviceSettings() {
                 <div
                     onClick={async () => {
                         setClearing(true);
-                        await window.app.Services.Storage.clear();
+                        await window.app.Services.Storage.clear('all');
+                        setClearing(false);
+                    }}
+                >
+                    {clearing ? <Loader size="16px" /> : "Clear"}
+                </div>
+            </SettingEntry>
+            <SettingEntry>
+                <div>Clear games data</div>
+                <div
+                    onClick={async () => {
+                        setClearing(true);
+                        await window.app.Services.Storage.clear('games');
                         setClearing(false);
                     }}
                 >
