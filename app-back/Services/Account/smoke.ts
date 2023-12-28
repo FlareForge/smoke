@@ -26,7 +26,7 @@ export default class SmokeAccount extends AbstractAccount {
 
     init() {
         super.init();
-        // this.handleStart();
+        this.handleStart();
     }
 
     async handleStart() {

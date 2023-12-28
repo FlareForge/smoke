@@ -9,18 +9,19 @@ export default function Mods({gameData}){
     const gameBanner = gameData?.banner || gameData?.image || './images/unknown.png'
 
     useEffect(() => {
-        setPosts([{
-            type: 'mod',
-            title: 'Game Patch 4',
-            description: 'This is the first update for the game',
-            date: '2021-07-01',
-            image: ''
-        }])
+        // setPosts([{
+        //     type: 'mod',
+        //     title: 'Game Patch 4',
+        //     description: 'This is the first update for the game',
+        //     date: '2021-07-01',
+        //     image: ''
+        // }])
     }, []);
     
     return (
         <PostsContainer>
             {
+                posts.length === 0 ? <h2>No data available yet</h2> :
                 posts.map((post: any, i: number) => 
                     <Entry
                         type={post.type}

@@ -4,12 +4,14 @@ import { useSettingsMenu } from "@Components/Settings";
 import { useModal } from "@Components/Modal";
 import Input from "@Components/Input";
 import { useEffect, useState } from "react";
+import useTransition from "@Components/Transition";
 
-const RoundedBtn = ({ children, notifs = 9, className = "", onClick = () => {} }) => {
+const RoundedBtn = ({ children, notifs = 9, className = "", onClick = () => {}, hasAvatar = false}) => {
     return (
             <RoundedContainer
                 className={className || "focusable"}
                 onClick={onClick}
+                $hasAvatar={hasAvatar}
             >
                 {!!notifs && <RoundedNbr>{notifs}</RoundedNbr>}
                 {children}
@@ -56,11 +58,12 @@ const Login = ({ closeModal }) => {
 const AccountAvatar = () => {
 
     const { openModal } = useModal();
-    const { openSettings } = useSettingsMenu();
+    const transition = useTransition();
     const [isLogged, setIsLogged] = useState(false);
+    const [userData, setUserData] = useState(null);
 
     const openLogin = () => {
-        if(isLogged) return openSettings("account");
+        if(isLogged) return transition('/profile/')
         openModal(() => Login, {}, updateLogStatus);
     }
 
@@ -73,13 +76,20 @@ const AccountAvatar = () => {
         return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        window.app.Services.Account.getUserData("token").then(setUserData);
+    }, [isLogged]);
+
     return (
         <AvatarContainer>
             <RoundedBtn
                 notifs={0}
                 onClick={openLogin}
+                hasAvatar={!!userData?.avatar}
             >
-                <Icon name="account" />
+                {  userData?.avatar ?
+                    <img src={userData.avatar} alt="avatar" /> :
+                    <Icon name="account" />}
             </RoundedBtn>
         </AvatarContainer>
     );
@@ -115,8 +125,8 @@ export default ({ icon = null, action = null }) => {
                     <Icon name="heart" />
                 </RoundedBtn> */}
             </RoundedBtnsContainer>
-            {/* <HrLine color={"var(--main)"} />
-            <AccountAvatar /> */}
+            <HrLine color={"var(--main)"} />
+            <AccountAvatar />
         </AccountContainer>
     );
 };
@@ -138,22 +148,22 @@ const LoginContainer = styled.div`
     align-items: center;
 `;
 
-// const HrLine = styled.div`
-//     width: 1px;
-//     height: 60px;
-//     border-radius: 50px;
-//     opacity: 0.5;
-//     margin: 0 20px;
-//     ${({ color = "#3A3B44" }) =>
-//         `
-//     background: linear-gradient(
-//         180deg,
-//         rgba(255, 107, 39, 0) 0.79%,
-//         ${color} 57.69%,
-//         rgba(255, 107, 39, 0) 99.21%
-//     );
-//   `}
-// `;
+const HrLine = styled.div`
+    width: 1px;
+    height: 60px;
+    border-radius: 50px;
+    opacity: 0.5;
+    margin: 0 20px;
+    ${({ color = "#3A3B44" }) =>
+        `
+    background: linear-gradient(
+        180deg,
+        rgba(255, 107, 39, 0) 0.79%,
+        ${color} 57.69%,
+        rgba(255, 107, 39, 0) 99.21%
+    );
+  `}
+`;
 
 const AvatarContainer = styled.div`
     display: flex;
@@ -181,7 +191,8 @@ const RoundedContainer = styled.div`
     border-radius: 50%;
     display: flex;
     box-sizing: border-box;
-    padding: 17px;
+    padding: ${(props: any) => (props.$hasAvatar ? "0" : "17px")};
+    overflow: hidden;
     justify-content: center;
     align-items: center;
     background: var(--grey);

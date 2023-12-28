@@ -26,7 +26,6 @@ export default () => {
             const { x, width } = get_left_an_r();
             _.style.width = `${width}px`;
             _.style.left = `${x}px`;
-            navigate(menuItems?.[activeItem]?.link);
         }
     }, [activeItem]);
 
@@ -54,7 +53,10 @@ export default () => {
                 const isactive = activeItem === i;
                 return (
                     <TransitionLink
-                        onClick={() => setActiveItem(i)}
+                        onClick={() => {
+                            setActiveItem(i)
+                            navigate(menuItems?.[i]?.link);
+                        }}
                         key={`item-menu-${i}`}
                     >
                         <ItemMenu
