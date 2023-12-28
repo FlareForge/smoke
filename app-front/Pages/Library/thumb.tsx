@@ -61,6 +61,7 @@ const Game = styled.div`
         background-image: url('${props.$image}');
         box-shadow: 0px 0px 20px 20px rgba(0, 0, 0, 0.15);
         overflow: hidden;
+        cursor: pointer;
         position: relative;
 
         &::before {
