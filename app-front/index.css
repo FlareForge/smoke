@@ -14,14 +14,6 @@ body {
     height: 100%;
 }
 
-html,
-body {
-    /* need better */
-    @supports (zoom: 80%){
-        zoom: 80%;
-    }
-}
-
 .soon,
 .soon * {
     text-decoration: line-through;

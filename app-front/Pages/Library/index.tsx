@@ -6,6 +6,7 @@ import useTransition from "../../Components/Transition";
 import useSettings from "../../Components/Settings";
 import Loader from "../../Components/Loader";
 import Icon from "../../Components/Icon";
+import Thumb from "./thumb";
 
 const CheckName = ({ name, closeModal }) => {
     const [_name, setName] = useState(name);
@@ -365,20 +366,15 @@ export default function Library({ changeAction }){
                 >
                     {Games.map((game: any) => {
                         return (
-                            <Game
-                                className="focusable"
+                            <Thumb
                                 key={game.id}
-                                $orientation={settings.orientation}
-                                $image={game?.image || './images/unknown.png'}
-                                style={{ viewTransitionName: 'game-poster.'+game.id }}
+                                orientation={settings.orientation}
+                                game={game}
                                 onClick={() => {
                                     navigate(`/game/${game.id || 0}`)
                                 }}
                             >
-                                <div>
-                                    {game?.name || 'Unknown'}
-                                </div>
-                            </Game>
+                            </Thumb>
                         )
                     })}
                 </Grid>
@@ -403,53 +399,6 @@ const Message = styled.div`
         text-decoration: none;
     }
 `;
-
-const Game = styled.div`
-    background-color: #fff;
-    border-radius: 28px;
-    aspect-ratio: ${(props: any) => props.$orientation === 'portrait' ? '0.747' : props.$orientation === 'landscape' ? '1.338' : '1 / 1'};
-    position: relative;
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-image: url(${(props: any) => props.$image});
-    cursor: pointer;
-    box-shadow: 0px 0px 20px 20px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
-
-    &::before{
-        content: '';
-        position: absolute;
-        border-radius: 27px;
-        filter: blur(5px);
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(180deg, rgba(0, 0, 0, 0.00) 80.86%, #000 100%);
-        transition-duration: 150ms;
-        transition-property: opacity;
-        opacity: 0;
-    }
-
-    &:hover::before, &.focused::before{
-        opacity: 1;
-    }
-
-    & > div{
-        position: absolute;
-        bottom: 10px;
-        left: 15px;
-        font-size: 1.3rem;
-        font-weight: 600;
-        color: #fff;
-        transition-duration: 150ms;
-        transition-property: transform;
-        transform: translateY(calc(100% + 10px));
-    }
-
-    &:hover > div, &.focused > div{
-        transform: translateY(0px);
-    }
-`;	
 
 const Grid = styled.div`
     margin-top: 20px;
