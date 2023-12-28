@@ -24,9 +24,9 @@ export default class SmokeAccount extends AbstractAccount {
     #token: string = "";
     #userData: any = {};
 
-    init() {
-        super.init();
-        this.handleStart();
+    async init() {
+        await super.init();
+        await this.handleStart();
     }
 
     async handleStart() {
@@ -38,6 +38,7 @@ export default class SmokeAccount extends AbstractAccount {
     }
 
     private async saveSession(token) {
+        await ipcRenderer.invoke('set-session-storage', { key: "smoke-token", value: token });
         this.#token = token;
     }
 
@@ -120,14 +121,14 @@ export default class SmokeAccount extends AbstractAccount {
             case "email":
                 response = await fetch(`/auth`, {type, data:opts})
                 if(!response.access_token) return false;
-                this.saveSession(response.access_token);
-                this.saveCreditentials(opts.email, opts.password);
+                await this.saveSession(response.access_token);
+                await this.saveCreditentials(opts.email, opts.password);
                 this.fetchUserData();
                 return true
             case "token":
                 response = await fetch(`/auth`, {type, data:opts})
                 if(!response.access_token) return false
-                this.saveSession(opts.token);
+                await this.saveSession(opts.token);
                 this.fetchUserData();
                 return true
             case "discord": // need more here

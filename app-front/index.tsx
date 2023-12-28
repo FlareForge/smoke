@@ -6,7 +6,9 @@ import { createGlobalStyle, styled } from 'styled-components';
 import { ModalProvider } from "@Components/Modal";
 import useSettings, { SettingsProvider } from "@Components/Settings";
 import WindowControls from "@Components/WindowControls";
+import { FullscreenControls } from "@Components/WindowControls";
 import Header from "@Components/Header";
+import FriendsBar from "@Components/FriendsBar";
 
 import Library from "@Pages/Library";
 import Game from "@Pages/Game";
@@ -47,27 +49,54 @@ function App() {
         <AppContainer>
             <Style settings={settings}/>
             <HashRouter>
-                <WindowControls fullscreen={fullscreen} />
-                <Header
-                    fullscreen={fullscreen}
-                    icon={icon}
-                    action={action}
-                />
-                <PageContainer>
-                    <Routes>
-                        <Route path="/" element={<>Home</>} />
-                        <Route path="/market" element={<>Store</>} />
-                        <Route path="/library" element={<Library changeAction={changeMainAction} />} />
-                        <Route path="/social" element={<>Social</>} />
-                        <Route path="/game/:id" element={<Game />} />
-                        <Route path="/profile/:id" element={<Profile />} />
-                        <Route path="/profile" element={<Profile />} />
-                    </Routes>
-                </PageContainer>
+                {!fullscreen && <WindowControls/>}
+                <Split
+                    $fullscreen={fullscreen}
+                >
+                    <SplitContent>
+                        {fullscreen && <FullscreenControls />}
+                        <Header
+                            fullscreen={fullscreen}
+                            icon={icon}
+                            action={action}
+                        />
+                        <PageContainer>
+                            <Routes>
+                                <Route path="/" element={<>Home</>} />
+                                <Route path="/market" element={<>Store</>} />
+                                <Route path="/library" element={<Library changeAction={changeMainAction} />} />
+                                <Route path="/social" element={<>Social</>} />
+                                <Route path="/game/:id" element={<Game />} />
+                                <Route path="/profile/:id" element={<Profile />} />
+                                <Route path="/profile" element={<Profile />} />
+                            </Routes>
+                        </PageContainer>
+                    </SplitContent>
+                    <FriendsBar />
+                </Split>
             </HashRouter>
         </AppContainer>
     );
 }
+
+const Split = styled.div`
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    border-right: ${(props: any) => props.$fullscreen ? "none" : "1px solid rgba(255, 255, 255, 0.1)"};
+    border-left: ${(props: any) => props.$fullscreen ? "none" : "1px solid rgba(255, 255, 255, 0.1)"};
+    border-bottom: ${(props: any) => props.$fullscreen ? "none" : "1px solid rgba(255, 255, 255, 0.1)"};
+`;
+
+const SplitContent = styled.div`
+    flex: 1 0 0;
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+`;
 
 const AppContainer = styled.div`
     width: 100%;
@@ -82,7 +111,7 @@ const AppContainer = styled.div`
 const PageContainer = styled.div`
     width: 100%;
     box-sizing: border-box;
-    padding: 0 50px;
+    padding: 0 50px 50px 50px;
     padding-top: 85px;
     overflow-y: scroll;
     overflow-x: hidden;

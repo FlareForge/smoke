@@ -148,6 +148,17 @@ ipcMain.handle("open-folder-dialog", async (_) => (await dialog.showOpenDialog({
 ipcMain.handle("gamechange", (_, arg) => currentGameData = arg);
 ipcMain.handle('toggle-startup', (_, arg) => app.setLoginItemSettings({openAtLogin:arg,path:path.join(app.getPath('exe'),'/smoke.exe')}));
 
+const tempStorage = {};
+ipcMain.handle("get-session-storage", (_, arg) => {
+    if(!tempStorage[arg]) return null;
+    return tempStorage[arg];
+});
+
+ipcMain.handle("set-session-storage", (_, arg) => {
+    tempStorage[arg.key] = arg.value;
+    return 1;
+});
+
 let nonce = 0;
 ipcMain.handle('subway-track', async (_, arg) => {
     return await new Promise((resolve, reject) => {

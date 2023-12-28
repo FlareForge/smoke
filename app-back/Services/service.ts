@@ -4,12 +4,12 @@ export class Service {
     protected services: Services = null;
     static id: string = "";
     
-    public setServices(services: Services) {
+    public async setServices(services: Services) {
         this.services = services;
-        this.init();
+        await this.init();
     }
 
-    public init() {}
+    public async init() {}
 
     public clean() {
         this.services = null;
