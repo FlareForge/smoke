@@ -22,9 +22,10 @@ export default class SmokeFriends extends AbstractFriends {
 
     #friends = [];
 
-    async init() {
-        await super.init();
+    async reload(){
+        await super.reload();
         this.handleStart();
+        return null;
     }
 
     async handleStart() {
@@ -33,11 +34,13 @@ export default class SmokeFriends extends AbstractFriends {
 
     async updateFriends() {
         const token = await ipcRenderer.invoke('get-session-storage', 'smoke-token');
+        if(!token) return this.#friends = [];
         const result = await fetch(`/friends`, {}, token);
         console.info("FRIENDS", result.friends)
         this.#friends = result.friends.map(friend => ({
             ...friend,
-            avatar: `${BASE_STORE}/${friend.avatar}`
+            avatar: `${BASE_STORE}/${friend.avatar}`,
+            smoke_id: friend.id,
         }))
     }
 
@@ -51,5 +54,7 @@ export default class SmokeFriends extends AbstractFriends {
         await this.updateFriends();//!!!
         return true;
     }
+
+
 
 }

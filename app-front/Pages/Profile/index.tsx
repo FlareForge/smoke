@@ -7,11 +7,12 @@ import { useSettingsMenu } from "@Components/Settings";
 export default function Profile() {
     let { id } = useParams();
     const [profileData, setProfileData] = useState(null);
-    const [page, setPage] = useState('posts');
+    const [_page, setPage] = useState('posts');
     const { openSettings } = useSettingsMenu();
 
     useEffect(() => {
         if(!id) window.app.Services.Account.getUserData('token').then((data) => { setProfileData(data) });
+        else window.app.Services.Account.getProfileData(id).then((data) => { setProfileData(data) });
     }, []);
 
     const content = <h2>No data available yet</h2>;
