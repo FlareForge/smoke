@@ -9,10 +9,15 @@ export class Service {
         await this.init();
     }
 
-    public async init() {}
+    public async init() {
+        await this.reload();
+    }
+
+    async reload() {
+        return true;
+    }
 
     public clean() {
         this.services = null;
     }
-
 }

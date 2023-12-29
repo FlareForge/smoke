@@ -8,6 +8,7 @@ import WindowsModManager from "./Mods/windows";
 import AccountManager from "./Account/smoke";
 import WindowsController from "./Controller/windows";
 import SmokeFriends from "./Friends/smoke";
+import SmokeMessages from "./Messages/smoke";
 
 export const availableServices = {
     Account: {
@@ -42,6 +43,10 @@ export const availableServices = {
         abstract: abstractServices.Friends,
         Smoke: SmokeFriends,
     },
+    Messages: {
+        abstract: abstractServices.Messages,
+        Smoke: SmokeMessages,
+    },
 }
 
 export const defaultServices = {
@@ -53,6 +58,7 @@ export const defaultServices = {
     Storage: ['Local'],
     Controller: ['Windows'],
     Friends: ['Smoke'],
+    Messages: ['Smoke'],
 }
 
 const Store = require('electron-store');
@@ -113,6 +119,7 @@ const Services = Object.fromEntries(
             Object.fromEntries(
                 Object.getOwnPropertyNames(entry[1].abstract.prototype)
                 .filter((p) => !["constructor", "setServices", "clean"].includes(p))
+                .concat(['reload'])
                 .map((p) => [
                     p, 
                     async (...args) => aggregateResults(await Promise.allSettled(selectedServices[entry[0]].map(service => service[p](...args))))

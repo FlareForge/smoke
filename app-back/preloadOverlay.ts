@@ -28,6 +28,7 @@ const servicesSubway = Object.fromEntries(
             Object.fromEntries(
                 Object.getOwnPropertyNames(entry[1].prototype)
                 .filter((p) => !["constructor", "setServices", "clean"].includes(p))
+                .concat(['reload'])
                 .map((p) => [
                     p, 
                     (...args) => track(`Services.${entry[0]}.${p}`, args)

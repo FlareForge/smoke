@@ -270,7 +270,7 @@ function AccountSettings() {
                 <input
                     type="text"
                     name="body"
-                    value={userData.username}
+                    value={userData.username || ""}
                     onChange={(e) => setUserData({ username: e.target.value })}
                 />
             </SettingEntry>
@@ -285,6 +285,20 @@ function AccountSettings() {
                         backgroundImage: `url(${userData.avatar}?nonce=${nonce})`,
                     } : {}}
                 >
+                </div>
+            </SettingEntry>
+            <SettingEntry>
+                <div> </div>
+                <div
+                    onClick={async () => {
+                        window.app.Services.Account.logout("token")
+                        _setUserData({
+                            username: "",
+                            avatar: "",
+                        });
+                    }}
+                >
+                    Logout
                 </div>
             </SettingEntry>
         </>

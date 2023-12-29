@@ -23,11 +23,15 @@ const Login = ({ closeModal }) => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState(null);
+    const [clearTimeoutId, setClearTimeoutId] = useState(null);
 
     const login = () => {
+        setError(null);
         window.app.Services.Account.login('email', { email, password }).then((status) => {
-            if(!status) return alert('error');
-            alert('logged in');
+            if(clearTimeoutId) clearTimeout(clearTimeoutId);
+            setClearTimeoutId(setTimeout(() => setError(null), 5000));
+            if(!status) return setError('Wrong email or password');
             closeModal();
         });
     }
@@ -35,6 +39,9 @@ const Login = ({ closeModal }) => {
     return (<div>
         <h1>Login</h1>
         <LoginContainer>
+            <ErrorContainer>
+                {error}
+            </ErrorContainer>
             <Input
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -54,6 +61,14 @@ const Login = ({ closeModal }) => {
         </div>
     </div>)
 }
+
+const ErrorContainer = styled.div`
+    position: absolute;
+    top: 20px;
+    color: red;
+    font-size: 20px;
+    font-weight: bold;
+`;
 
 const AccountAvatar = () => {
 
@@ -125,7 +140,7 @@ export default ({ icon = null, action = null }) => {
                     <Icon name="heart" />
                 </RoundedBtn> */}
             </RoundedBtnsContainer>
-            <HrLine color={"var(--main)"} />
+            <HrLine/>
             <AccountAvatar />
         </AccountContainer>
     );
@@ -143,6 +158,7 @@ const LoginContainer = styled.div`
     height: 100%;
     display: flex;
     flex-direction: column;
+    position: relative;
     gap: 20px;
     justify-content: center;
     align-items: center;
@@ -154,15 +170,7 @@ const HrLine = styled.div`
     border-radius: 50px;
     opacity: 0.5;
     margin: 0 20px;
-    ${({ color = "#3A3B44" }) =>
-        `
-    background: linear-gradient(
-        180deg,
-        rgba(255, 107, 39, 0) 0.79%,
-        ${color} 57.69%,
-        rgba(255, 107, 39, 0) 99.21%
-    );
-  `}
+    background: linear-gradient( 180deg,  rgba(255, 107, 39, 0) 0%, var(--grey) 33%, var(--grey) 66%, rgba(255, 107, 39, 0) 100%);
 `;
 
 const AvatarContainer = styled.div`
