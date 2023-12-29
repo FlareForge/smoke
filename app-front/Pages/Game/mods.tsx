@@ -46,11 +46,11 @@ export default function Mods({gameData}){
 }
 
 const PostsContainer = styled.div`
-    margin-top: 20px;
+    margin-top: calc(var(--quintet) * 2.5) ;
     width: 100%;
     height: max-content;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: calc(var(--quintet) * 2.5) ;
 `;
 

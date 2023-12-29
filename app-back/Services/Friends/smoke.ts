@@ -36,7 +36,6 @@ export default class SmokeFriends extends AbstractFriends {
         const token = await ipcRenderer.invoke('get-session-storage', 'smoke-token');
         if(!token) return this.#friends = [];
         const result = await fetch(`/friends`, {}, token);
-        console.info("FRIENDS", result.friends)
         this.#friends = result.friends.map(friend => ({
             ...friend,
             avatar: `${BASE_STORE}/${friend.avatar}`,

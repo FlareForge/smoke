@@ -2,18 +2,18 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import HeadBar from "../../Components/HeadBar";
-import { useSettingsMenu } from "@Components/Settings";
+import useTransition from "@Components/Transition";
 
 export default function Profile() {
     let { id } = useParams();
     const [profileData, setProfileData] = useState(null);
     const [_page, setPage] = useState('posts');
-    const { openSettings } = useSettingsMenu();
+    const transition = useTransition();
 
     useEffect(() => {
         if(!id) window.app.Services.Account.getUserData('token').then((data) => { setProfileData(data) });
         else window.app.Services.Account.getProfileData(id).then((data) => { setProfileData(data) });
-    }, []);
+    }, [id]);
 
     const content = <h2>No data available yet</h2>;
     return (
@@ -28,7 +28,6 @@ export default function Profile() {
                             $image={profileData?.avatar}
                         />
                     </div>
-                    
                 </MaskHorizontal>
                 <Details>
                     <AvatarProfile
@@ -40,7 +39,7 @@ export default function Profile() {
                 </Details>
             </Banner>
             <HeadBar
-                drop="blur(5px)"
+                drop="blur(var(--quintet))"
             >
                 <div
                     className="soon"
@@ -65,7 +64,7 @@ export default function Profile() {
                 </div>
                 {!id && <div
                     className="focusable"
-                    onClick={() => openSettings("account")}
+                    onClick={() => transition("/settings/account")}
                 >
                     <p>Settings</p>
                 </div>}
@@ -76,10 +75,10 @@ export default function Profile() {
 }
 
 const AvatarProfile = styled.img`
-    width: 200px;
-    height: 200px;
-    border-radius: 28px;
-    margin-bottom: 20px;
+    width: calc(var(--decade) * 20);
+    height: calc(var(--decade) * 20);
+    border-radius: var(--radius);
+    margin-bottom: calc(var(--quintet) * 2.5) ;
     object-fit: cover;
 `;
 
@@ -103,23 +102,23 @@ const BlurImage = styled.div`
     background-image: url(${(props: any) => props.$image});
     background-size: cover;
     background-position: center center;
-    filter: blur(300px);
+    filter: blur(40vh);
     opacity: 0.3;
 `;
 
 const Title = styled.div`
-    font-size: 50px;
+    font-size: calc(var(--decade) * 3.5);
     font-weight: bold;
     color: #FFF;
-    margin-bottom: 10px;
+    margin-bottom: calc(var(--decade) * 0.6);
 `;
 
 const MaskHorizontal = styled.div`
     position: absolute;
-    right: -50px;
-    top: calc(50% + 25px);
+    right: calc(var(--padding) * -1);
+    top: calc(50% + var(--quintet) * 3);
     width: 85%;
-    height: calc(100% + 250px);
+    height: calc(120%);
     transform: translateY(-50%);
     & > div {
         position: relative;
@@ -143,6 +142,7 @@ const BannerImage = styled.div`
 
 const Banner = styled.div`
     width: 100%;
-    height: 400px;
+    height: 50vh;
     position: relative;
+    margin-bottom: calc(var(--decade) * 3.5);
 `;

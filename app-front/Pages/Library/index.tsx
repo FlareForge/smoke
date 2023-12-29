@@ -165,13 +165,13 @@ const SelectMethod = ({ closeModal }) => {
 const AddOption = styled.div`
     display: flex;
     align-items: center;
-    gap: 20px !important;
-    padding: 20px 10px !important;
+    gap: calc(var(--quintet) * 2.5)  !important;
+    padding: calc(var(--quintet) * 2.5)  calc(var(--decade) * 0.6)  !important;
 
     & > div:first-child{
-        margin-left: 10px;
-        width: 50px;
-        height: 50px;
+        margin-left: calc(var(--decade) * 0.6) ;
+        width: calc(var(--decade) * 3.5) ;
+        height: calc(var(--decade) * 3.5) ;
     }
 
     & > div:last-child{
@@ -188,7 +188,7 @@ const AddOption = styled.div`
 `;
 
 const InstallBtn = styled.div`
-    padding: 5px 10px;
+    padding: 5px calc(var(--decade) * 0.6) ;
     text-align: center;
     width: 90px;
     border-radius: 8px;
@@ -219,14 +219,14 @@ const EmulatorList = styled.div`
         width: 100%;
         border: 0;
         background-color: rgba(255, 255, 255, 0.1);
-        padding: 10px;
+        padding: calc(var(--decade) * 0.6) ;
         color: #fff;
         font-weight: 600;
-        font-size: 20px;
+        font-size: calc(var(--quintet) * 2.5) ;
         display: flex;
         align-items: center;
         justify-content: start;
-        gap: 10px;
+        gap: calc(var(--decade) * 0.6) ;
         cursor: pointer;
 
         &:hover{
@@ -242,8 +242,8 @@ const EmulatorList = styled.div`
         }
 
         & > img{
-            width: 20px;
-            height: 20px;
+            width: calc(var(--quintet) * 2.5) ;
+            height: calc(var(--quintet) * 2.5) ;
             margin-left: 6px;
         }
 
@@ -258,7 +258,7 @@ const EmulatorList = styled.div`
             opacity: 0.5;
             cursor: pointer;
             border-radius: 8px;
-            padding: 5px 10px;
+            padding: 5px calc(var(--decade) * 0.6) ;
 
             &:hover{
                 background-color: rgba(255, 255, 255, 0.2);
@@ -385,7 +385,7 @@ export default function Library({ changeAction }){
 
 const Message = styled.div`
     margin-top: 35px;
-    font-size: 20px;
+    font-size: calc(var(--quintet) * 2.5) ;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -393,7 +393,7 @@ const Message = styled.div`
 
     & > u{
         cursor: pointer;
-        padding: 5px 10px;
+        padding: 5px calc(var(--decade) * 0.6) ;
         border-radius: 8px;
         background-color: rgba(255, 255, 255, 0.15);
         text-decoration: none;
@@ -401,8 +401,7 @@ const Message = styled.div`
 `;
 
 const Grid = styled.div`
-    margin-top: 20px;
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(${(props: any) => props.$coverSize || '300'}px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(calc(${(props: any) => props.$coverSize || '300'}vh / 15) , 1fr));
+    gap: calc(var(--quintet) * 2.5) ;
 `;

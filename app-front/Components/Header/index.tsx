@@ -17,7 +17,7 @@ export default ({ fullscreen = false, icon = null, action = null }) => {
 };
 
 const HeaderContainer = styled.div`
-    padding: 20px var(--padding);
+    padding: calc(var(--quintet) * 2.5)  var(--padding);
     box-sizing: border-box;
     position: relative;
     width: 100%;
@@ -31,7 +31,7 @@ const HeaderContainer = styled.div`
 const BackDrop = styled.div`
     position: absolute;
     width: 100%;
-    left: 0px;
+    left: 0;
     height: 100%;
     background: linear-gradient(
         180deg,

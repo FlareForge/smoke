@@ -8,13 +8,11 @@ import Loader from "../../Components/Loader";
 import Posts from "./posts";
 import Mods from "./mods";
 import { Game } from "../../../app-back/Services/Storage/abstract";
-import { useSettingsMenu } from "@Components/Settings";
 
 export default function GamePage() {
     let { id } = useParams();
     const navigate = useTransition();
     const contentTransition = useContentTransition();
-    const { openSettings } = useSettingsMenu();
     const [gameData, setGameData] = useState<Game>(null);
     const [gameLoading, setGameLoading] = useState(false);
     const [gameRunning, setGameRunning] = useState(false);
@@ -54,7 +52,7 @@ export default function GamePage() {
     }
 
     const buttonText =
-        gameLoading ? <Loader size="20px"/> :
+        gameLoading ? <Loader size="calc(var(--quintet) * 2.5) "/> :
         gameRunning ? 'Stop' :
         'Play';
 
@@ -73,9 +71,10 @@ export default function GamePage() {
         <Container>
             <Banner>
                 <BackButton
+                    className="focusable"
                     onClick={() => navigate('/library')}
                 >
-                    Back
+                    <Icon name="arrow-right" />
                 </BackButton>
                 <BlurImage
                     $image={gamePoster}
@@ -87,7 +86,6 @@ export default function GamePage() {
                             $image={gameBanner}
                         />
                     </div>
-                    
                 </MaskHorizontal>
                 <Details>
                     <Title>
@@ -157,7 +155,7 @@ export default function GamePage() {
                 </div>
                 <div
                     className="focusable"
-                    onClick={() => openSettings("games/"+gameData?.id)}
+                    onClick={() => navigate("/settings/games/"+gameData?.id)}
                 >
                     <p>Settings</p>
                 </div>
@@ -178,18 +176,29 @@ export default function GamePage() {
 
 const BackButton = styled.div`
     position: fixed;
-    top: 130px;
-    left: var(--padding);
-    padding: 15px 25px;
-    font-size: 25px;
-    font-weight: 600;
-    border-radius: 14px;
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    top: calc(var(--padding) + var(--nav-height));
+    right: calc(100% - var(--decade) * 7);
+    width: calc(var(--decade) * 7);
+    height: (var(--decade) * 4);
+    padding: var(--decade) calc(var(--quintet) * 4);
+    border-radius: calc(var(--decade) * 4);
     cursor: pointer;
     background-color: rgba(0, 0, 0, 0.4);
-    color: #fff;
+    backdrop-filter: blur(var(--quintet));
     z-index: 1;
-    backdrop-filter: blur(10px);
-    border: 4px solid rgba(255, 255, 255, 0.1);
+    transition-duration: 0.2s;
+    transition-property: background-color;
+
+    & > * {
+        transform: rotate(180deg);
+    }
+
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
 
 `;
 
@@ -198,14 +207,15 @@ const TimePlayed = styled.div`
     flex-direction: column;
     justify-content: center;
     & > p {
-        font-size: 18px;
+        font-size: var(--font-size);
         font-weight: 700;
         color: #fff;
         opacity: 0.5;
         margin: 0;
+        white-space: nowrap;
 
         &:last-child{
-            font-size: 24px;
+            font-size: calc(var(--font-size) * 1.2);
             font-weight: 500;
         }
     }
@@ -217,12 +227,12 @@ const Last = styled.div`
     display: flex;
     justify-content: flex-end;
     align-items: center;
-    gap: 15px;
+    gap: var(--decade);
 `;
 
 const Container = styled.div`
     width: 100%;
-`;
+`;  
 
 const Details = styled.div`
     position: absolute;
@@ -240,34 +250,34 @@ const BlurImage = styled.div`
     background-image: url(${(props: any) => props.$image});
     background-size: cover;
     background-position: center center;
-    filter: blur(300px);
+    filter: blur(40vh);
     opacity: 0.3;
 `;
 
 const Title = styled.div`
-    font-size: 50px;
+    font-size: calc(var(--decade) * 3.5) ;
     font-weight: bold;
     color: #FFF;
-    margin-bottom: 10px;
+    margin-bottom: calc(var(--decade) * 0.6) ;
 `;
 
 const Description = styled.div`
-    font-size: 16px;
+    font-size: var(--font-size);
     color: #FFF;
-    margin-bottom: 20px;
+    margin-bottom: calc(var(--quintet) * 2.5) ;
 `;
 
 const Button = styled.div`
-    padding: 20px 20px;
+    padding: calc(var(--quintet) * 2.5)  calc(var(--quintet) * 2.5) ;
     background-color: rgba(5, 255, 0, 0.54);
     ${(props: any) => props.$running && 'background-color: rgba(255, 0, 0, 0.54);'}
     ${(props: any) => props.$loading && 'background-color: rgba(255, 255, 255, 0.54);'}
     color: #fff;
-    font-size: 20px;
+    font-size: calc(var(--quintet) * 2.5) ;
     font-weight: bold;
-    border-radius: 14px;
+    border-radius: var(--small-radius);
     cursor: pointer;
-    margin-bottom: 10px;
+    margin-bottom: calc(var(--decade) * 0.6) ;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -275,10 +285,10 @@ const Button = styled.div`
 
 const MaskHorizontal = styled.div`
     position: absolute;
-    right: -50px;
-    top: calc(50% + 25px);
+    right: calc(var(--padding) * -1);
+    top: calc(50% + var(--quintet) * 3);
     width: 85%;
-    height: calc(100% + 250px);
+    height: calc(120%);
     transform: translateY(-50%);
     & > div {
         position: relative;
@@ -297,11 +307,11 @@ const BannerImage = styled.div`
     background-position: center center;
     mask-image: linear-gradient(90deg, rgba(255, 255, 255, 0.00) 0%, #FFF 45%, #FFF 100%);
     -webkit-mask-image: linear-gradient(90deg, rgba(255, 255, 255, 0.00) 0%, #FFF 45%, #FFF 100%);
-    /* -webkit-mask-mode: alpha, luminance; */
 `;
 
 const Banner = styled.div`
     width: 100%;
-    height: 780px;
+    height: 65vh;
     position: relative;
+    margin-bottom: calc(var(--decade) * 3.5);
 `;

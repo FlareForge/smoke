@@ -1,12 +1,13 @@
 import styled from 'styled-components';
 
 const Input = styled.input`
-    border: 0px;
-    border-radius: 18px;
-    padding: 10px;
-    font-size: 17px;
-    height: 45px;
+    border: 0;
+    border-radius: var(--small-radius);
+    padding: calc(var(--decade));
+    font-size: var(--font-size);
+    height: calc(var(--decade) * 3);
     width: 100%;
+    height: calc(var(--decade) * 4);
     box-sizing: border-box;
     background-color: rgba(255, 255, 255, 0.1);
     &:focus {

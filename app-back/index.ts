@@ -63,10 +63,6 @@ function createWindows() {
         },
     });
 
-    appWindow.once('ready-to-show', () => {
-        appWindow.webContents.setZoomFactor(0.65);
-    });
-
     appWindow.setMenuBarVisibility(false);
     overlayWindow.setFullScreen(true);
 

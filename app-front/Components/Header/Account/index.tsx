@@ -1,19 +1,18 @@
 import { styled } from "styled-components";
 import Icon from "../../Icon";
-import { useSettingsMenu } from "@Components/Settings";
 import { useModal } from "@Components/Modal";
 import Input from "@Components/Input";
 import { useEffect, useState } from "react";
 import useTransition from "@Components/Transition";
 
-const RoundedBtn = ({ children, notifs = 9, className = "", onClick = () => {}, hasAvatar = false}) => {
+const RoundedBtn = ({ children, className = "", onClick = () => {}, hasAvatar = false}) => {
     return (
             <RoundedContainer
                 className={className || "focusable"}
                 onClick={onClick}
                 $hasAvatar={hasAvatar}
             >
-                {!!notifs && <RoundedNbr>{notifs}</RoundedNbr>}
+                {/* {!!notifs && <RoundedNbr>{notifs}</RoundedNbr>} */}
                 {children}
             </RoundedContainer>
     );
@@ -64,9 +63,9 @@ const Login = ({ closeModal }) => {
 
 const ErrorContainer = styled.div`
     position: absolute;
-    top: 20px;
+    top: calc(var(--quintet) * 2.5) ;
     color: red;
-    font-size: 20px;
+    font-size: calc(var(--quintet) * 2.5) ;
     font-weight: bold;
 `;
 
@@ -78,7 +77,7 @@ const AccountAvatar = () => {
     const [userData, setUserData] = useState(null);
 
     const openLogin = () => {
-        if(isLogged) return transition('/profile/')
+        if(isLogged) return transition('profile/')
         openModal(() => Login, {}, updateLogStatus);
     }
 
@@ -98,7 +97,6 @@ const AccountAvatar = () => {
     return (
         <AvatarContainer>
             <RoundedBtn
-                notifs={0}
                 onClick={openLogin}
                 hasAvatar={!!userData?.avatar}
             >
@@ -112,20 +110,18 @@ const AccountAvatar = () => {
 
 export default ({ icon = null, action = null }) => {
 
-    const { openSettings } = useSettingsMenu();
+    const transition = useTransition();
 
     return (
         <AccountContainer>
             <RoundedBtnsContainer>
                 {!!icon && <RoundedBtn
-                    notifs={0}
                     onClick={() => action()}
                 >
                     <Icon name={icon} />
                 </RoundedBtn>}
                 <RoundedBtn
-                    notifs={0}
-                    onClick={() => openSettings()}
+                    onClick={() => transition('/settings/general')}
                 >
                     <Icon name="settings" />
                 </RoundedBtn>
@@ -140,7 +136,7 @@ export default ({ icon = null, action = null }) => {
                     <Icon name="heart" />
                 </RoundedBtn> */}
             </RoundedBtnsContainer>
-            <HrLine/>
+            <Separator/>
             <AccountAvatar />
         </AccountContainer>
     );
@@ -159,17 +155,17 @@ const LoginContainer = styled.div`
     display: flex;
     flex-direction: column;
     position: relative;
-    gap: 20px;
+    gap: calc(var(--quintet) * 2.5);
     justify-content: center;
     align-items: center;
 `;
 
-const HrLine = styled.div`
-    width: 1px;
-    height: 60px;
-    border-radius: 50px;
+const Separator = styled.div`
+    width: var(--unit);
+    height: calc(var(--decade) * 3.5);
+    border-radius: calc(var(--decade) * 3.5) ;
     opacity: 0.5;
-    margin: 0 20px;
+    margin: 0 calc(var(--quintet) * 1.5) ;
     background: linear-gradient( 180deg,  rgba(255, 107, 39, 0) 0%, var(--grey) 33%, var(--grey) 66%, rgba(255, 107, 39, 0) 100%);
 `;
 
@@ -178,61 +174,68 @@ const AvatarContainer = styled.div`
     justify-content: center;
     align-items: center;
     position: relative;
-    border-radius: 50px;
+    border-radius: calc(var(--decade) * 3.5);
+
     &::before {
         content: "";
         position: absolute;
-        left: 0;
-        top: 0;
-        border-radius: 50px;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: calc(var(--decade) * 3.5) ;
         opacity: 0.2;
-        background: var(--main);
-        filter: blur(8px);
-        width: 64px;
-        height: 64px;
+        background: black;
+        filter: blur(var(--decade));
+        width: calc(var(--decade) * 6);
+        height: calc(var(--decade) * 6);
     }
 `;
 
 const RoundedContainer = styled.div`
-    width: 63px;
-    height: 63px;
+    width: calc(var(--decade) * 4);
+    height: calc(var(--decade) * 4);
     border-radius: 50%;
     display: flex;
     box-sizing: border-box;
-    padding: ${(props: any) => (props.$hasAvatar ? "0" : "17px")};
+    padding: ${(props: any) => (props.$hasAvatar ? "0" : "calc(var(--quintet) * 2.2)")};
     overflow: hidden;
     justify-content: center;
     align-items: center;
     background: var(--grey);
     position: relative;
     cursor: pointer;
+
+    &:hover {
+        background: var(--dark);
+    }
+
     & svg {
-        width: 27px;
+        width: calc(var(--decade) * 2);
     }
 `;
 
-const RoundedNbr = styled.div`
-    position: absolute;
-    right: -5px;
-    aspect-ratio: 1;
-    width: 12px;
-    top: -5px;
-    border-radius: 50px;
-    border: 3px solid #3a3b44;
-    background: var(--main);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 2px 4px 4px 0px rgba(0, 0, 0, 0.25);
-    color: white;
-    font-family: "Kodchasan-Bold";
-    font-size: 9px;
-    padding: 4px;
-`;
+// const RoundedNbr = styled.div`
+//     position: absolute;
+//     right: -5px;
+//     aspect-ratio: 1;
+//     width: 12px;
+//     top: -5px;
+//     border-radius: calc(var(--decade) * 3.5) ;
+//     border: 3px solid #3a3b44;
+//     background: var(--main);
+//     display: flex;
+//     justify-content: center;
+//     align-items: center;
+//     box-shadow: 2px 4px 4px 0 rgba(0, 0, 0, 0.25);
+//     color: white;
+//     font-family: "Kodchasan-Bold";
+//     font-size: 9px;
+//     padding: 4px;
+// `;
 
 const RoundedBtnsContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px;
+    gap: calc(var(--quintet) * 1.5) ;
 `;

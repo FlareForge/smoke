@@ -38,8 +38,8 @@ const EntryContainer = styled.div`
     width: 80%;
     height: 400px;
     display: flex;
-    padding: 10px;
-    gap: 10px;
+    padding: calc(var(--decade) * 0.6) ;
+    gap: calc(var(--decade) * 0.6) ;
     box-sizing: border-box;
     border-radius: 28px;
     background-color: rgba(255, 255, 255, 0.1);
@@ -59,7 +59,7 @@ const EntryDetails = styled.div`
     height: 100%;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: calc(var(--decade) * 0.6) ;
     box-sizing: border-box;
     position: relative;
 `;
@@ -71,7 +71,7 @@ const EntryType = styled.div`
     opacity: 1;
     position: absolute;
     top: 0;
-    right: 10px;
+    right: calc(var(--decade) * 0.6) ;
 `;
 
 const EntryDate = styled.div`
@@ -80,8 +80,8 @@ const EntryDate = styled.div`
     color: #FFF;
     opacity: 0.5;
     position: absolute;
-    top: 20px;
-    right: 10px;
+    top: calc(var(--quintet) * 2.5) ;
+    right: calc(var(--decade) * 0.6) ;
 `;
 
 const EntryTitle = styled.div`

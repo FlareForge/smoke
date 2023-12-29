@@ -30,8 +30,21 @@ const ControllerNavigation = ({ moveToNext, moveToPrev, children }) => {
                 }, 15000);
             };
         }, 50);
-        return () => clearInterval(interval);
+
+        window.addEventListener('keydown', dev);
+
+        return () => {
+            clearInterval(interval)
+            window.removeEventListener('keydown', dev);
+        }
     }, []);
+
+    const dev = (e) => {
+        if(e.key === 'ArrowUp') navigateFocus(true, false, false, false);
+        if(e.key === 'ArrowDown') navigateFocus(false, true, false, false);
+        if(e.key === 'ArrowLeft') navigateFocus(false, false, true, false);
+        if(e.key === 'ArrowRight') navigateFocus(false, false, false, true);
+    }
 
     const getDistance = (rectA, rectB, direction) => {
         const centerA = { x: (rectA.left + rectA.right) / 2, y: (rectA.top + rectA.bottom) / 2 };
@@ -88,22 +101,22 @@ export default ControllerNavigation;
 const Container = styled.div`
     display: flex;
     align-items: center;
-    gap: 50px;
+    gap: var(--nav-gap);
     position: relative;
-    margin-left: ${(props: any) => props.$gamepadUsed ? '110px' : '20px'};
+    margin-left: ${(props: any) => props.$gamepadUsed ? 'calc(var(--padding) + var(--decade) * 5)' : 'calc(var(--decade) * 1.5)'};
 
     & > .icon {
         display: ${(props: any) => props.$gamepadUsed ? 'block' : 'none'};
-        width: 80px;
-        height: 70px;
+        width: calc(var(--decade) * 6);
+        height: calc(var(--decade) * 5);
         position: absolute;
 
         &:first-child {
-            right: calc(100% + 40px);
+            right: calc(100% + var(--decade) * 3);
         }
 
         &:last-child {
-            left: calc(100% + 40px);
+            left: calc(100% + var(--decade) * 3.2);
         }
     }
 `;

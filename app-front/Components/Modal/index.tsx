@@ -89,7 +89,7 @@ const ModalOverlay = styled.div`
 const ModalContainer = styled.div`
     background: var(--dark);
     border-radius: 28px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 calc(var(--decade) * 0.6)  rgba(0, 0, 0, 0.2);
     position: relative;
     width: ${(props: any) => props.$size.x};
     min-height: ${(props: any) => props.$size.y};
@@ -99,14 +99,14 @@ const ModalContainer = styled.div`
     overflow: hidden;
 
     & > div {
-        margin: 20px;
+        margin: calc(var(--quintet) * 2.5) ;
         flex: 1 0 0;
         display: flex;
         flex-direction: column;
     }
 
     & > div > h1:first-child {
-        margin: 0px;
+        margin: 0;
     }
 
     & > div > h2 {
@@ -119,12 +119,12 @@ const ModalContainer = styled.div`
         &:after {
             content: "";
             position: absolute;
-            left: -20px;
+            left: -calc(var(--quintet) * 2.5) ;
             display: block;
             width: calc(100% + 40px);
-            height: 1px;
+            height: var(--unit);
             background: #888888;
-            margin: 20px 0;
+            margin: calc(var(--quintet) * 2.5)  0;
             opacity: 0.1;
         }
     }
@@ -135,19 +135,19 @@ const ModalContainer = styled.div`
         justify-content: end;
         align-items: center;
         position: relative;
-        height: 50px;
+        height: calc(var(--decade) * 3.5) ;
         width: 100%;
-        gap: 20px;
+        gap: calc(var(--quintet) * 2.5) ;
 
         &:after {
             content: "";
             position: absolute;
-            left: -20px;
+            left: -calc(var(--quintet) * 2.5) ;
             bottom: 100%;
             display: block;
-            height: 1px;
+            height: var(--unit);
             background: #888888;
-            margin: 20px 0;
+            margin: calc(var(--quintet) * 2.5)  0;
             opacity: 0.1;
             width: calc(100% + 40px);
         }
@@ -156,7 +156,7 @@ const ModalContainer = styled.div`
         button {
             height: 100%;
             border-radius: 18px;
-            padding: 0 20px;
+            padding: 0 calc(var(--quintet) * 2.5) ;
             background-color: rgba(255, 255, 255, 0.1);
             border: 0;
             color: #fff;
@@ -167,7 +167,7 @@ const ModalContainer = styled.div`
     }
 
     & > div > div:not(:last-child) {
-        margin-bottom: 10px;
+        margin-bottom: calc(var(--decade) * 0.6) ;
         padding: 26px 0;
         flex: 1 0 0;
     }
