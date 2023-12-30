@@ -18,16 +18,18 @@ export default function ModulesSettings() {
         <>
             {Object.entries(modules).map( ([id, availableModules]) => {
                 const enabledModulesLength = availableModules.filter(m => m.enabled).length;
-                return <div key={id}>
-                    <div> {id} </div>
+                return [
+                    <div key={id+"Title"}> {id} </div>,
                     <EmulatorList
-                        style={{ height: "auto", marginTop: "calc(var(--decade) * 0.6) ", marginBottom: "calc(var(--decade) * 0.6) " }}
+                        key={id+"List"}
+                        style={{ height: "auto", marginTop: "calc(var(--decade) * 0.9) ", marginBottom: "calc(var(--decade) * 0.9)" }}
                     >
                         {
                             availableModules.map((module, i) => (
                                 <div key={id+i}>
                                     <img
-                                        src={"./platforms/nds.svg"}
+                                        // @ts-ignore
+                                        src={module.icon || "./svgs/cpu.svg"}
                                         alt={module.name}
                                     />
                                     <div>{module.name?.toLowerCase()}</div>
@@ -85,8 +87,8 @@ export default function ModulesSettings() {
                             ))
                         }
                     </EmulatorList>
-                </div>
-            })}
+                ]
+            }).flat()}
         </>
     );
 }
