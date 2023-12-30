@@ -18,7 +18,6 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
 
 function OverlayApp() {
     const { settings } = useSettings();
-
     const [overlayData, setOverlayData] = useState<any>({});
 
     useEffect(() => {
@@ -88,7 +87,7 @@ const GameOptions = styled.div`
 `;
 
 const BackButton = styled.button`
-    height: calc(var(--quintet) * 0.6);
+    height: calc(var(--decade) * 6);
     border-radius: calc(var(--decade) * 1.4);
     padding: var(--decade) calc(var(--decade) * 1.4);
     border: none;
@@ -97,7 +96,7 @@ const BackButton = styled.button`
     font-size: calc(var(--decade) * 3);
     font-weight: 500;
     cursor: pointer;
-
+    transition-duration: 0.2s;
     &:hover {
         background: ${(props: any) => props.red ? "rgba(255, 0, 0, 0.3)" : "rgba(255, 255, 255, 0.3)"};
     }

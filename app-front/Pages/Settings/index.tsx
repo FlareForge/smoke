@@ -150,6 +150,10 @@ const SideBar = styled.div`
 const PageContainer = styled.div`
     flex: 1;
     height: 100%;
-    padding-left: calc(var(--decade) * 2);
     box-sizing: border-box;
+    overflow-y: overlay;
+
+    & > *:not(.vertical-list) {
+        margin-left: calc(var(--decade) * 2.5);
+    }
 `;

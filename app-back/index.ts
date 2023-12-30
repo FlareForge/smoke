@@ -47,15 +47,15 @@ function createWindows() {
         frame: false,
         transparent: true,
         alwaysOnTop: true,
-        skipTaskbar: true,
+        // skipTaskbar: true,
         show: false,
-        focusable: false,
+        // focusable: false,
         minimizable: false,
         maximizable: false,
-        resizable: false,
+        // resizable: false,
         movable: false,
         // closable: false,
-        fullscreen: true,
+        // fullscreen: true,
         webPreferences: {
             preload: path.join(__dirname, "preloadOverlay.js"),
             contextIsolation: true,
@@ -121,9 +121,10 @@ function showOverlay() {
     overlayWindow.setAlwaysOnTop(true, "screen-saver", 100);
     overlayWindow.focusable = true;
     overlayWindow.webContents.send("overlay-open", currentGameData);
+    overlayWindow.focus();
 }
 
-app.on("ready", () => globalShortcut.register("Shift+Tab", showOverlay));
+app.on("ready", () => globalShortcut.register("Shift+Backspace", showOverlay));
 app.on("window-all-closed", () => app.quit()); // will have to change this later
 
 app.on("before-quit", () => {

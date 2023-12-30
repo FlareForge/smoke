@@ -245,19 +245,20 @@ export const SettingEntry = styled.div`
     }
 `;
 
-export const EmulatorList = styled.div`
+export const EmulatorList = styled.div.attrs((_) => ({
+    className: 'vertical-list'
+}))`
     pointer-events: ${(props: any) => (props.$locked ? "none" : "all")};
     opacity: ${(props: any) => (props.$locked ? "0.5" : "1")};
     display: flex;
     flex-direction: column;
-    gap: calc(var(--decade) * 0.2) ;
+    gap: calc(var(--decade) * 0.2);
     height: 100%;
-    border-radius: 18px;
     overflow: hidden;
-    background-color: var(--dark);
+    background-color: var(--grey);
     overflow-y: overlay;
     overflow-x: hidden;
-    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0 var(--radius) var(--radius) 0;
 
     & > div {
         box-sizing: border-box;
@@ -270,12 +271,12 @@ export const EmulatorList = styled.div`
         display: flex;
         align-items: center;
         justify-content: start;
-        gap: calc(var(--decade) * 0.6) ;
-        border-bottom: calc(2 * var(--border-size)) solid rgba(255, 255, 255, 0.1);
+        gap: var(--decade);
+        background-color: rgba(255, 255, 255, 0.1); 
         cursor: pointer;
 
         &:hover {
-            background-color: rgba(255, 255, 255, 0.1);
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
         & > img {
