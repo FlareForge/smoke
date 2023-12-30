@@ -3,7 +3,7 @@ import { abstractServices } from "./abstract";
 import EqualGamesScanner from "./Scanner/equalGames";
 import LocalStorage from "./Storage/local";
 import WindowsEmulatorManager from "./Emulator/windows";
-import SmokeMetadata from "./Metadata/smoke";
+import IGDBMetadata from "./Metadata/igdb";
 import WindowsModManager from "./Mods/windows";
 import AccountManager from "./Account/smoke";
 import WindowsController from "./Controller/windows";
@@ -21,7 +21,7 @@ export const availableServices = {
     },
     Metadata: {
         abstract: abstractServices.Metadata,
-        Smoke: SmokeMetadata,
+        IGDB: IGDBMetadata,
     },
     Mods: {
         abstract: abstractServices.Mods,
@@ -52,7 +52,7 @@ export const availableServices = {
 export const defaultServices = {
     Account: ['Smoke'],
     Emulator: ['Windows'],
-    Metadata: ['Smoke'],
+    Metadata: ['IGDB'],
     Mods: ['Windows'],
     Scanner: ['EqualGames'],
     Storage: ['Local'],
