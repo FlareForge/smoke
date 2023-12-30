@@ -3,7 +3,7 @@
     "author": "Flare, Forge.",
     "description": "all-in-one game launcher",
     "license": "CC-BY-SA-4.0",
-    "version": "0.0.9",
+    "version": "0.0.10",
     "main": "./app-back/.build/index.js",
     "scripts": {
         "   DEVELOPMENT SCRIPTS --------------": "",
