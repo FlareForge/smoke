@@ -33,7 +33,7 @@ function AddFiendModal ({ closeModal }) {
         </div>
     )
 }
-export default function FriendsBar({size = '80px'}){
+export default function FriendsBar(){
 
     const { openModal } = useModal();
     const [friendsVisible, setFriendsVisible] = useState(true);
@@ -55,10 +55,10 @@ export default function FriendsBar({size = '80px'}){
 
     return (
         <SectionContainer
-            $size={size}
             $friendsVisible={friendsVisible}
         >
             <CloseFriends
+                className="focusable"
                 $friendsVisible={friendsVisible}
                 onClick={() => {
                     if(selectedFriend) {
@@ -86,6 +86,7 @@ export default function FriendsBar({size = '80px'}){
                         </div>
                     </UserInfo>
                     <Button
+                        className="focusable"
                         onClick={() => {
                             transition('/profile/'+selectedFriend.id);
                         }}
@@ -103,13 +104,15 @@ export default function FriendsBar({size = '80px'}){
                     <FriendAvatar
                         key={i}
                         $image={friend.avatar}
+                        className="focusable"
                         onClick={() => {
                             setSelectedFriend(friend);
                         }}
                     />
                 ))}
                 <AddFriend
-                    onClick={() => openModal(() => AddFiendModal, {}, () => {}, {x: '350px', y: '200px'})}
+                    className="focusable"
+                    onClick={() => openModal(() => AddFiendModal, {}, () => {}, {x: '40vh', y: '20vh'})}
                 >
                     <Icon name="plus"/>
                 </AddFriend>
@@ -125,39 +128,46 @@ const UserInfo = styled.div`
 
 const QuickTools = styled.div`
     width: 100%;
-    height: 500px;
+    height: calc(35vh * var(--scale));
     background-color: rgba(255, 255, 255, 0.05);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: var(--unit) solid rgba(255, 255, 255, 0.1);
 `;
 
 const Username = styled.div`
-    font-size: 20px;
+    font-size: calc(var(--quintet) * 2.5);
     font-weight: 600;
     color: white;
 `;
 
 const Avatar = styled.div`
-    width: 50px;
-    height: 50px;
+    width: calc(var(--decade) * 3.5);
+    height: calc(var(--decade) * 3.5);
+    background-color: rgba(255, 255, 255, 0.1);
     background-image: url(${(props: any) => props.$image});
     background-size: cover;
     background-position: center;
-    border-radius: 18px;
+    border-radius: var(--small-radius);
     cursor: pointer;
 `;
 
 const Miniprofile = styled.div`
     width: 100%;
-    height: 70px;
+    height: calc(var(--decade) * 5);
     display: flex;
     box-sizing: border-box;
-    padding: 10px;
+    padding: calc(var(--decade) * 0.6);
     background-color: rgba(255, 255, 255, 0.05);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    gap: 10px;
+    border-bottom: var(--unit) solid rgba(255, 255, 255, 0.1);
+    gap: calc(var(--decade) * 0.6) ;
 
     & > *:last-child {
-        width: 50px;
+        width: calc(var(--decade) * 3.5);
+    }
+
+    
+    & > div:last-child {
+        width: calc(var(--decade) * 3.5);
+        height: calc(var(--decade) * 3.5);
     }
 `;
 
@@ -167,13 +177,13 @@ const FriendsContainer = styled.div`
     background-color: var(--grey);
     position: relative;
     flex-direction: column;
-    gap: 10px;
-    width: ${(props: any) => props.$friendsVisible ? props.$size : '0px'};
+    gap: calc(var(--decade) * 0.6) ;
+    width: ${(props: any) => props.$friendsVisible ? 'calc(var(--decade) * 6)' : '0'};
     display: flex;
     height: 100%;
-    border-left: ${(props: any) => props.$friendsVisible ? '1px solid rgba(255, 255, 255, 0.1)' : '0px'};
+    border-left: ${(props: any) => props.$friendsVisible ? 'var(--unit) solid rgba(255, 255, 255, 0.1)' : '0'};
     box-sizing: border-box; 
-    padding: ${(props: any) => props.$friendsVisible ? '10px 10px' : '10px 0px'};
+    padding: ${(props: any) => props.$friendsVisible ? 'calc(var(--decade) * 0.6)  calc(var(--decade) * 0.6) ' : 'calc(var(--decade) * 0.6)  0'};
     overflow: hidden;
 
     & > *:not(:first-child) {
@@ -191,10 +201,9 @@ const ChatContainer = styled.div`
     overflow: hidden;
     flex-direction: column;
     display: flex;
-    gap: 10px;
-    width: ${(props: any) => props.$chatOpen ? '350px' : '0px'};
+    width: ${(props: any) => props.$chatOpen ? 'calc(var(--decade) * 25) ' : '0'};
     height: 100%;
-    border-left: ${(props: any) => props.$chatOpen ? '1px solid rgba(255, 255, 255, 0.1)' : '0px'};
+    border-left: ${(props: any) => props.$chatOpen ? 'var(--unit) solid rgba(255, 255, 255, 0.1)' : '0'};
     box-sizing: border-box; 
 `;
 
@@ -202,21 +211,23 @@ const CloseFriends = styled.div`
     position: absolute;
     cursor: pointer;
     z-index: 1;
-    padding: 5px;
+    padding: calc(var(--unit) * 4);
     box-sizing: border-box;
-    top: 40px;
-    left: -28px;
-    width: 30px;
-    height: 30px;
+    top: calc(var(--nav-height));
+    left: calc((var(--decade) * -2.5) + var(--unit));
+    width: calc(var(--decade) * 2.5);
+    height: calc(var(--decade) * 2.5);
     display: flex;
     justify-content: center;
     align-items: center;
-    border-radius: 10px 0px 0px 10px;
+    border-radius: calc(var(--decade) * 0.6)  0 0 calc(var(--decade) * 0.6) ;
     background-color: var(--grey);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: var(--unit) solid rgba(255, 255, 255, 0.1);
 
     & > * {
-        transform: ${(props: any) => !props.$friendsVisible ? 'rotate(180deg)' : 'revert'};
+        transition-duration: 0.2s;
+        transition-property: transform;
+        transform: ${(props: any) => !props.$friendsVisible ? 'scaleX(-1)' : 'scaleX(1)'};
     }
 
     &:hover {
@@ -235,23 +246,24 @@ const SectionContainer = styled.div`
 
 const FriendAvatar = styled.div`
     width: 100%;
-    height: 60px;
+    background-color: rgba(255, 255, 255, 0.1);
+    height: calc(var(--decade) * 4.7);
     background-image: url(${(props: any) => props.$image});
     background-size: cover;
     background-position: center;
-    border-radius: 18px;
+    border-radius: var(--small-radius);
     cursor: pointer;
 `;
 
 const AddFriend = styled.div`
     width: 100%;
-    height: 60px;
+    height: calc(var(--decade) * 4.7);
     display: flex;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
-    padding: 10px;
+    padding: calc(var(--decade) * 0.6) ;
     background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 18px;
+    border-radius: var(--small-radius);
     cursor: pointer;
 `;

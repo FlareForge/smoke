@@ -4,43 +4,38 @@ import useTransition from "../../Transition";
 import ControllerNavigation from "@Components/Controller";
 
 export default () => {
-
+    
     const navigate = useTransition();
-    const BgWhiteRef = useRef(null);
-
-    const [activeItem, setActiveItem] = useState(-2);
-
+    
+    const BubbleRef = useRef(null);
     const itemRefs = Array.from({ length: menuItems.length }, ()=>useRef(null));
     
-    //! 
+    const [activeItem, setActiveItem] = useState(0);
+    
     useEffect(() => {
-        (() => {
-            setActiveItem(0);
-            navigate("/library");
-        })()
+        window.addEventListener("resize", updateBubble);
+        navigate('/library')
+        return () => {
+            window.removeEventListener("resize", updateBubble);
+        };
     }, []);
 
     useEffect(() => {
-        if (activeItem >= 0) {
-            const _ = BgWhiteRef.current;
-            const { x, width } = get_left_an_r();
-            _.style.width = `${width}px`;
-            _.style.left = `${x}px`;
-        }
+        if (activeItem >= 0) updateBubble()
     }, [activeItem]);
 
-    const get_left_an_r = useCallback(() => {
-        let _x = 0;
-        let _w = itemRefs[activeItem]?.current?.clientWidth || 0;
-        const _p = _w * 0.3;
-        _w += _p;
-        for (let i = 0; i < activeItem; i += 1) {
-            _x += itemRefs[i]?.current?.clientWidth + 50; // 50 -> gap
-        }
-        return {
-            x: (_x || 0) - _p / 2,
-            width: _w,
-        };
+    const updateBubble = () => {
+        const bubble = BubbleRef.current;
+        const { left, width } = getItemTransform();
+        bubble.style.width = width;
+        bubble.style.left = left;
+    }
+
+    const getItemTransform = useCallback(() => {
+        const padding = "var(--decade) * 2.3"
+        let width = `calc(${itemRefs[activeItem]?.current?.clientWidth || 0}px + ${padding} * 2)`;
+        const left = 'calc('+itemRefs.filter((_, i) => i < activeItem).map(item => item?.current?.clientWidth).join("px + ")+`${activeItem > 0 ? 'px + ' : ''}var(--nav-gap) * ${activeItem || 0} - ${padding})`
+        return { left, width};
     }, [activeItem]);
 
     return (
@@ -48,7 +43,7 @@ export default () => {
             moveToNext={() => setActiveItem((prev) => Math.min(prev + 1, (menuItems.length || 1) - 1))}
             moveToPrev={() => setActiveItem((prev) => Math.max(prev - 1, 0))}
         >
-            <div className="_an_r" ref={BgWhiteRef}></div>
+            <BackgroundBubble className="_an_r" ref={BubbleRef}></BackgroundBubble>
             {menuItems.map(({ icon, txt }, i) => {
                 const isactive = activeItem === i;
                 return (
@@ -59,17 +54,17 @@ export default () => {
                         }}
                         key={`item-menu-${i}`}
                     >
-                        <ItemMenu
+                        <Item
                             $isactive={isactive}
                             ref={itemRefs[i]}
                         >
-                            <IconMenuItem $isactive={isactive}>
+                            <MenuIcon $isactive={isactive}>
                                 {icon}
-                            </IconMenuItem>
-                            <TxtMenuItem $txtLength={txt.length}>
+                            </MenuIcon>
+                            <MenuText $txtLength={txt.length}>
                                 {txt}
-                            </TxtMenuItem>
-                        </ItemMenu>
+                            </MenuText>
+                        </Item>
                     </TransitionLink>
                 );
             })}
@@ -97,6 +92,85 @@ const LinearGradientActiveItems = () => {
     );
 };
 
+const TransitionLink = styled.div`
+    cursor: pointer;
+`;
+
+const Item = styled.div<{ $isactive: boolean }>`
+    color: white;
+    font-family: "Montserrat-Medium";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: calc(var(--quintet) * 3);
+    position: relative;
+    
+    ${({ $isactive }) => $isactive === true && `
+        font-family: "Montserrat-Black" !important;
+        color: var(--main);
+    `}
+`;
+
+const MenuText = styled.div<{ $txtLength: number }>`
+    font-size: calc(var(--quintet) * 2.5) ;
+    width: calc(${({ $txtLength }) => $txtLength} * var(--decade) * 0.65);
+    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`;
+
+const MenuIcon = styled.div<{ $isactive: boolean }>`
+    width: calc(var(--decade) * 2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+    &::before {
+        content: "";
+        z-index: -1;
+        width: calc(var(--quintet) * 3);
+        height: calc(var(--quintet) * 3);
+        opacity: 0;
+        background: var(--main);
+        position: absolute;
+        filter: blur(0);
+        border-radius: 50%;
+        transition: 0.25s linear;
+    }
+
+    ${({ $isactive }) => $isactive === true && `
+        &::before {
+            width: calc(var(--quintet) * 3);
+            height: calc(var(--quintet) * 3);
+            opacity: 0.25;
+            filter: blur(var(--quintet));
+        }
+    `}
+
+    ${({ $isactive }) => $isactive !== true && `
+        & svg{
+            & path{
+                fill: white;
+                opacity: 1;
+            }
+        }
+    `}
+`;
+
+const BackgroundBubble = styled.div`
+    position: absolute;
+    left: 0;
+    width: 0;
+    height: calc(var(--decade) * 4);
+    background: white;
+    border-radius: calc(var(--decade) * 5);
+    opacity: 1;
+    transition: 0.25s ease-out;
+    transition-property: width, left;
+`;
+
 const menuItems = [
     // {
     //     icon: (
@@ -118,7 +192,6 @@ const menuItems = [
     //         </svg>
     //     ),
     //     txt: "Store",
-    //     soon: true,
     //     link: "/",
     // },
     // {
@@ -150,7 +223,6 @@ const menuItems = [
     //         </svg>
     //     ),
     //     txt: "Market",
-    //     soon: true,
     //     link: "/market",
     // },
     {
@@ -193,76 +265,6 @@ const menuItems = [
     //         </svg>
     //     ),
     //     txt: "Social",
-    //     soon: true,
     //     link: "/social",
     // },
 ];
-
-const TransitionLink = styled.div`
-    cursor: pointer;
-`;
-
-const ItemMenu = styled.div<{ $isactive: boolean }>`
-    color: white;
-    font-family: "Montserrat-Medium";
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    position: relative;
-    ${({ $isactive }) =>
-        $isactive === true &&
-        `
-    font-family: "Montserrat-Black";
-    color: var(--main);
-  `}
-`;
-
-const TxtMenuItem = styled.div<{ $txtLength: number }>`
-    font-size: 20px;
-    padding: 10px;
-    width: ${({ $txtLength }) => $txtLength * 12}px;
-    white-space: nowrap;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-`;
-const IconMenuItem = styled.div<{ $isactive: boolean }>`
-    width: 30px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-    &::before {
-        content: "";
-        z-index: -1;
-        width: 25px;
-        height: 25px;
-        opacity: 0;
-        background: var(--main);
-        position: absolute;
-        filter: blur(0px);
-        border-radius: 50%;
-        transition: 0.25s linear;
-    }
-    ${({ $isactive }) =>
-        $isactive === true &&
-        `
-    &::before {
-      width: 25px;
-      height: 25px;
-      opacity: 0.25;
-      filter: blur(5px);
-    }
-  `}
-    ${({ $isactive }) =>
-        $isactive !== true &&
-        `
-    & svg{
-      & path{
-        fill: white;
-        opacity: 1;
-      }
-    }
-  `}
-`;

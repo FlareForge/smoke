@@ -13,6 +13,7 @@ import FriendsBar from "@Components/FriendsBar";
 import Library from "@Pages/Library";
 import Game from "@Pages/Game";
 import Profile from "@Pages/Profile";
+import Settings from "@Pages/Settings";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
     <StrictMode>
@@ -69,6 +70,7 @@ function App() {
                                 <Route path="/game/:id" element={<Game />} />
                                 <Route path="/profile/:id" element={<Profile />} />
                                 <Route path="/profile" element={<Profile />} />
+                                <Route path="/settings/:section/:param?" element={<Settings />} />
                             </Routes>
                         </PageContainer>
                     </SplitContent>
@@ -81,13 +83,13 @@ function App() {
 
 const Split = styled.div`
     width: 100%;
-    height: 100%;
+    height: ${(props: any) => props.$fullscreen ? "100vh" : "calc(100vh - var(--window-handle) - var(--unit) * 3)"};
     display: flex;
     flex-direction: row;
     box-sizing: border-box;
-    border-right: ${(props: any) => props.$fullscreen ? "none" : "1px solid rgba(255, 255, 255, 0.1)"};
-    border-left: ${(props: any) => props.$fullscreen ? "none" : "1px solid rgba(255, 255, 255, 0.1)"};
-    border-bottom: ${(props: any) => props.$fullscreen ? "none" : "1px solid rgba(255, 255, 255, 0.1)"};
+    border-right: ${(props: any) => props.$fullscreen ? "none" : "var(--border-size) solid rgba(255, 255, 255, 0.1)"};
+    border-left: ${(props: any) => props.$fullscreen ? "none" : "var(--border-size) solid rgba(255, 255, 255, 0.1)"};
+    border-bottom: ${(props: any) => props.$fullscreen ? "none" : "var(--border-size) solid rgba(255, 255, 255, 0.1)"};
 `;
 
 const SplitContent = styled.div`
@@ -96,11 +98,12 @@ const SplitContent = styled.div`
     height: 100%;
     display: flex;
     flex-direction: column;
+    width: 1px;
 `;
 
 const AppContainer = styled.div`
     width: 100%;
-    height: 100%;
+    height: 100vh;
     box-sizing: border-box;
     background: var(--dark);
     overflow: hidden;
@@ -109,10 +112,9 @@ const AppContainer = styled.div`
 `;
 
 const PageContainer = styled.div`
-    width: 100%;
     box-sizing: border-box;
-    padding: 0 50px 50px 50px;
-    padding-top: 85px;
+    padding: 0 var(--padding) var(--padding) var(--padding);
+    padding-top: calc(var(--nav-height) + var(--padding) / 2);
     overflow-y: scroll;
     overflow-x: hidden;
     flex: 1 0 0;
@@ -124,7 +126,7 @@ const Style = createGlobalStyle`
         --dark: ${(props: any) => props.settings.darkColor};
         --grey: ${(props: any) => props.settings.lightColor};
         --green: ${(props: any) => props.settings.highlightColor};
-        --padding: 50px;
+        --scale: 1;
     }
 
     * {

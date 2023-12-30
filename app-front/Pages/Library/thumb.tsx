@@ -46,7 +46,7 @@ export default function Thumb({ game, orientation = "portait", onClick}) {
 }
 
 const Game = styled.div`
-    border-radius: 28px;
+    border-radius: var(--radius);
     aspect-ratio: ${(props: any) =>
         props.$orientation === "portrait"
             ? "0.747"
@@ -59,7 +59,7 @@ const Game = styled.div`
         background-position: center center;
         background-repeat: no-repeat;
         background-image: url('${props.$image}');
-        box-shadow: 0px 0px 20px 20px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 0 calc(var(--quintet) * 2.5)  calc(var(--quintet) * 2.5)  rgba(0, 0, 0, 0.15);
         overflow: hidden;
         cursor: pointer;
         position: relative;
@@ -67,8 +67,8 @@ const Game = styled.div`
         &::before {
             content: "";
             position: absolute;
-            border-radius: 27px;
-            filter: blur(5px);
+            border-radius: var(--radius);
+            filter: blur(calc(var(--unit) * 3));
             width: 100%;
             height: 100%;
             background: linear-gradient(180deg, rgba(0, 0, 0, 0) 80.86%, #000 100%);
@@ -84,19 +84,20 @@ const Game = styled.div`
 
         & > div {
             position: absolute;
-            bottom: 10px;
-            left: 15px;
-            font-size: 1.3rem;
+            width: calc(100% - var(--decade) * 2);
+            bottom: calc(var(--decade) * 0.6);
+            left: var(--decade);
+            font-size: calc(var(--font-size) * 1.3);
             font-weight: 600;
             color: #fff;
             transition-duration: 150ms;
             transition-property: transform;
-            transform: translateY(calc(100% + 10px));
+            transform: translateY(calc(100% + calc(var(--decade) * 0.6) ));
         }
 
         &:hover > div,
         &.focused > div {
-            transform: translateY(0px);
+            transform: translateY(0);
         }
 
     ` : `
