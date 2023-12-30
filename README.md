@@ -1,32 +1,41 @@
-### Smoke Launcher
-
+### Smoke
 <p align="center">
   <img width="150" height="150" src="https://github.com/FlareForge/smoke/assets/137607414/33a8a6c7-4d0f-40c9-82c8-9eaaf67d9446">
 </p>
 
-- [What is Smoke?](#what-is-smoke)
-- [State of Smoke](#state-of-smoke)
-- [Install Smoke](#install-smoke)
-- [Build Smoke](#build-smoke)
-- [Issues, Feedback & Suggestions](#issues-feedback--suggestions)
-- [Contribute to Smoke](#contribute-to-smoke)
-- [Goal/WIP](#goalwip)
-- [Credits](#credits)
-- [License](#license)
-- [Gallery](#gallery)
+An open source video game hub* that plugs into any service.\
+*hub = (library + social + emulators + mods)*
 
-## [What is Smoke?](#what-is-smoke)
-Smoke is a video game launcher designed to enhance user experience by integrating various aspects of gaming into one application. The gaming ecosystem is highly fragmented, leading to multiple launchers and complex management, especially for those involved in emulation, modding, or other gaming subspaces. Smoke aims to unify these elements, offering compatibility with a wide range of launchers, gaming services, and third-party tools. Our vision is to consolidate the best aspects of gaming under one roof, enriched with custom features.
-
-### [Install Smoke](#install-smoke)
+## Download
 `Warning: Smoke is currently in even more than early alpha, there are a lot of issues, and it's lacking important features.`\
 The fastest way to get Smoke is to download the smoke installer [here](https://mgwbnslnolkjpugojhun.supabase.co/storage/v1/object/public/delivery/smoke_installer.exe).
 
-### [State of Smoke](#state-of-smoke)
-Smoke is currently in very early development and only available for Windows x64. Check out the issues & projects page for more details on what's implemented.
+## State of Smoke
+Smoke is currently in early development and only available for Windows x64.\
+Available features currently:
+- Local windows games scanning using [EqualGames](https://github.com/EqualGames/game-scanner)
+- Adding custom emulators from settings (need to specify emulator path, name and roms extension)
+- Scanning folders for compatible roms
+- IGDB Metadata
+- Gamepad mapper customizable per game or per emulator (keyboard key selection will be redone as atm it can only press single letter keys)
+- Account, Friends & Messaging systems (account creation is closed atm if you want one hit me up)
+- Simple interface customization features 
+- Overlay using Shift+Backspace shortcut, it's quite empty atm 
+- Modules system, every single core part of the application is modular and can be pluged to multiple services at once. For example, once the addon system will be available, one would be able make a Messaging & Friends module that adds a discord integration to the launcher. modules can be ordered & disabled
 
-![image](https://github.com/FlareForge/smoke/assets/137607414/4de60305-6d72-4363-a356-da63ee430268)
-more screenshots here [Gallery](#gallery) 
+![image](https://github.com/FlareForge/smoke/assets/137607414/f83870d6-fe50-4675-a64d-c6a2af5d603c)
+![image](https://github.com/FlareForge/smoke/assets/137607414/246efd71-12ad-485d-8e75-9c640b015e6a)
+![image](https://github.com/FlareForge/smoke/assets/137607414/a3a8abb4-083e-4fc1-b972-3e77fc6a95de)
+![image](https://github.com/FlareForge/smoke/assets/137607414/f123945d-0771-47fe-b97b-749605fb223f)
+![image](https://github.com/FlareForge/smoke/assets/137607414/3a485541-0577-4059-b428-568900443847)
+
+## More ...
+- [Build Smoke](#build-smoke)
+- [Issues, Feedback & Suggestions](#issues-feedback--suggestions)
+- [Contribute to Smoke](#contribute-to-smoke)
+- [Goal](#goal)
+- [Credits](#credits)
+- [License](#license)
 
 ### [Build Smoke](#build-smoke)
 Smoke is very easy to build!
@@ -43,7 +52,7 @@ Got issues? Have feedback or early suggestions for Smoke? Drop them in this repo
 ### [Contribute to Smoke](#contribute-to-smoke)
 We're open to contributions! If you want to implement a new feature, support new emulators, or port Smoke to a new device, please first open a suggestion to make sure it's something we would be willing to add!
 
-## [Goal/WIP](#goalwip)
+## [Goal](#goal)
 ### [Basic Launcher Features](#basic-launcher-features)
 Smoke is envisioned to incorporate all standard features of video game launchers like Steam, Epic Games, and GOG Galaxy. We are committed to integrating with other services to minimize ecosystem fragmentation. Expect interoperable features such as friend lists and messaging. Smoke will scan and support games from various sources, including Steam, GOG, manual additions, and potentially the Smoke store. The launcher will also facilitate the installation of necessary applications in the background, enhancing user convenience. Smoke's cross-platform availability will include Windows, Linux, Android, and macOS, with functionality as a primary OS homescreen.
 
@@ -79,12 +88,3 @@ Game Scanner: https://github.com/EqualGames/game-scanner
 
 This project is licensed under the CC BY-SA 4.0 License, Creative Commons Attribution-ShareAlike 4.0 International.\
 For details, see the [LICENSE](LICENSE) file.
-
-## [Gallery](#gallery)
-
-![image](https://github.com/FlareForge/smoke/assets/137607414/90497aeb-2fa2-4409-a8c9-780983b4792e)
-![image](https://github.com/FlareForge/smoke/assets/137607414/22b5ab2c-afa6-4239-aa7b-190ffdbbb502)
-![image](https://github.com/FlareForge/smoke/assets/137607414/454cc518-c0fe-4704-a45d-51e4fb6ee7b2)
-![image](https://github.com/FlareForge/smoke/assets/137607414/3a485541-0577-4059-b428-568900443847)
-![image](https://github.com/FlareForge/smoke/assets/137607414/ef55c529-9a0b-46c0-a344-aa5776a3ab68)
-![image](https://github.com/FlareForge/smoke/assets/137607414/413627eb-6adf-458f-881d-a38cdd3a3003)

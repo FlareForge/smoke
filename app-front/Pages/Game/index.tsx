@@ -44,7 +44,7 @@ export default function GamePage() {
         setGameLoading(true);
         await window.app.Services.Emulator.startGame(gameData);
         const notification = new Notification("Tip", {
-            body: "Use shift + tab to open the overlay and see the controls layout.",
+            body: "Use shift + Backspace to open the overlay and see the controls layout.",
         });
         notification.onclick = () => {};
         setGameRunning(true);
