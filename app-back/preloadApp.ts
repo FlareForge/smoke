@@ -26,17 +26,6 @@ const context = {
 
 contextBridge.exposeInMainWorld('app', context);
 
-declare global {
-    interface Window {
-        app: typeof context;
-    }
-
-    interface WindowEventMap {
-        'fullscreen': CustomEvent<{fullscreen:boolean}>;
-        'overlay-open': CustomEvent<{open:boolean}>;
-    }
-}
-
 ipcRenderer.on('fullscreen', (_, fullscreen) => window.dispatchEvent(new CustomEvent('fullscreen',{detail:{fullscreen}})));
 ipcRenderer.on('overlay-open', (_, arg) => window.dispatchEvent(new CustomEvent('overlay-open',{detail:arg})));
 ipcRenderer.on('clean', (_) => cleanServices());
@@ -60,3 +49,14 @@ ipcRenderer.on('subway-track', async (_, { path, data, nonce }) => {
         error
     });
 });
+
+declare global {
+    interface Window {
+        app: typeof context;
+    }
+
+    interface WindowEventMap {
+        'fullscreen': CustomEvent<{fullscreen:boolean}>;
+        'overlay-open': CustomEvent<{open:boolean}>;
+    }
+}

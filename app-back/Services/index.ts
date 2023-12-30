@@ -7,6 +7,8 @@ import SmokeMetadata from "./Metadata/smoke";
 import WindowsModManager from "./Mods/windows";
 import AccountManager from "./Account/smoke";
 import WindowsController from "./Controller/windows";
+import SmokeFriends from "./Friends/smoke";
+import SmokeMessages from "./Messages/smoke";
 
 export const availableServices = {
     Account: {
@@ -36,7 +38,15 @@ export const availableServices = {
     Controller: {
         abstract: abstractServices.Controller,
         Windows: WindowsController,
-    }
+    },
+    Friends: {
+        abstract: abstractServices.Friends,
+        Smoke: SmokeFriends,
+    },
+    Messages: {
+        abstract: abstractServices.Messages,
+        Smoke: SmokeMessages,
+    },
 }
 
 export const defaultServices = {
@@ -47,6 +57,8 @@ export const defaultServices = {
     Scanner: ['EqualGames'],
     Storage: ['Local'],
     Controller: ['Windows'],
+    Friends: ['Smoke'],
+    Messages: ['Smoke'],
 }
 
 const Store = require('electron-store');
@@ -107,6 +119,7 @@ const Services = Object.fromEntries(
             Object.fromEntries(
                 Object.getOwnPropertyNames(entry[1].abstract.prototype)
                 .filter((p) => !["constructor", "setServices", "clean"].includes(p))
+                .concat(['reload'])
                 .map((p) => [
                     p, 
                     async (...args) => aggregateResults(await Promise.allSettled(selectedServices[entry[0]].map(service => service[p](...args))))
@@ -118,7 +131,12 @@ const Services = Object.fromEntries(
     [key in keyof typeof availableServices]: InstanceType<typeof availableServices[key]["abstract"]>
 }
 
-Object.values(selectedServices).forEach((services) => services.forEach(service => service.setServices(Services)));
+(async () => {
+    const services = Object.values(selectedServices).flat();
+    for (const service of services) {
+        await service.setServices(Services);
+    }
+})();
 
 export default Services;
 

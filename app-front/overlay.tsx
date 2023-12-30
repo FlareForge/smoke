@@ -75,26 +75,26 @@ function OverlayApp() {
 }
 
 const GameOptions = styled.div`
-    padding: 20px;
+    padding: calc(var(--decade) * 1.4);
     top: 0;
     left: 0;
     width: 50%;
     height: 100%;
     display: flex;
-    gap: 20px;
+    gap: calc(var(--decade) * 1.4);
     flex-direction: column;
     justify-content: start;
     align-items: start;
 `;
 
 const BackButton = styled.button`
-    height: 50px;
-    border-radius: 20px;
-    padding: 10px 20px;
+    height: calc(var(--quintet) * 0.6);
+    border-radius: calc(var(--decade) * 1.4);
+    padding: var(--decade) calc(var(--decade) * 1.4);
     border: none;
     background: ${(props: any) => props.red ? "rgba(255, 0, 0, 0.2)" : "rgba(255, 255, 255, 0.2)"};
     color: white;
-    font-size: 25px;
+    font-size: calc(var(--decade) * 3);
     font-weight: 500;
     cursor: pointer;
 
@@ -105,8 +105,8 @@ const BackButton = styled.button`
 
 const LayoutGuide = styled.div`
     flex: 1 0 0;
-    height: 500px;
-    padding-top: 50px;
+    height: 30vh;
+    padding-top: var(--padding);
     display: flex;
     justify-content: end;
     align-items: center;
@@ -125,8 +125,8 @@ const Style = createGlobalStyle`
         --dark: ${(props: any) => props.settings.darkColor};
         --grey: ${(props: any) => props.settings.lightColor};
         --green: ${(props: any) => props.settings.highlightColor};
-        --padding: 50px;
-        --overlay-background: ${(props: any) => props.settings.overlayBackground};
+        --overlay-background: color-mix(in srgb, var(--grey), transparent 10%);
+        --scale: 1;
     }
 
     * {

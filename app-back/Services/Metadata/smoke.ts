@@ -30,6 +30,7 @@ export default class SmokeMetadata extends AbstractScanner {
 
         return {
             ...game,
+            name: data?.result?.name || game.name,
             image: cover,
             banner: banner,
             description: "No description yet",

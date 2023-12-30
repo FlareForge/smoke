@@ -81,7 +81,24 @@ export default class LocalStorage extends AbstractStorage {
         this.#store.delete("storage."+id);
     }
     
-    async clear(){
-        this.#store.clear();
+    async clear(location){
+        switch(location){
+            case 'games':
+                const currentGames = this.#store.get('games', {});
+                for (const game in currentGames) {
+                    if(currentGames[game].image?.startsWith?.('file://')) ipcRenderer.invoke('delete-local-image', {
+                        path: currentGames[game].image,
+                    });
+                    if(currentGames[game].banner?.startsWith?.('file://')) ipcRenderer.invoke('delete-local-image', {
+                        path: currentGames[game].banner,
+                    });
+                }
+                this.#store.set('games', {});
+                break;
+            case 'all':
+                this.clear('games');
+                break;
+        }
+        
     }
 }

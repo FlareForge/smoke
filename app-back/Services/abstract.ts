@@ -5,6 +5,8 @@ import AbstractMetadata from "./Metadata/abstract";
 import AbstractModManager from "./Mods/abstractManager";
 import AbstractAccount from "./Account/abstract";
 import AbstractController from "./Controller/abstract";
+import AbstractFriends from "./Friends/abstract";
+import AbstractMessages from "./Messages/abstract";
 
 export const abstractServices = {
     Account: AbstractAccount,
@@ -14,4 +16,6 @@ export const abstractServices = {
     Scanner: AbstractScanner,
     Storage: AbstractStorage,
     Controller: AbstractController,
+    Friends: AbstractFriends,
+    Messages: AbstractMessages,
 }

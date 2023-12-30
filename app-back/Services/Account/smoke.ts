@@ -24,9 +24,9 @@ export default class SmokeAccount extends AbstractAccount {
     #token: string = "";
     #userData: any = {};
 
-    init() {
-        super.init();
-        // this.handleStart();
+    async init() {
+        await super.init();
+        await this.handleStart();
     }
 
     async handleStart() {
@@ -38,7 +38,10 @@ export default class SmokeAccount extends AbstractAccount {
     }
 
     private async saveSession(token) {
+        await ipcRenderer.invoke('set-session-storage', { key: "smoke-token", value: token });
         this.#token = token;
+        this.services.Friends.reload();
+        this.services.Messages.reload();
     }
 
     private async getSession() {
@@ -57,7 +60,9 @@ export default class SmokeAccount extends AbstractAccount {
     
     private async fetchUserData() {
         this.#userData = await fetch(`/account`, {}, this.#token);
+        if(!this.#userData) this.#userData = {};
         if(this.#userData.avatar) this.#userData.avatar = `${BASE_STORE}/${this.#userData.avatar}`;
+        this.#userData.smoke_id = this.#userData.id;
     }
 
     async getUserData(type: string, _options?: any) {
@@ -120,14 +125,14 @@ export default class SmokeAccount extends AbstractAccount {
             case "email":
                 response = await fetch(`/auth`, {type, data:opts})
                 if(!response.access_token) return false;
-                this.saveSession(response.access_token);
-                this.saveCreditentials(opts.email, opts.password);
+                await this.saveSession(response.access_token);
+                await this.saveCreditentials(opts.email, opts.password);
                 this.fetchUserData();
                 return true
             case "token":
                 response = await fetch(`/auth`, {type, data:opts})
                 if(!response.access_token) return false
-                this.saveSession(opts.token);
+                await this.saveSession(opts.token);
                 this.fetchUserData();
                 return true
             case "discord": // need more here
@@ -147,4 +152,23 @@ export default class SmokeAccount extends AbstractAccount {
         }
     }
 
+    async getProfileData(id: string): Promise<any> {
+        const result = await fetch(`/profile`, {id}, this.#token);
+        if(result.avatar) result.avatar = `${BASE_STORE}/${result.avatar}`;
+        result.smoke_id = result.id;
+        return result;
+    }
+
+    async logout(type) {
+        switch(type) {
+            case "email":
+            case "token":
+                await this.saveSession("");
+                await this.saveCreditentials("", "");
+                this.#userData = {};
+                return true;
+            default:
+                return false;
+        }
+    }
 }

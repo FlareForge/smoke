@@ -25,7 +25,7 @@ export default class WindowsEmulatorManager extends AbstractEmulatorManager {
     }
 
     async init(){
-        super.init();
+        await super.init();
         const customEmulators = await this.services.Storage.get('customEmulators', {}) as Record<string, Emulator>;
         Object.values(customEmulators).forEach((emulator) => this.initCustomEmulator(emulator));
     }

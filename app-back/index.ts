@@ -104,10 +104,7 @@ function createWindows() {
         });
     });
 
-
-    app.whenReady().then(() => {
-        protocol.handle('smokedata', (request) => net.fetch('file://' + path.join(app.getPath("userData"), "data/", request.url.slice('smokedata://'.length))))
-    })
+    protocol.handle('smokedata', (request) => net.fetch('file://' + path.join(app.getPath("userData"), "data/", request.url.slice('smokedata://'.length))))
 }
 
 function hideOverlay() {
@@ -147,6 +144,17 @@ ipcMain.handle("open-file-dialog", async (_) => (await dialog.showOpenDialog({pr
 ipcMain.handle("open-folder-dialog", async (_) => (await dialog.showOpenDialog({properties:["openDirectory"]})).filePaths[0]);
 ipcMain.handle("gamechange", (_, arg) => currentGameData = arg);
 ipcMain.handle('toggle-startup', (_, arg) => app.setLoginItemSettings({openAtLogin:arg,path:path.join(app.getPath('exe'),'/smoke.exe')}));
+
+const tempStorage = {};
+ipcMain.handle("get-session-storage", (_, arg) => {
+    if(!tempStorage[arg]) return null;
+    return tempStorage[arg];
+});
+
+ipcMain.handle("set-session-storage", (_, arg) => {
+    tempStorage[arg.key] = arg.value;
+    return 1;
+});
 
 let nonce = 0;
 ipcMain.handle('subway-track', async (_, arg) => {

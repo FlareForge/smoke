@@ -50,7 +50,7 @@ export default class AbstractStorage extends Service {
         return null;
     }
 
-    async clear(){
+    async clear(_location: string){
         return null;
     }
 }
