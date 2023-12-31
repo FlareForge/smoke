@@ -11,6 +11,7 @@ export default function Chat ({ user }) {
     const [messages, setMessages] = useState([]);
     const [unconfirmedMessages, setUnconfirmedMessages] = useState([]);
     const [newMessage, setNewMessage] = useState('');
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         return () => {
@@ -24,7 +25,10 @@ export default function Chat ({ user }) {
 
     useEffect(() => {
         if(user) {
+            setMessages([]);
+            setLoading(true)
             window.app.Services.Messages.getPrivateMessages(user).then((_messages) => {
+                setLoading(false);
                 setMessages(_messages);
                 window.app.Services.Messages.setCallback(user, (_messages) => {
                     setMessages((prev) => {
@@ -81,6 +85,18 @@ export default function Chat ({ user }) {
                         </div>
                     </Message>
                 ))}
+                { loading &&
+                    <>
+                        <LoadingMessage $rng={Math.random()} $isMine={Math.random() > 0.5}/>
+                        <LoadingMessage $rng={Math.random()} $isMine={Math.random() > 0.5}/>
+                        <LoadingMessage $rng={Math.random()} $isMine={Math.random() > 0.5}/>
+                        <LoadingMessage $rng={Math.random()} $isMine={Math.random() > 0.5}/>
+                        <LoadingMessage $rng={Math.random()} $isMine={Math.random() > 0.5}/>
+                        <LoadingMessage $rng={Math.random()} $isMine={Math.random() > 0.5}/>
+                        <LoadingMessage $rng={Math.random()} $isMine={Math.random() > 0.5}/>
+                        <LoadingMessage $rng={Math.random()} $isMine={Math.random() > 0.5}/>
+                    </>
+                }
             </MessagesContainer>
             <SendMessage>
                 <Input
@@ -137,4 +153,15 @@ const Message = styled.div`
     & > div {
         font-size: var(--font-size);
     }
+`;
+
+const LoadingMessage = styled.div`
+    padding: var(--quintet) var(--decade);
+    border-radius: ${(props: any) => props.$isMine ? 'var(--small-radius) 0 var(--small-radius) var(--small-radius)' : '0 var(--small-radius) var(--small-radius) var(--small-radius)'};
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    align-self: ${(props: any) => props.$isMine ? 'flex-end' : 'flex-start'};
+    width: ${(props: any) => props.$rng * 80}%;
+    opacity: 0.5;
+    height: calc(var(--font-size) + var(--quintet));
 `;
