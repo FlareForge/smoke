@@ -1,4 +1,4 @@
-import { abstractServices, abstractEvents, hiddenProperties } from "./abstract";
+import { abstractServices, hiddenProperties } from "./abstract";
 import { EventEmitter } from "./service";
 const Store = require('electron-store');
 const crypto = require('crypto');
@@ -100,6 +100,10 @@ const selectedServices = Object.fromEntries(
     [key in keyof typeof availableServices]: InstanceType<typeof availableServices[key]["abstract"]>[]
 }
 
+type First<T extends (...args: any) => any> = T extends (first: infer First, ...rest: infer _) => any ? First : never;
+type Rest<T extends (...args: any) => any> = T extends (first: any, ...rest: infer Rest) => any ? Rest : never;
+
+
 // @ts-ignore
 const Services = Object.fromEntries(
     Object.entries(availableServices)
@@ -125,9 +129,12 @@ const Services = Object.fromEntries(
 ) as {
     [key in keyof typeof availableServices]: Omit<InstanceType<typeof availableServices[key]["abstract"]>, typeof hiddenProperties[number]> &
     {
-        on: (event: abstractEvents[key]["event"], listener: abstractEvents[key]["listener"]) => number,
-        off: (event: abstractEvents[key]["event"], listenerId: number) => void,
-        clean: (event: abstractEvents[key]["event"]) => void
+        on: (
+            event: First<typeof availableServices[key]["abstract"]["prototype"]["emit"]>,
+            listener: (...args: Rest<typeof availableServices[key]["abstract"]["prototype"]["emit"]>) => void
+        ) => number,
+        off: (event: First<typeof availableServices[key]["abstract"]["prototype"]["emit"]>, listenerId: number) => void,
+        clean: (event: First<typeof availableServices[key]["abstract"]["prototype"]["emit"]>) => void
     }
 }
 
