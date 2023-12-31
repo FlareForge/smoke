@@ -35,6 +35,7 @@ export default class LocalStorage extends AbstractStorage {
             ...this.#store.get('games', {}),
             [game.id]: game,
         });
+        this.emit('game-added', game)
     }
 
     async setGame(game){

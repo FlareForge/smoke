@@ -1,5 +1,5 @@
 import AbstractScanner from "./Scanner/abstract";
-import AbstractStorage from "./Storage/abstract";
+import AbstractStorage, { StorageEvents } from "./Storage/abstract";
 import AbstractEmulatorManager from "./Emulator/abstractManager";
 import AbstractMetadata from "./Metadata/abstract";
 import AbstractModManager from "./Mods/abstractManager";
@@ -19,3 +19,24 @@ export const abstractServices = {
     Friends: AbstractFriends,
     Messages: AbstractMessages,
 }
+
+export interface abstractEvents {
+    Account: null,
+    Emulator: null,
+    Metadata: null,
+    Mods: null,
+    Scanner: null,
+    Storage: StorageEvents,
+    Controller: null,
+    Friends: null,
+    Messages: null,
+}
+
+export const hiddenProperties = [
+    "constructor",
+    "setServices",
+    "setEventEmitter",
+    "events",
+    "emit",
+    "clean",
+] as const;
