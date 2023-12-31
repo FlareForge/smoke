@@ -111,6 +111,21 @@ const AccountAvatar = () => {
 export default ({ icon = null, action = null }) => {
 
     const transition = useTransition();
+    const [notifications, setNotifications] = useState([{
+        content: "You have a new friend request",
+    }]);
+
+    useEffect(() => {
+        updateNotifications();
+        const event = window.app.Services.Notifications.on('notification-updated', updateNotifications);
+        return () => {
+            window.app.Services.Notifications.off('notification-updated', event);
+        }
+    }, []);
+
+    const updateNotifications = () => {
+        window.app.Services.Notifications.getNotifications().then(setNotifications);
+    }
 
     return (
         <AccountContainer>
@@ -120,6 +135,28 @@ export default ({ icon = null, action = null }) => {
                 >
                     <Icon name={icon} />
                 </RoundedBtn>}
+                <NotificationButton>
+                    {notifications.length > 0 && <Bubble>
+                        {notifications.length}
+                    </Bubble>}
+                    <Icon name="bell" />
+                    <Dropdown className="dropdown">
+                        <h1>Notifications</h1>
+                        { !notifications?.length && <p>No notifications</p>}
+                        { notifications?.map((notification: any, i) => (
+                            <Notification
+                                key={i}
+                                onClick={async () => {
+                                    setNotifications((prev) => prev.filter((_, index) => index !== i));
+                                    await window.app.Services.Notifications.readNotification(notification);
+                                    updateNotifications();
+                                }}
+                            >
+                                {notification.content}
+                            </Notification>
+                        ))}
+                    </Dropdown>
+                </NotificationButton>
                 <RoundedBtn
                     onClick={() => transition('/settings/general')}
                 >
@@ -142,6 +179,36 @@ export default ({ icon = null, action = null }) => {
     );
 };
 
+const Bubble = styled.div`
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: calc(var(--unit) * 1);
+    right: calc(var(--unit) * 1);
+    width: calc(var(--decade) * 1.5);
+    height: calc(var(--decade) * 1.5);
+    border-radius: 50%;
+    background: var(--main);
+    color: white;
+    font-size: calc(var(--font-size) * 0.8);
+    font-family: "Kodchasan-Bold";
+`;
+
+const Notification = styled.div`
+    width: 100%;
+    padding: calc(var(--quintet) * 1.5);
+    border-bottom: var(--border-size) solid rgba(255, 255, 255, 0.1);
+    border-top: var(--border-size) solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    transition-duration: 0.2s;
+    transition-property: background-color;
+    box-sizing: border-box;
+    font-size: var(--font-size);
+    &:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+`;
 
 const AccountContainer = styled.div`
     display: flex;
@@ -207,11 +274,85 @@ const RoundedContainer = styled.div`
 
     &:hover {
         background: var(--dark);
+
+        & > .dropdown {
+            opacity: 1;
+            display: flex;
+        }
     }
 
     & svg {
         width: calc(var(--decade) * 2);
     }
+`;
+
+const NotificationButton = styled.div`
+    width: calc(var(--decade) * 4);
+    height: calc(var(--decade) * 4);
+    border-radius: 50%;
+    display: flex;
+    box-sizing: border-box;
+    padding: ${(props: any) => (props.$hasAvatar ? "0" : "calc(var(--quintet) * 2.2)")};
+    justify-content: center;
+    align-items: center;
+    background: var(--grey);
+    position: relative;
+    cursor: pointer;
+
+    &:hover {
+        background: var(--dark);
+
+        & > .dropdown {
+            opacity: 1;
+            display: flex;
+            pointer-events: all;
+        }
+    }
+
+    &:after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: calc(100% +  var(--quintet) * 2);
+        transform: translateX(-50%);
+        height: calc(100% + var(--decade) * 2);
+    }
+`;
+
+const Dropdown = styled.div`
+    pointer-events: none;
+    position: absolute;
+    display: flex;
+    opacity: 0;
+    transition-duration: 0.2s;
+    transition-property: opacity;
+    width: calc(var(--decade) * 20);
+    height: max-content;
+    align-items: start;
+    top: calc(100% + var(--decade));
+    left: 50%;
+    border-radius: var(--small-radius);
+    background: color-mix(in srgb, var(--main), var(--dark));
+    justify-content: center;
+    flex-direction: column;
+    color: white;
+    padding: var(--decade);
+    transform: translateX(-50%);
+    cursor: pointer;
+
+    & > h1 {
+        font-size: calc(var(--font-size) * 1.2);
+        font-weight: bold;
+        text-align: left;
+        margin: 0 0 calc(var(--quintet) * 1.5) 0;
+    }
+
+    & > p {
+        font-size: calc(var(--font-size) * 0.8);
+        margin: 0;
+    }
+
 `;
 
 // const RoundedNbr = styled.div`
