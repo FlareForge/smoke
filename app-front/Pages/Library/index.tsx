@@ -274,12 +274,26 @@ export default function Library({ changeAction }){
  
     const navigate = useTransition();
 
-    const [Games, setGames] = useState([]);
+    const [games, setGames] = useState([]);
+
+    useEffect(() => {
+        updateGames();
+        changeAction("plus", () => {addGame()});
+        const event = window.app.Services.Storage.on("game-added", handleNewGame);
+        return () => {
+            window.app.Services.Storage.off("game-added", event);
+            changeAction(null, null);
+        }
+    }, []);
 
     const updateGames = () => {
         window.app.Services.Storage.getGames().then((games: any) => {
             setGames(Object.values(games))
         });
+    }
+
+    const handleNewGame = (game) => {
+        setGames((prev) => [...prev, game]);
     }
 
     const checkName = (name) => {
@@ -317,7 +331,6 @@ export default function Library({ changeAction }){
                 game.name = name as string;
                 const scrapedGame = await window.app.Services.Metadata.scrapGame(game)
                 await window.app.Services.Storage.addGame(scrapedGame)
-                updateGames();
                 break;
             case "scan":
                 window.app.Services.Emulator.scanFolder(async ({name, path, emulator}) => {
@@ -329,7 +342,6 @@ export default function Library({ changeAction }){
                         emulatorPath,
                     })
                     await window.app.Services.Storage.addGame(scrapedGame)
-                    updateGames();
                 });
                 break;
             case "store":
@@ -338,22 +350,9 @@ export default function Library({ changeAction }){
         }
     }
 
-    useEffect(() => {
-        updateGames();
-        const interval = setInterval(() => {
-            if(document.hidden) return;
-            updateGames();
-        }, 2000)
-        changeAction("plus", () => {addGame()})
-        return () => {
-            changeAction(null, null);
-            clearInterval(interval);
-        }
-    }, []);
-
     return (
         <div>
-            { !Games.length ? 
+            { !games.length ? 
                 <Message>
                     No game found!&nbsp;
                     <u onClick={addGame}>Scan</u>
@@ -364,7 +363,7 @@ export default function Library({ changeAction }){
                 <Grid
                     $coverSize={settings.coverSize}
                 >
-                    {Games.map((game: any) => {
+                    {games.map((game: any) => {
                         return (
                             <Thumb
                                 key={game.id}
