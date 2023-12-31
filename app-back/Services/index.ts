@@ -12,6 +12,7 @@ import AccountManager from "./Account/smoke";
 import WindowsController from "./Controller/windows";
 import SmokeFriends from "./Friends/smoke";
 import SmokeMessages from "./Messages/smoke";
+import SmokeNotifications from "./Notifications/smoke";
 
 export const availableServices = {
     Account: {
@@ -50,6 +51,10 @@ export const availableServices = {
         abstract: abstractServices.Messages,
         Smoke: SmokeMessages,
     },
+    Notifications: {
+        abstract: abstractServices.Notifications,
+        Smoke: SmokeNotifications,
+    },
 }
 
 export const defaultServices = {
@@ -62,6 +67,7 @@ export const defaultServices = {
     Controller: ['Windows'],
     Friends: ['Smoke'],
     Messages: ['Smoke'],
+    Notifications: ['Smoke'],
 }
 
 const store = new Store();
