@@ -25,6 +25,9 @@ var currentGameData = null;
 var tray = null;
 var mainWindowHidden = false;
 
+const canOpenApplication = app.requestSingleInstanceLock()
+if (!canOpenApplication) app.quit();
+
 Store.initRenderer();
 app.commandLine.appendSwitch("enable-features", "OverlayScrollbar");
 app.commandLine.appendSwitch("enable-threaded-compositing");
@@ -91,10 +94,13 @@ function createWindows() {
         }
     });
     appWindow.on('show', () => {
-        tray.destroy();
+        if(tray) tray.destroy();
         mainWindowHidden = true;
     });
 
+    const log = require("electron-log")
+    log.transports.file.level = "debug"
+    autoUpdater.logger = log;
     autoUpdater.autoDownload = false;
     autoUpdater.checkForUpdatesAndNotify();
     autoUpdater.on('update-available', () => {
@@ -159,6 +165,12 @@ function showOverlay() {
 
 app.on("ready", () => globalShortcut.register("Shift+Backspace", showOverlay));
 
+app.on('second-instance', (_event, _commandLine, _workingDirectory) => {
+    if(!appWindow) return;
+    appWindow.show();
+    appWindow.focus();
+});
+
 let isClosing = false;
 app.on("before-quit", () => {
     isClosing = true;
@@ -183,7 +195,7 @@ ipcMain.handle("get-bin-path", (_, __) => app.isPackaged ? path.join(process.res
 ipcMain.handle("open-file-dialog", async (_) => (await dialog.showOpenDialog({properties:["openFile"]})).filePaths[0]);
 ipcMain.handle("open-folder-dialog", async (_) => (await dialog.showOpenDialog({properties:["openDirectory"]})).filePaths[0]);
 ipcMain.handle("gamechange", (_, arg) => currentGameData = arg);
-ipcMain.handle('toggle-startup', (_, arg) => app.setLoginItemSettings({openAtLogin:arg,path:path.join(app.getPath('exe'),'/smoke.exe')}));
+ipcMain.handle('toggle-startup', (_, arg) => app.setLoginItemSettings({openAtLogin:arg,path:app.getPath('exe')}));
 
 const tempStorage = {};
 ipcMain.handle("get-session-storage", (_, arg) => {
