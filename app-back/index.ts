@@ -7,6 +7,8 @@ const {
     protocol,
     net,
     screen: electronScreen,
+    Tray,
+    Menu
 } = require("electron");
 const path = require("path");
 const { exec, execFile, spawn } = require("child_process");
@@ -20,10 +22,13 @@ const { autoUpdater } = require('electron-updater');
 var appWindow = null;
 var overlayWindow = null;
 var currentGameData = null;
+var tray = null;
+var mainWindowHidden = false;
 
 Store.initRenderer();
 app.commandLine.appendSwitch("enable-features", "OverlayScrollbar");
 app.commandLine.appendSwitch("enable-threaded-compositing");
+app.setAppUserModelId("Smoke");
 app.whenReady().then(createWindows);
 
 function createWindows() {
@@ -33,6 +38,7 @@ function createWindows() {
         width,
         height,
         frame: false,
+        show: true,
         backgroundColor: "#010B0E",
         webPreferences: {
             preload: path.join(__dirname, "preloadApp.js"),
@@ -74,13 +80,19 @@ function createWindows() {
         overlayWindow.loadFile("./app-front/.build/overlay.html");
     }
 
-    overlayWindow.on('close', (_e) =>  overlayWindow.webContents.send("clean", false))
-    appWindow.on('close', (_e) =>  appWindow.webContents.send("clean", false))
     appWindow.on("enter-full-screen", () => appWindow.webContents.send("fullscreen", true));
     appWindow.on("leave-full-screen", () => appWindow.webContents.send("fullscreen", false));
-    appWindow.on("closed", () => {
-        try{overlayWindow.close()}catch(e){}
-        app.quit()
+    appWindow.on('close', (event) => {
+        if (!isClosing) {
+            event.preventDefault();
+            appWindow.hide();
+            mainWindowHidden = true;
+            tray = createTray();
+        }
+    });
+    appWindow.on('show', () => {
+        tray.destroy();
+        mainWindowHidden = true;
     });
 
     autoUpdater.autoDownload = false;
@@ -105,6 +117,25 @@ function createWindows() {
     });
 
     protocol.handle('smokedata', (request) => net.fetch('file://' + path.join(app.getPath("userData"), "data/", request.url.slice('smokedata://'.length))))
+    appWindow.show();
+}
+
+function createTray() {
+    const trayIcon = path.join(__dirname, '../Assets/icon.png');
+    tray = new Tray(trayIcon);
+    const contextMenu = Menu.buildFromTemplate([
+        {
+            label: 'Close',
+            click: () => app.quit()
+        }
+    ])
+    tray.setToolTip('Smoke');
+    tray.setContextMenu(contextMenu);
+    tray.on('click', () => {
+        appWindow.show();
+        tray.destroy();
+    });
+    return tray;
 }
 
 function hideOverlay() {
@@ -114,6 +145,8 @@ function hideOverlay() {
 }
 
 function showOverlay() {
+    if (mainWindowHidden) return;
+    if (!overlayWindow) return;
     if (overlayWindow.isVisible()) return hideOverlay();
     if(appWindow.isFocused()) return;
     overlayWindow.show();
@@ -125,14 +158,19 @@ function showOverlay() {
 }
 
 app.on("ready", () => globalShortcut.register("Shift+Backspace", showOverlay));
-app.on("window-all-closed", () => app.quit()); // will have to change this later
 
+let isClosing = false;
 app.on("before-quit", () => {
+    isClosing = true;
     try{overlayWindow.close()}catch(e){}
-    try{appWindow.close()}catch(e){}
+    try{
+        appWindow.webContents.send("clean", false)
+        appWindow.close()
+    }catch(e){}
 });
 
 ipcMain.handle("is-querty", (_) => false);// later
+ipcMain.handle("wake-up", (_) => {appWindow.show(); appWindow.focus();});
 ipcMain.handle("close-overlay", (_) => hideOverlay());
 ipcMain.handle("close-app", (_) => appWindow.close());
 ipcMain.handle("minimize-app", (_) => appWindow.minimize());
@@ -140,6 +178,7 @@ ipcMain.handle("maximize-app", (_) => appWindow.isMaximized() ? appWindow.restor
 ipcMain.handle("fullscreen-app", (_) => appWindow.setFullScreen(!appWindow.isFullScreen()));
 ipcMain.handle("open-url", (_, arg) => openurl(arg));
 ipcMain.handle("get-app-path", (_, arg) => app.getPath(arg));
+ipcMain.handle("get-icon-path", (_, arg) => path.join(__dirname, "../Assets", arg));
 ipcMain.handle("get-bin-path", (_, __) => app.isPackaged ? path.join(process.resourcesPath, "../bin") : path.join(__dirname, "bin"));
 ipcMain.handle("open-file-dialog", async (_) => (await dialog.showOpenDialog({properties:["openFile"]})).filePaths[0]);
 ipcMain.handle("open-folder-dialog", async (_) => (await dialog.showOpenDialog({properties:["openDirectory"]})).filePaths[0]);
