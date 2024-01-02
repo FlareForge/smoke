@@ -23,6 +23,7 @@ export default class SmokeMessages extends AbstractMessages {
     #callback = null;	
     #target = null;
     #lastId = null;
+    #stoped = false;
 
     async reload(){
         await super.reload();
@@ -59,9 +60,11 @@ export default class SmokeMessages extends AbstractMessages {
     }
 
     async startListening() {
+        if(this.#stoped) return;
         if(!this.#callback) return;
         if(!this.#target) return;
         const token = await ipcRenderer.invoke('get-session-storage', 'smoke-token');
+        if(!token) return;
         const room = this.#target.smoke_id ? this.#target.smoke_id : this.#target.smoke_id; // will have groups
         try{
             const result = await fetch(`/chat-listen`, { room, isPrivate: !!this.#target.smoke_id, lastId: this.#lastId }, token);
@@ -77,4 +80,8 @@ export default class SmokeMessages extends AbstractMessages {
         this.startListening();
     }
 
+    async clean() {
+        await super.clean();
+        this.#stoped = true;    
+    }
 }

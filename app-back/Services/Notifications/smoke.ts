@@ -21,7 +21,8 @@ const fetch = async (url, data, token = null): Promise<any> => {
 export default class SmokeNotifications extends AbstractNotifications{
 
     #notifications = [];
-    #checkInterval = null;
+    #lastId = null; 
+    #stoped = false;
 
     async reload(){
         await super.reload();
@@ -30,21 +31,7 @@ export default class SmokeNotifications extends AbstractNotifications{
     }
 
     async handleStart() {
-        await this.updateNotifications();
-        this.#checkInterval = setInterval(() => {
-            this.updateNotifications();
-        }, 60000);
-    }
-
-    async updateNotifications() {
-        const token = await ipcRenderer.invoke('get-session-storage', 'smoke-token');
-        if(!token) return this.#notifications = [];
-        const result = await fetch(`/notifications`, {}, token);
-        this.#notifications = result.notifications.map(notification => ({
-            ...notification,
-            smoke_id: notification.id,
-        }))
-        this.emit('notification-updated')
+        this.startListening();
     }
 
     async getNotifications() {
@@ -55,13 +42,48 @@ export default class SmokeNotifications extends AbstractNotifications{
         if(!_notification.smoke_id) return false;
         const token = await ipcRenderer.invoke('get-session-storage', 'smoke-token');
         await fetch(`/notifications-read`, { id: _notification.smoke_id }, token);
-        await this.updateNotifications();//!!!
+        this.#notifications = this.#notifications.filter(notification => notification.smoke_id !== _notification.smoke_id);
+        this.emit('notification-updated')
         return true;
+    }
+
+    #firstCall = true;
+    async startListening() {
+        if(this.#stoped) return;
+        const token = await ipcRenderer.invoke('get-session-storage', 'smoke-token');
+        if(!token) return;
+        try{
+            const result = await fetch(`/notifications`, { lastId: this.#lastId }, token);
+            const notifications = result.notifications.map(notification => ({
+                ...notification,
+                smoke_id: notification.id,
+            }))
+ 
+            if(result.newNotifications && notifications && notifications.length > 0) {
+                this.#notifications = notifications;
+                this.#lastId = notifications[notifications.length - 1].smoke_id;
+                this.emit('notification-updated')
+                if(!this.#firstCall){
+                    const appNotification = new Notification(`${notifications.length} new notification${notifications.length > 1 ? 's' : ''}`, {
+                        icon: await ipcRenderer.invoke('get-icon-path', 'icon.png'),
+                        body: `${notifications[notifications.length - 1].content}`,
+                    });
+                    appNotification.onclick = () => {
+                        ipcRenderer.invoke('wake-up');
+                    }
+                }else{
+                    this.#firstCall = false;
+                }
+            }
+        }catch(e) {
+            console.error(e);
+            await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+        this.startListening();
     }
 
     async clean() {
         await super.clean();
-        clearInterval(this.#checkInterval);    
+        this.#stoped = true;
     }
-
 }
