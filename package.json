@@ -3,7 +3,7 @@
     "author": "Flare, Forge.",
     "description": "all-in-one game launcher",
     "license": "CC-BY-SA-4.0",
-    "version": "0.0.13",
+    "version": "0.0.14",
     "main": "./app-back/.build/index.js",
     "scripts": {
         "   DEVELOPMENT SCRIPTS --------------": "",
@@ -46,6 +46,9 @@
             }
         ],
         "win": {
+            "publisherName": [
+                "Flare, Forge."
+            ],
             "target": [
                 "nsis-web",
                 "nsis"
