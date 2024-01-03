@@ -22,6 +22,7 @@ const context = {
     minimize: () => ipcRenderer.invoke('minimize-app'),
     close:  () => ipcRenderer.invoke('close-app'),
     closeOverlay: () => ipcRenderer.invoke('close-overlay'),
+    getVersion: () => ipcRenderer.invoke('get-app-version'),
 };
 
 contextBridge.exposeInMainWorld('app', context);
