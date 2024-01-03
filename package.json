@@ -3,7 +3,7 @@
     "author": "Flare, Forge.",
     "description": "all-in-one game launcher",
     "license": "CC-BY-SA-4.0",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "main": "./app-back/.build/index.js",
     "scripts": {
         "   DEVELOPMENT SCRIPTS --------------": "",
@@ -12,7 +12,7 @@
         "   DEVELOPMENT SUB-SCRIPTS ----------": "",
         "dev:back": "nodemon --watch \"./app-back/**/*\" --ext js,ts --exec \"npm run dev:back:transpile && npm run dev:back:copy && npm run dev:back:run\"",
         "dev:back:transpile": "npx tsc ./app-back/index.ts ./app-back/preloadApp.ts ./app-back/preloadOverlay.ts --outDir ./app-back/.dev/build --module commonjs --target es6 --esModuleInterop",
-        "dev:back:copy": "copyfiles ./app-bin/index.node ./app-back/.dev/",
+        "dev:back:copy": "copyfiles ./app-bin/index.node ./app-back/.dev/ && copyfiles -f ./app-back/Assets/**/* ./app-back/.dev/Assets/",
         "dev:back:run": "electron ./app-back/.dev/build/index.js",
         "dev:bin": "nodemon --watch \"./app-bin/**/*\" --ext rs --exec \"npm run dev:bin:build && npm run dev:back\"",
         "dev:bin:build": "npx cargo-cp-artifact -nc app-bin/index.node -- cargo build --target-dir app-bin/.build --message-format=json-render-diagnostics",
@@ -73,6 +73,7 @@
     },
     "dependencies": {
         "@equal-games/game-scanner": "1.1.4",
+        "electron-log": "^5.0.3",
         "electron-store": "~8.1.0",
         "electron-updater": "~6.1.7",
         "extract-zip": "2.0.1",

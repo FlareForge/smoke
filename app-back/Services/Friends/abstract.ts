@@ -1,6 +1,11 @@
 import { Service } from "../service";
 
-export default class AbstractFriends extends Service {
+export type FriendsEvents = {
+    event: "friends-updated";
+    listener: () => void;
+}
+
+export default class AbstractFriends extends Service<FriendsEvents>{
 
     async requestFriend(_id: string): Promise<boolean> {
         return false;
@@ -18,7 +23,7 @@ export default class AbstractFriends extends Service {
         return false;
     }
 
-    async getFriends(): Promise<string[]> {
+    async getFriends(): Promise<any[]> {
         return [];
     }
 

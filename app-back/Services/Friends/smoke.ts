@@ -18,9 +18,10 @@ const fetch = async (url, data, token = null): Promise<any> => {
     })
 }
 
-export default class SmokeFriends extends AbstractFriends {
+export default class SmokeFriends extends AbstractFriends{
 
     #friends = [];
+    #checkInterval = null;
 
     async reload(){
         await super.reload();
@@ -30,6 +31,9 @@ export default class SmokeFriends extends AbstractFriends {
 
     async handleStart() {
         await this.updateFriends();
+        this.#checkInterval = setInterval(() => {
+            this.updateFriends();
+        }, 60000);
     }
 
     async updateFriends() {
@@ -41,6 +45,7 @@ export default class SmokeFriends extends AbstractFriends {
             avatar: `${BASE_STORE}/${friend.avatar}`,
             smoke_id: friend.id,
         }))
+        this.emit('friends-updated')
     }
 
     async getFriends() {
@@ -54,6 +59,9 @@ export default class SmokeFriends extends AbstractFriends {
         return true;
     }
 
-
+    async clean() {
+        await super.clean();
+        clearInterval(this.#checkInterval);    
+    }
 
 }

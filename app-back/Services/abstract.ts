@@ -7,6 +7,7 @@ import AbstractAccount from "./Account/abstract";
 import AbstractController from "./Controller/abstract";
 import AbstractFriends from "./Friends/abstract";
 import AbstractMessages from "./Messages/abstract";
+import AbstractNotifications from "./Notifications/abstract";
 
 export const abstractServices = {
     Account: AbstractAccount,
@@ -18,4 +19,14 @@ export const abstractServices = {
     Controller: AbstractController,
     Friends: AbstractFriends,
     Messages: AbstractMessages,
+    Notifications: AbstractNotifications,
 }
+
+export const hiddenProperties = [
+    "constructor",
+    "setServices",
+    "setEventEmitter",
+    "events",
+    "emit",
+    "clean",
+] as const;

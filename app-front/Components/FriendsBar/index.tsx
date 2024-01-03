@@ -1,11 +1,12 @@
 import styled from 'styled-components';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Icon from '@Components/Icon';
 import { useModal } from '@Components/Modal';
 import Input from '@Components/Input';
 import Button from '@Components/Button';
 import Chat from './chat';
 import useTransition from '@Components/Transition';
+import Avatar from '@Components/Avatar';
 
 function AddFiendModal ({ closeModal }) {
     const [username, setUsername] = useState('');
@@ -35,6 +36,8 @@ function AddFiendModal ({ closeModal }) {
 }
 export default function FriendsBar(){
 
+    const bubbleRef = useRef(null);
+    const selectedRef = useRef(null);
     const { openModal } = useModal();
     const [friendsVisible, setFriendsVisible] = useState(true);
     const [friends, setFriends] = useState([]);
@@ -43,13 +46,27 @@ export default function FriendsBar(){
 
     useEffect(() => {
         updateFriends()
-        const interval = setInterval(updateFriends, 1000);
-        return () => { clearInterval(interval) }
+        const event = window.app.Services.Friends.on('friends-updated', updateFriends);
+        return () => {
+            window.app.Services.Friends.off('friends-updated', event);
+        }
     }, []);
+
+    useEffect(() => {
+        if(selectedFriend && selectedRef.current && bubbleRef.current){
+            bubbleRef.current.style.top = selectedRef.current.offsetTop + (selectedRef.current.offsetHeight / 2) + 'px';
+            bubbleRef.current.style.transform = 'translate(-50%, -50%)';
+        } else if(bubbleRef.current) {
+            bubbleRef.current.style.transform = 'translate(50%, -50%)'
+        }
+    }, [selectedFriend]);
 
     const updateFriends = () => {
         window.app.Services.Friends.getFriends().then((friends) => {
-            setFriends(friends);
+            setFriends([
+                ...friends.filter((friend) => friend.online),
+                ...friends.filter((friend) => !friend.online),
+            ]);
         });
     }
 
@@ -75,7 +92,9 @@ export default function FriendsBar(){
             >
                 <Miniprofile>
                     <Avatar
-                        $image={selectedFriend?.avatar}
+                        profile={selectedFriend}
+                        scale="calc(var(--decade) * 3.5)"
+                        radius='--small-radius'
                     />
                     <UserInfo>
                         <Username>
@@ -100,11 +119,15 @@ export default function FriendsBar(){
             <FriendsContainer
                 $friendsVisible={friendsVisible}
             >
+                <SelectedBubble ref={bubbleRef}/>
                 {friends.map((friend,i) => (
-                    <FriendAvatar
+                    <Avatar
                         key={i}
-                        $image={friend.avatar}
+                        profile={friend}
                         className="focusable"
+                        radius='--radius'
+                        scale="calc(var(--decade) * 4.7)"
+                        ref={selectedFriend?.id === friend.id ? selectedRef : null}
                         onClick={() => {
                             setSelectedFriend(friend);
                         }}
@@ -122,6 +145,23 @@ export default function FriendsBar(){
     )
 }
 
+const SelectedBubble = styled.div`
+    position: absolute;
+    width: calc(var(--unit) * 3);
+    height: calc(var(--decade) * 2.5);
+    border-radius: var(--radius);
+    background-color: white;
+    transition-duration: 0.2s;
+    transition-property: transform, border-radius, border;
+    transform: scale(1.1);
+    box-sizing: border-box;
+    z-index: 0;
+    left: 100%;
+    transform: translate(-50%, -50%);
+    transition-duration: 0.2s;
+    transition-property: top, transform;
+`;
+
 const UserInfo = styled.div`
     flex: 1 0 0;
 `;
@@ -137,17 +177,6 @@ const Username = styled.div`
     font-size: calc(var(--quintet) * 2.5);
     font-weight: 600;
     color: white;
-`;
-
-const Avatar = styled.div`
-    width: calc(var(--decade) * 3.5);
-    height: calc(var(--decade) * 3.5);
-    background-color: rgba(255, 255, 255, 0.1);
-    background-image: url(${(props: any) => props.$image});
-    background-size: cover;
-    background-position: center;
-    border-radius: var(--small-radius);
-    cursor: pointer;
 `;
 
 const Miniprofile = styled.div`
@@ -174,7 +203,6 @@ const Miniprofile = styled.div`
 const FriendsContainer = styled.div`
     transition-duration: 0.2s;
     transition-property: width, padding;
-    background-color: var(--grey);
     position: relative;
     flex-direction: column;
     gap: calc(var(--decade) * 0.6) ;
@@ -185,12 +213,9 @@ const FriendsContainer = styled.div`
     box-sizing: border-box; 
     padding: ${(props: any) => props.$friendsVisible ? 'calc(var(--decade) * 0.6)  calc(var(--decade) * 0.6) ' : 'calc(var(--decade) * 0.6)  0'};
     overflow: hidden;
-
-    & > *:not(:first-child) {
-        opacity: ${(props: any) => props.$friendsVisible ? '1' : '0'};
-        transition-duration: 0.2s;
-        transition-property: opacity;
-    }
+    opacity: ${(props: any) => props.$friendsVisible ? '1' : '0'};
+    transition-duration: 0.2s;
+    transition-property: opacity;
 `;
 
 const ChatContainer = styled.div`
@@ -244,17 +269,6 @@ const SectionContainer = styled.div`
     box-sizing: border-box; 
 `;
 
-const FriendAvatar = styled.div`
-    width: 100%;
-    background-color: rgba(255, 255, 255, 0.1);
-    height: calc(var(--decade) * 4.7);
-    background-image: url(${(props: any) => props.$image});
-    background-size: cover;
-    background-position: center;
-    border-radius: var(--small-radius);
-    cursor: pointer;
-`;
-
 const AddFriend = styled.div`
     width: 100%;
     height: calc(var(--decade) * 4.7);
@@ -264,6 +278,12 @@ const AddFriend = styled.div`
     box-sizing: border-box;
     padding: calc(var(--decade) * 0.6) ;
     background-color: rgba(255, 255, 255, 0.1);
-    border-radius: var(--small-radius);
+    border-radius: var(--radius);
     cursor: pointer;
+    transition-duration: 0.2s;
+    transition-property: border-radius;
+
+    &:hover {
+        border-radius: calc(var(--radius) - var(--quintet));
+    }
 `;

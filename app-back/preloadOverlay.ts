@@ -1,22 +1,5 @@
-// import { abstractServices } from './Services/available';
-import AbstractScanner from "./Services/Scanner/abstract";
-import AbstractStorage from "./Services/Storage/abstract";
-import AbstractEmulatorManager from "./Services/Emulator/abstractManager";
-import AbstractMetadata from "./Services/Metadata/abstract";
-import AbstractModManager from "./Services/Mods/abstractManager";
-import AbstractAccount from "./Services/Account/abstract";
-import AbstractController from "./Services/Controller/abstract";
+import { abstractServices, hiddenProperties } from './Services/abstract';
 const { contextBridge, ipcRenderer } = require('electron');
-
-export const abstractServices = {
-    Account: AbstractAccount,
-    Emulator: AbstractEmulatorManager,
-    Metadata: AbstractMetadata,
-    Mods: AbstractModManager,
-    Scanner: AbstractScanner,
-    Storage: AbstractStorage,
-    Controller: AbstractController,
-}
 
 const track = (path, data) => ipcRenderer.invoke('subway-track', { path, data });
 
@@ -27,7 +10,7 @@ const servicesSubway = Object.fromEntries(
             entry[0],
             Object.fromEntries(
                 Object.getOwnPropertyNames(entry[1].prototype)
-                .filter((p) => !["constructor", "setServices", "clean"].includes(p))
+                .filter((p: typeof hiddenProperties[number]) => !hiddenProperties.includes(p))
                 .concat(['reload'])
                 .map((p) => [
                     p, 

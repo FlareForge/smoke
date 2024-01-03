@@ -16,7 +16,12 @@ export type Game = {
     mapping?: any;
 };
 
-export default class AbstractStorage extends Service {
+export type StorageEvents = {
+    event: "game-added";
+    listener: (game: Game) => void;
+}
+
+export default class AbstractStorage extends Service<StorageEvents>{
 
     async getGames(): Promise<Record<string,Game>> {
         return {}
