@@ -175,6 +175,7 @@ let isClosing = false;
 app.on("before-quit", () => {
     isClosing = true;
     try{overlayWindow.close()}catch(e){}
+    try{tray.destroy()}catch(e){}
     try{
         appWindow.webContents.send("clean", false)
         appWindow.close()
@@ -183,6 +184,7 @@ app.on("before-quit", () => {
 
 ipcMain.handle("is-querty", (_) => false);// later
 ipcMain.handle("wake-up", (_) => {appWindow.show(); appWindow.focus();});
+ipcMain.handle('get-app-version', (_) => process?.env?.npm_package_version || app.getVersion() || "0.0.0");
 ipcMain.handle("close-overlay", (_) => hideOverlay());
 ipcMain.handle("close-app", (_) => appWindow.close());
 ipcMain.handle("minimize-app", (_) => appWindow.minimize());

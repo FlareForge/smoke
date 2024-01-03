@@ -1,11 +1,17 @@
 import styled from "styled-components";
 import Icon from "../Icon";
+import { useEffect, useState } from "react";
 
 export default function WindowControls() {
+    const [appVersion, setAppVersion] = useState(null);
+
+    useEffect(() => {
+        window.app.getVersion().then(setAppVersion);
+    });
 
     return (
         <ControlsContainer>
-            <div>smoke</div>
+            <div>smoke v{appVersion || '0'}</div>
             <div>
                 <div
                     onClick={() => {
