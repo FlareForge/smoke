@@ -1,0 +1,7 @@
+<svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+	<title>twitch-icon-svg</title>
+	<style>
+		.s0 { fill: #ffffff } 
+	</style>
+	<path id="Layer" fill-rule="evenodd" class="s0" d="m62.5 0v39.2l-16.7 16.7h-12.4l-8.1 8.1h-8.6v-8.1h-15.3v-44.9l4.3-11zm-5.7 5.7h-45.9v40.1h12.9v8.2l8.1-8.1h15.3l9.6-9.6c0 0 0-30.6 0-30.6zm-9.6 11v16.7h-5.7v-16.7zm-15.3 0v16.7h-5.7v-16.7z"/>
+</svg>

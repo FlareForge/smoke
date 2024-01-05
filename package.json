@@ -3,7 +3,7 @@
     "author": "Flare, Forge.",
     "description": "all-in-one game launcher",
     "license": "CC-BY-SA-4.0",
-    "version": "0.0.18",
+    "version": "0.0.19",
     "main": "./app-back/.build/index.js",
     "scripts": {
         "   DEVELOPMENT SCRIPTS --------------": "",
@@ -84,7 +84,8 @@
         "open": "6.4.0",
         "react": "~18.2.0",
         "react-dom": "~18.2.0",
-        "react-router-dom": "~6.20.0"
+        "react-router-dom": "~6.20.0",
+        "react-twitch-embed": "^3.0.1"
     },
     "devDependencies": {
         "@babel/core": "^7.23.5",
