@@ -1,24 +1,19 @@
 import styled from "styled-components";
 import Entry from "./entry";
-import Input from "@Components/Input";
+import { useState } from "react";
+import { useContentTransition } from "@Components/Transition";
+import MultiplayerMod from "./widgets/multiplayermod";
+import ModTags from "./widgets/multiplayertags";
 import Button from "@Components/Button";
 import Icon from "@Components/Icon";
-import { useEffect, useState } from "react";
-import { useContentTransition } from "@Components/Transition";
-import Widgets from "./widgets";
 
-export default function Posts({gameData, feedData}){
+export default function Multiplayer({gameData, feedData}){
 
     const transition = useContentTransition();
-    const posts = feedData?.posts || [];
-    const [newPost, setNewPost] = useState("");
+    const posts = feedData?.servers || [];
     const [openPost, setOpenPost] = useState(null);
-    const isGrid = true;
+    const isGrid = false;
     
-    useEffect(() => {
-        window.scrollTo(0, 0);
-    }, [openPost])
-
     const changePost = (post) => {
         transition(() => {
             setOpenPost(post);
@@ -38,7 +33,7 @@ export default function Posts({gameData, feedData}){
         },
     };
 
-    let content = null;
+    let content = null
     if(openPost) {
         content = <>
             <PostsContainer>
@@ -53,7 +48,17 @@ export default function Posts({gameData, feedData}){
                     sender={openPost.sender}
                     height={"max-content"}
                     action={() => {changePost(null)}}
-                />
+                >
+                    <Button>
+                        <Icon name="thumbs-up" />
+                    </Button>
+                    <Button>
+                        <Icon name="thumbs-down" />
+                    </Button>
+                    <Button onClick={(e) => { e.stopPropagation();}}>
+                        Connect
+                    </Button>
+                </Entry>
                 {Array(5).fill(0).map((_, i) =>
                     <Entry
                         key={i}
@@ -70,9 +75,9 @@ export default function Posts({gameData, feedData}){
                 )}
             </PostsContainer>
         </>
-    } else {    
+    } else {
         content = <>
-            <Special>
+            {/* <Special>
                 <Entry
                     id={posts?.[0]?.id}
                     special={true}
@@ -84,35 +89,8 @@ export default function Posts({gameData, feedData}){
                     sender={posts?.[0]?.sender}
                     height={"calc(var(--decade) * 10)"}
                     action={() => {}}
-                >
-                    <></>
-                </Entry>
-            </Special>
-            <Header>
-                <NewPost>
-                    <Input
-                        placeholder="Say something!"
-                        value={newPost}
-                        onChange={(e) => setNewPost(e.target.value)}
-                    />
-                    <Button
-                        onClick={() => {
-                            // window.app.Services.Feed.newPost(gameData, newPost);
-                            setNewPost("");
-                        }}
-                    >
-                        <Icon name="arrow-right" />
-                    </Button>
-                </NewPost>
-                <Filter>
-                    <Dropdown
-                        onClick={() => isGrid ? null : isGrid}
-                    >
-                        <div>Mix</div>
-                        {/* <Icon name="arrow-right" /> */}
-                    </Dropdown>
-                </Filter>
-            </Header>
+                />
+            </Special> */}
             <PostsContainer
                 $isGrid={isGrid}
             >
@@ -128,87 +106,53 @@ export default function Posts({gameData, feedData}){
                             date={post.date}
                             image={post.image}
                             sender={post.sender}
-                            height={isGrid ? "100%" : null}
+                            height={'calc(var(--decade) * 13)'}
                             action={() => {changePost(post)}}
-                        />
+                            special={true}
+                        >
+                            <Button>
+                                <Icon name="thumbs-up" />
+                            </Button>
+                            <Button>
+                                <Icon name="thumbs-down" />
+                            </Button>
+                            <Button onClick={(e) => { e.stopPropagation();}}>
+                                Connect
+                            </Button>
+                        </Entry>
                     )
                 }
             </PostsContainer>
         </>
     }
-
+    
     return (
         <>
             <PostsPage>
                 { content }
             </PostsPage>
-            <Widgets gameData={gameData} feedData={feedData}/>
+            <WidgetsContainer>
+                <MultiplayerMod gameData={gameData} feedData={feedData} />
+                <ModTags gameData={gameData} feedData={feedData} />
+            </WidgetsContainer>
         </>
     )
 }
+
+const WidgetsContainer = styled.div`
+    margin-top: calc(var(--quintet) * 2.5) ;
+    width: calc(var(--decade) * 22.5);
+    height: max-content;
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--quintet) * 2.5) ;
+`;
+
 
 const Special = styled.div`
     width: 100%;
     height: max-content;
     margin-bottom: calc(var(--quintet) * 2.5);
-`;
-
-const Dropdown = styled.div`
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    gap: var(--quintet);
-    align-items: center;
-    cursor: pointer;
-    height: calc(var(--decade) * 4);
-    font-weight: 600;
-
-`;
-
-// & > *:last-child {
-//     transform: rotate(90deg);
-//     height: 60%;
-// }
-const Header = styled.div`
-    width: 100%;
-    height: max-content;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    gap: var(--decade);
-`;
-
-const Filter = styled.div`
-    cursor: pointer;
-    width: 8%;
-    height: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: var(--radius);
-    padding: calc(var(--decade) * 1) calc(var(--decade) * 2);
-    box-sizing: border-box;
-`;
-
-const NewPost = styled.div`
-    width: 100%;
-    height: max-content;
-    display: flex;
-    padding: calc(var(--decade) * 1);
-    gap: calc(var(--quintet) * 1);
-    box-sizing: border-box;
-    border-radius: var(--radius);
-    background-color: rgba(255, 255, 255, 0.1);
-    flex: 1;
-
-    & > *:last-child {
-        aspect-ratio: 1/1;
-        width: revert;
-    }
 `;
 
 const PostsContainer = styled.div`
@@ -218,13 +162,12 @@ const PostsContainer = styled.div`
     flex-direction: column;
     grid-template-columns: repeat(2, 1fr);
     grid-auto-rows: calc(var(--decade) * 20);
-    margin-top: calc(var(--quintet) * 2.5) ;
     gap: calc(var(--quintet) * 2.5) ;
 `;
 
 const PostsPage = styled.div`
-    flex: 1 0 0;    
     margin-top: calc(var(--quintet) * 2.5) ;
     width: 100%;
+    flex: 1 0 0;    
     height: max-content;
 `;

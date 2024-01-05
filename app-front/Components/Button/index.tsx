@@ -2,11 +2,12 @@ import styled from 'styled-components';
 
 const Button = styled.div`
     border: 0;
+    font-weight: 600;
     cursor: pointer;
     border-radius: var(--small-radius);
     padding: calc(var(--decade));
-    font-size: var(--decade);
-    width: 100%;
+    font-size: var(--font-size);
+    width: max-content;
     height: calc(var(--decade) * 4);
     box-sizing: border-box;
     text-align: center;

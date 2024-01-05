@@ -2,6 +2,8 @@ import styled from 'styled-components';
 
 const Input = styled.input`
     border: 0;
+    font-family: "Montserrat-Regular", sans-serif;
+    font-weight: 600;
     border-radius: var(--small-radius);
     padding: calc(var(--decade));
     font-size: var(--font-size);

@@ -22,7 +22,6 @@ export default forwardRef<any, any>(function Avatar({
     return (
         <AvatarImg
             className={className}
-            src={avatar}
             ref={ref}
             $scale={scale}
             $radius={radius}
@@ -30,11 +29,16 @@ export default forwardRef<any, any>(function Avatar({
             onClick={onClick || (() => {
                 transition('/profile/'+id);
             })}
-        />
+        >
+           {avatar && <img
+                src={avatar}
+                alt="avatar"
+            />}
+        </AvatarImg>
     );
 });
 
-const AvatarImg = styled.img`
+const AvatarImg = styled.div`
     cursor: pointer;
     position: relative;
     box-sizing: border-box;
@@ -44,13 +48,34 @@ const AvatarImg = styled.img`
     width: ${(props: any) => props.$scale};
     height: ${(props: any) => props.$scale};
     opacity: ${(props: any) => props.$online ? 1 : 0.5};
-    border-radius: var(${(props: any) => props.$radius});
-    border: ${(props: any) => props.$online ? "calc(var(--unit) * 3) solid green" : 'revert'};
+    border-radius: var(${(props: any) => props.$radius});    
     filter: ${(props: any) => !props.$online ? "grayscale(1)" : 'revert'};
     transition-duration: 0.2s;
-    transition-property: border-radius, opacity, filter;
+    transition-property: box-shadow, opacity, filter;
+    box-shadow: 0 0 1vh rgba(0, 0, 0, 0.5);
 
+    & > img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: var(${(props: any) => props.$radius});
+    }
+    
     &:hover {
-        border-radius: calc(var(${(props: any) => props.$radius}) - var(--quintet));
+        box-shadow: 0 0 1vh ${(props: any) => props.$online ? "rgba(0, 255, 47, 0.46);" : "rgba(136, 136, 136, 0.46);"};
+    }
+
+    &:after {
+        content: "";
+        display: ${(props: any) => props.$online ? "block" : "none"};
+        position: absolute;
+        box-sizing: border-box;
+        height: 17%;
+        width: 17%;
+        background-color: green;
+        box-shadow: 0 0 0.5vh rgb(85, 255, 0);
+        border-radius: var(--radius);
+        left: 5%;
+        top: 5%;
     }
 `;
