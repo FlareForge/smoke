@@ -2,9 +2,9 @@ import styled from "styled-components";
 import Avatar from "@Components/Avatar";
 import Speedrun from "./widgets/speedrun";
 
-export default function Esport({gameData, feedData}){
+export default function Esport({gameData}){
 
-    const esport = feedData?.esport;
+    const esport = gameData?.esport;
     
     return (
         <>
@@ -58,7 +58,7 @@ export default function Esport({gameData, feedData}){
             }
             </Page>
             <WidgetsContainer>
-                <Speedrun gameData={gameData} feedData={feedData} />
+                <Speedrun gameData={gameData}/>
             </WidgetsContainer>
         </>
     )

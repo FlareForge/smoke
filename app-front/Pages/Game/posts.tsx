@@ -7,11 +7,11 @@ import { useEffect, useState } from "react";
 import { useContentTransition } from "@Components/Transition";
 import Widgets from "./widgets";
 
-export default function Posts({gameData, feedData}){
+export default function Posts({gameData}){
 
     const transition = useContentTransition();
-    const specialPost = feedData?.featured;
-    const [posts, setPosts] = useState(feedData?.posts || []); // [
+    const [specialPost, setSpecialPost] = useState(null);
+    const [posts, setPosts] = useState([]);
     const [newPost, setNewPost] = useState("");
     const [openPost, setOpenPost] = useState(null);
     const isGrid = true;
@@ -21,8 +21,13 @@ export default function Posts({gameData, feedData}){
     }, [openPost])
 
     useEffect(() => {
-        setPosts(feedData?.posts || []);
-    }, [feedData?.posts])
+        if(gameData) updatePosts();
+    }, [gameData])
+
+    const updatePosts = () => {
+        window.app.Services.Forum.getPosts(gameData).then(setPosts)
+        window.app.Services.Forum.getFeaturedPost(gameData).then(setSpecialPost)
+    }
 
     const changePost = (post) => {
         transition(() => {
@@ -77,7 +82,7 @@ export default function Posts({gameData, feedData}){
         </>
     } else {    
         content = <>
-            {specialPost && <Special>
+            {specialPost?.id && <Special>
                 <Entry
                     id={specialPost?.id}
                     special={true}
@@ -102,7 +107,7 @@ export default function Posts({gameData, feedData}){
                     />
                     <Button
                         onClick={async () => {
-                            const res = await window.app.Services.Feed.newPost(gameData, {content: newPost});
+                            const res = await window.app.Services.Forum.newPost(gameData, {content: newPost});
                             if(!res.id) return;
                             setNewPost("");
                             setPosts([res, ...posts]);
@@ -149,7 +154,7 @@ export default function Posts({gameData, feedData}){
             <PostsPage>
                 { content }
             </PostsPage>
-            <Widgets gameData={gameData} feedData={feedData}/>
+            <Widgets gameData={gameData}/>
         </>
     )
 }

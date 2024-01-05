@@ -8,7 +8,8 @@ import AbstractController from "./Controller/abstract";
 import AbstractFriends from "./Friends/abstract";
 import AbstractMessages from "./Messages/abstract";
 import AbstractNotifications from "./Notifications/abstract";
-import AbstractFeed from "./Feed/abstract";
+import AbstractForum from "./Forum/abstract";
+import AbstractMultiplayer from "./Multiplayer/abstract";
 
 export const abstractServices = {
     Account: AbstractAccount,
@@ -21,7 +22,8 @@ export const abstractServices = {
     Friends: AbstractFriends,
     Messages: AbstractMessages,
     Notifications: AbstractNotifications,
-    Feed: AbstractFeed,
+    Forum: AbstractForum,
+    Multiplayer: AbstractMultiplayer,
 }
 
 export const hiddenProperties = [

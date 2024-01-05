@@ -1,5 +1,5 @@
 import { BASE_STORE, BASE_URL, anonKey } from "../smoke.config";
-import AbstractFeed from "./abstract";
+import AbstractForum from "./abstract";
 const { ipcRenderer } = require("electron");
 
 const fetch = async (url, data, token = null): Promise<any> => {
@@ -18,7 +18,7 @@ const fetch = async (url, data, token = null): Promise<any> => {
     })
 }
 
-export default class SmokeFeed extends AbstractFeed {
+export default class SmokeForum extends AbstractForum {
 
     async newPost(_game: any, _post: any) {
         if(!_game.smoke_id) return {};
@@ -26,11 +26,11 @@ export default class SmokeFeed extends AbstractFeed {
         const result = await fetch(`/post`, { game: _game.smoke_id, post: _post.content}, token);
         return result?.post || {};
     }
-    async getGameInformation(game) {
-        if(!game.smoke_id) return {};
+    async getPosts(game) {
+        if(!game.smoke_id) return [];
         const token = await ipcRenderer.invoke('get-session-storage', 'smoke-token');
         const result = await fetch(`/feed`, { id: game.smoke_id }, token);
-        return result?.feed || {};
+        return result?.feed?.posts || [];
         // return {
         //     mods: [
         //         {

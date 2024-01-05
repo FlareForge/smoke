@@ -5,11 +5,10 @@ import Icon from "@Components/Icon";
 import Input from "@Components/Input";
 import { useState } from "react";
 
-export default function Search({gameData, feedData}) {
+export default function Search({gameData}) {
 
     const [search, setSearch] = useState("");
     const game = gameData;
-    const feed = feedData;
 
     return (
         <Container>

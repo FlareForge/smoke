@@ -16,6 +16,9 @@ export default function Entry({
     special = false,
     open = false,
     children = null,
+    background = null,
+    objectFit = null,
+    square = false,
 }) {
 
     if(!children) children = (
@@ -42,13 +45,15 @@ export default function Entry({
             } : {}}
         >
             {special && <ImageBackground
-                $image={image}
+                $image={background || image}
             />}
 
             {image && !open && <EntryImage
                 className="focusable"
                 $image={image}
                 $special={special}
+                $objectFit={objectFit}
+                $square={square}
             />}
             <EntryDetails>
                 {type && <EntryType>
@@ -149,11 +154,12 @@ const EntryContainer = styled.div`
 `;
 
 const EntryImage = styled.div`
-    width: ${(props: any) => props.$special ? "30%" : "50%"};
+    width: ${(props: any) => props.$square ? "revert" : (props.$special ? "30%" : "50%")};
+    aspect-ratio: ${(props: any) => props.$square ? "1/1" : "revert"};
     height: 100%;
     position: relative;
     background-image: url(${(props: any) => props.$image});
-    background-size: cover;
+    background-size: ${(props: any) => props.$objectFit || "cover"};
     background-position: center center;
     border-radius: calc(var(--radius) - var(--decade));
 `;

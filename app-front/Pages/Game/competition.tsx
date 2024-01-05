@@ -8,10 +8,10 @@ import Button from "@Components/Button";
 import Icon from "@Components/Icon";
 import Rank from "./widgets/rank";
 
-export default function Competition({gameData, feedData}){
+export default function Competition({gameData}){
 
     const transition = useContentTransition();
-    const posts = feedData?.competitions || [];
+    const posts = gameData?.competitions || [];
     const [openPost, setOpenPost] = useState(null);
     const isGrid = false;
     
@@ -121,7 +121,7 @@ export default function Competition({gameData, feedData}){
                 { content }
             </PostsPage>
             <WidgetsContainer>
-                <Rank gameData={gameData} feedData={feedData} />
+                <Rank gameData={gameData}/>
             </WidgetsContainer>
         </>
     )

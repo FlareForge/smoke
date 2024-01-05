@@ -3,10 +3,9 @@ import styled from "styled-components";
 
 
 
-export default function Rank({gameData, feedData}) {
+export default function Rank({gameData}) {
 
     const game = gameData;
-    const feed = feedData;
 
     return (
         <Container>
