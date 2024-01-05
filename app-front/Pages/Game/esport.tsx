@@ -1,77 +1,61 @@
 import styled from "styled-components";
-import { useEffect, useState } from "react";
-import { useContentTransition } from "@Components/Transition";
-import MultiplayerMod from "./widgets/multiplayermod";
-import ModTags from "./widgets/multiplayertags";
-import Button from "@Components/Button";
-import Icon from "@Components/Icon";
-import Search from "./widgets/search";
-import WikiPages from "./widgets/wikipages";
 import Avatar from "@Components/Avatar";
 import Speedrun from "./widgets/speedrun";
 
 export default function Esport({gameData, feedData}){
 
-    const transition = useContentTransition();
-    const wiki = feedData?.wiki || {};
-    const [openPage, setOpenPage] = useState(null);
-    
-    const changePage = (post) => {
-        transition(() => {
-            setOpenPage(post);
-        })
-    }
-
-    useEffect(() => {
-        changePage(Object.keys(wiki)[0]);
-    }, [wiki])
+    const esport = feedData?.esport;
     
     return (
         <>
 
             <Page>
-                <Row>
+            {!esport ? <h2>No data available yet</h2> :
+                <>
+                    <Row>
+                        <Section>
+                            <Title>Top Players</Title>
+                            {
+                                Array(10).fill(0).map((_, i) => (
+                                    <LeaderboardRow
+                                        key={i}
+                                    >
+                                        <div>{i+1}.</div>
+                                        <Avatar
+                                            scale='calc(var(--decade) * 3)'
+                                        />
+                                        <div>Player</div>
+                                        <div>535 points</div>
+                                    </LeaderboardRow>
+                                ))
+                            }
+                        </Section>
+                        <Section>
+                            <Title>Top Teams</Title>
+                            {
+                                Array(10).fill(0).map((_, i) => (
+                                    <LeaderboardRow
+                                        key={i}
+                                    >
+                                        <div>{i+1}.</div>
+                                        <Avatar
+                                            scale='calc(var(--decade) * 3)'
+                                        />
+                                        <div>Team</div>
+                                        <div>535 points</div>
+                                    </LeaderboardRow>
+                                ))
+                            }
+                        </Section>
+                    </Row>
                     <Section>
-                        <Title>Top Players</Title>
-                        {
-                            Array(10).fill(0).map((_, i) => (
-                                <LeaderboardRow
-                                    key={i}
-                                >
-                                    <div>{i+1}.</div>
-                                    <Avatar
-                                        scale='calc(var(--decade) * 3)'
-                                    />
-                                    <div>Player</div>
-                                    <div>535 points</div>
-                                </LeaderboardRow>
-                            ))
-                        }
+                        <Title>Upcoming Matches</Title>
                     </Section>
                     <Section>
-                        <Title>Top Teams</Title>
-                        {
-                            Array(10).fill(0).map((_, i) => (
-                                <LeaderboardRow
-                                    key={i}
-                                >
-                                    <div>{i+1}.</div>
-                                    <Avatar
-                                        scale='calc(var(--decade) * 3)'
-                                    />
-                                    <div>Team</div>
-                                    <div>535 points</div>
-                                </LeaderboardRow>
-                            ))
-                        }
+                        <Title>Season Results</Title>
                     </Section>
-                </Row>
-                <Section>
-                    <Title>Upcoming Matches</Title>
-                </Section>
-                <Section>
-                    <Title>Season Results</Title>
-                </Section>
+                </>
+            }
             </Page>
             <WidgetsContainer>
                 <Speedrun gameData={gameData} feedData={feedData} />

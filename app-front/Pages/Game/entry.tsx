@@ -28,6 +28,8 @@ export default function Entry({
             </Button>
         </>
     );
+
+    console.log("Entry", id, open, sender)
     return (
         <EntryContainer
             $hasImage={!!image}
@@ -60,7 +62,7 @@ export default function Entry({
                         <Avatar
                             scale="calc(var(--decade) * 3)"
                             radius="--mini-radius"
-                            image={sender.avatar}
+                            profile={sender}
                         />
                         <Vert>
                             <EntryTitle> {title} </EntryTitle>

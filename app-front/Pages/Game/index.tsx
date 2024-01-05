@@ -25,10 +25,7 @@ export default function GamePage() {
     const hasDrops = true;
 
     useEffect(() => {
-        window.app.Services.Storage.getGame(id).then((game) => {
-            setGameData(game);
-            window.app.Services.Feed.getGameInformation(game).then(setFeedData);
-        });
+        updateData();
 
         const interval = setInterval(() => {
             if(document.hidden) return;
@@ -37,6 +34,13 @@ export default function GamePage() {
 
         return () => clearInterval(interval)
     }, []);
+
+    const updateData = async () => {
+        window.app.Services.Storage.getGame(id).then((game) => {
+            setGameData(game);
+            window.app.Services.Feed.getGameInformation(game).then(setFeedData);
+        });
+    }
 
     const setPage = (page) => {
         contentTransition(() => {

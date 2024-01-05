@@ -10,7 +10,8 @@ import Widgets from "./widgets";
 export default function Posts({gameData, feedData}){
 
     const transition = useContentTransition();
-    const posts = feedData?.posts || [];
+    const specialPost = feedData?.featured;
+    const [posts, setPosts] = useState(feedData?.posts || []); // [
     const [newPost, setNewPost] = useState("");
     const [openPost, setOpenPost] = useState(null);
     const isGrid = true;
@@ -18,6 +19,10 @@ export default function Posts({gameData, feedData}){
     useEffect(() => {
         window.scrollTo(0, 0);
     }, [openPost])
+
+    useEffect(() => {
+        setPosts(feedData?.posts || []);
+    }, [feedData?.posts])
 
     const changePost = (post) => {
         transition(() => {
@@ -29,7 +34,7 @@ export default function Posts({gameData, feedData}){
         id: "2093I",
         type: "comment",
         title: "Comment",
-        description: "This is a comment",
+        content: "This is a comment",
         date: "2021-05-20",
         image: null,
         sender: {
@@ -47,7 +52,7 @@ export default function Posts({gameData, feedData}){
                     id={openPost.id}
                     type={openPost.type}
                     title={openPost.title}
-                    description={openPost.description}
+                    description={openPost.content}
                     date={openPost.date}
                     image={openPost.image}
                     sender={openPost.sender}
@@ -60,7 +65,7 @@ export default function Posts({gameData, feedData}){
                         id={fkComment.id+i}
                         type={fkComment.type}
                         title={fkComment.title}
-                        description={fkComment.description}
+                        description={fkComment.content}
                         date={fkComment.date}
                         image={fkComment.image}
                         sender={fkComment.sender}
@@ -72,22 +77,22 @@ export default function Posts({gameData, feedData}){
         </>
     } else {    
         content = <>
-            <Special>
+            {specialPost && <Special>
                 <Entry
-                    id={posts?.[0]?.id}
+                    id={specialPost?.id}
                     special={true}
-                    type={posts?.[0]?.type}
-                    title={posts?.[0]?.title}
-                    description={posts?.[0]?.description}
-                    date={posts?.[0]?.date}
-                    image={posts?.[0]?.image}
-                    sender={posts?.[0]?.sender}
+                    type={specialPost?.type}
+                    title={specialPost?.title}
+                    description={specialPost?.content}
+                    date={specialPost?.date}
+                    image={specialPost?.image}
+                    sender={specialPost?.sender}
                     height={"calc(var(--decade) * 10)"}
                     action={() => {}}
                 >
                     <></>
                 </Entry>
-            </Special>
+            </Special>}
             <Header>
                 <NewPost>
                     <Input
@@ -96,9 +101,11 @@ export default function Posts({gameData, feedData}){
                         onChange={(e) => setNewPost(e.target.value)}
                     />
                     <Button
-                        onClick={() => {
-                            // window.app.Services.Feed.newPost(gameData, newPost);
+                        onClick={async () => {
+                            const res = await window.app.Services.Feed.newPost(gameData, {content: newPost});
+                            if(!res.id) return;
                             setNewPost("");
+                            setPosts([res, ...posts]);
                         }}
                     >
                         <Icon name="arrow-right" />
@@ -124,7 +131,7 @@ export default function Posts({gameData, feedData}){
                             key={i}
                             id={post.id}
                             title={post.title}
-                            description={post.description}
+                            description={post.content}
                             date={post.date}
                             image={post.image}
                             sender={post.sender}
