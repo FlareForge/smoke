@@ -8,6 +8,10 @@ import Loader from "../../Components/Loader";
 import Posts from "./posts";
 import Mods from "./mods";
 import { Game } from "../../../app-back/Services/Storage/abstract";
+import Multiplayer from "./multiplayer";
+import Wiki from "./wiki";
+import Esport from "./esport";
+import Competition from "./competition";
 
 export default function GamePage() {
     let { id } = useParams();
@@ -16,10 +20,11 @@ export default function GamePage() {
     const [gameData, setGameData] = useState<Game>(null);
     const [gameLoading, setGameLoading] = useState(false);
     const [gameRunning, setGameRunning] = useState(false);
-    const [openPage, setOpenPage] = useState('posts');
+    const [openPage, setOpenPage] = useState('feed');
+    const hasDrops = true;
 
     useEffect(() => {
-        window.app.Services.Storage.getGame(id).then(setGameData);
+        updateData();
 
         const interval = setInterval(() => {
             if(document.hidden) return;
@@ -28,6 +33,10 @@ export default function GamePage() {
 
         return () => clearInterval(interval)
     }, []);
+
+    const updateData = async () => {
+        window.app.Services.Storage.getGame(id).then(setGameData);
+    }
 
     const setPage = (page) => {
         contentTransition(() => {
@@ -61,10 +70,18 @@ export default function GamePage() {
     const gamePoster = gameData?.image || './images/unknown.png'
 
     let content = null;
-    if(openPage === 'posts'){
-        content = <Posts gameData={gameData}/>
-    }else if(openPage === 'mods'){
+    if(openPage === 'mods'){
         content = <Mods gameData={gameData}/>
+    }else if(openPage === 'feed'){
+        content = <Posts gameData={gameData}/>
+    }else if(openPage === 'multiplayer'){
+        content = <Multiplayer gameData={gameData}/>
+    }else if(openPage === 'wiki'){
+        content = <Wiki gameData={gameData}/>
+    }else if(openPage === 'esport'){
+        content = <Esport gameData={gameData}/>
+    }else if(openPage === 'competition'){
+        content = <Competition gameData={gameData}/>
     }
 
     return (
@@ -101,32 +118,49 @@ export default function GamePage() {
                         { buttonText }
                     </Button>
                 </Details>
+                {hasDrops && <Drops
+                    onClick={() => window.app.open("https://www.twitch.tv/directory/all/tags/Drops")}
+                >
+                    <Icon name="twitch" />
+                    <p>!drops</p>
+                </Drops>}
             </Banner>
             <HeadBar
                 drop="blur(5px)"
+                style={{
+                    paddingRight: 'var(--decade)',
+                    paddingLeft: 'calc(var(--decade) * 1.5)',
+                }}
             >
                 <div
-                    className="soon"
-                    onClick={() => setPage('posts')}
+                    className="focusable"
+                    onClick={() => setPage('feed')}
                 >
                     <p>Feed</p>
                 </div>
                 <div
-                    className="soon"
-                >
-                    <p>Forum</p>
-                </div>
-                <div
-                    className="soon"
-                >
-                    <p>News</p>
-                </div>
-                <div
-                    // className="focusable"
-                    className="soon"
-                    // onClick={() => setPage('mods')}
+                    className="focusable"
+                    onClick={() => setPage('mods')}
                 >
                     <p>Mods</p>
+                </div>
+                <div
+                    className="focusable"
+                    onClick={() => setPage('multiplayer')}
+                >
+                    <p>Multiplayer</p>
+                </div>
+                <div
+                    className="focusable"
+                    onClick={() => setPage('competition')}
+                >
+                    <p>Competition</p>
+                </div>
+                <div
+                    className="focusable"
+                    onClick={() => setPage('wiki')}
+                >
+                    <p>Wiki</p>
                 </div>
                 <div
                     className="soon"
@@ -136,12 +170,13 @@ export default function GamePage() {
                 <div
                     className="soon"
                 >
-                    <p>Guides</p>
+                    <p>Content</p>
                 </div>
                 <div
-                    className="soon"
+                    className="focusable"
+                    onClick={() => setPage('esport')}
                 >
-                    <p>Live</p>
+                    <p>ESport</p>
                 </div>
                 <div
                     className="focusable"
@@ -153,26 +188,68 @@ export default function GamePage() {
                 >
                     <p>Uninstall</p>
                 </div>
-                <div
-                    className="focusable"
-                    onClick={() => navigate("/settings/games/"+gameData?.id)}
-                >
-                    <p>Settings</p>
-                </div>
+                
                 <Last
                     className="soon"
                 >
                     <Icon name={"clock"} />
                     <TimePlayed>
-                        <p>Time Played</p>
                         <p>{gameData?.timePlayed || '0'}h</p>
                     </TimePlayed>
                 </Last>
+                <div
+                    className="focusable"
+                    onClick={() => navigate("/settings/games/"+gameData?.id)}
+                >
+                    <Icon name={"settings"} />
+                </div>
             </HeadBar>
-            { content }
+            <WithSideBar>
+                { content }
+            </WithSideBar>
         </Container>
     );
 }
+
+const Drops = styled.div`
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    bottom: calc(var(--decade) * -2.2);
+    width: max-content;
+    height: calc(var(--decade) * 5);
+    background-color: rgba(111, 58, 207, 0.6);
+    border-radius: var(--radius);
+    backdrop-filter: blur(var(--quintet));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--decade);
+    box-sizing: border-box;
+    padding: calc(var(--decade) * 1.2) calc(var(--decade) * 2);
+    font-weight: 700;
+    border: calc(var(--unit) * 3) solid white;
+    box-shadow: calc(var(--quintet) * -1) calc(var(--quintet) * -1) 2vh 0px rgba(44, 0, 29, 0.336),
+                calc(var(--quintet) * 1) calc(var(--quintet) * -1) 2vh 0px rgba(171, 134, 159, 0.259),
+                calc(var(--quintet) * -1) calc(var(--quintet) * 1) 2vh 0px rgba(161, 9, 192, 0.259),
+                calc(var(--quintet) * 1) calc(var(--quintet) * 1) 2vh 0px rgba(225, 4, 151, 0.192);
+    transition-duration: 0.2s;
+    transition-property: box-shadow;
+
+    &:hover {
+        box-shadow: calc(var(--quintet) * -1) calc(var(--quintet) * 1) 2vh 0px rgba(44, 0, 29, 0.336),
+                    calc(var(--quintet) * -1) calc(var(--quintet) * -1) 2vh 0px rgba(171, 134, 159, 0.259),
+                    calc(var(--quintet) * 1) calc(var(--quintet) * 1) 2vh 0px rgba(161, 9, 192, 0.259),
+                    calc(var(--quintet) * 1) calc(var(--quintet) * -1) 2vh 0px rgba(225, 4, 151, 0.192);
+    }
+`;
+
+const WithSideBar = styled.div`
+    display: flex;
+    width: 100%;
+    height: max-content;
+    gap: var(--decade);
+`;
 
 const BackButton = styled.div`
     position: fixed;
@@ -243,6 +320,7 @@ const Details = styled.div`
 
 const BlurImage = styled.div`
     position: absolute;
+    pointer-events: none;
     top: 0;  
     left: 0;
     width: 100%;

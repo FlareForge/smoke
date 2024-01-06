@@ -29,6 +29,8 @@ export default class IGDBMetadata extends AbstractScanner {
             name: game.name,
             image: data?.result?.cover,
             banner: data?.result?.banner,
+            smoke_id: data?.result?.id,
+            igdb_id: data?.result?.id,//TODO: change to igdb_id
             description: "No description yet",
         };
     }

@@ -1,10 +1,13 @@
 import styled from 'styled-components';
 
-export default function HeadBar({ children, drop = "revert"}) {
+export default function HeadBar({ children, drop = "revert", style = {}}) {
     return (
         <Bar
             $drop={drop}
-            style={{ viewTransitionName: 'headbar' }}
+            style={{
+                ...style,
+                viewTransitionName: 'headbar'
+            }}
         >
             {children}
         </Bar>
@@ -48,7 +51,7 @@ const Bar = styled.div`
         content: '';
         position: absolute;
         opacity: 0.1;
-        right: calc(var(--quintet) * -3);
+        right: calc(var(--decade) * -1);
         top: 0;
         height: 100%;
         width: var(--unit);

@@ -13,6 +13,8 @@ import WindowsController from "./Controller/windows";
 import SmokeFriends from "./Friends/smoke";
 import SmokeMessages from "./Messages/smoke";
 import SmokeNotifications from "./Notifications/smoke";
+import SmokeForum from "./Forum/smoke";
+import SmokeMultiplayer from "./Multiplayer/smoke";
 
 export const availableServices = {
     Account: {
@@ -55,6 +57,14 @@ export const availableServices = {
         abstract: abstractServices.Notifications,
         Smoke: SmokeNotifications,
     },
+    Forum: {
+        abstract: abstractServices.Forum,
+        Smoke: SmokeForum,
+    },
+    Multiplayer: {
+        abstract: abstractServices.Multiplayer,
+        Smoke: SmokeMultiplayer,
+    },
 }
 
 export const defaultServices = {
@@ -68,6 +78,8 @@ export const defaultServices = {
     Friends: ['Smoke'],
     Messages: ['Smoke'],
     Notifications: ['Smoke'],
+    Forum: ['Smoke'],
+    Multiplayer: ['Smoke'],
 }
 
 const store = new Store();
@@ -171,11 +183,13 @@ function aggregateResults(results) {
 }
 
 function deepMerge(objects) {
+    if(objects.every(obj => Array.isArray(obj))) return objects.flat();
     const result = {};
     for (const obj of objects) {
         for (const [key, value] of Object.entries(obj)) {
             if (typeof value === 'object' && value !== null) {
-                result[key] = deepMerge([result[key] || {}, value]);
+                if(Array.isArray(value) && !result[key]) result[key] = []
+                result[key] = deepMerge([result[key] ?? {}, value]);
             } else {
                 result[key] = result[key] || value;
             }

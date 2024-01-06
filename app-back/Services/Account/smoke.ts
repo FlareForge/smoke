@@ -154,7 +154,6 @@ export default class SmokeAccount extends AbstractAccount {
 
     async getProfileData(id: string): Promise<any> {
         const result = await fetch(`/profile`, {id}, this.#token);
-        if(result.avatar) result.avatar = `${BASE_STORE}/${result.avatar}`;
         result.smoke_id = result.id;
         return result;
     }

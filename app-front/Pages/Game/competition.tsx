@@ -1,20 +1,19 @@
 import styled from "styled-components";
 import Entry from "./entry";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useContentTransition } from "@Components/Transition";
-import Widgets from "./widgets";
-import { Container } from "./widgets/container";
 import MultiplayerMod from "./widgets/multiplayermod";
-import ModTags from "./widgets/modtags";
+import ModTags from "./widgets/multiplayertags";
 import Button from "@Components/Button";
 import Icon from "@Components/Icon";
+import Rank from "./widgets/rank";
 
-export default function Mods({gameData }){
+export default function Competition({gameData}){
 
     const transition = useContentTransition();
-    const posts = gameData?.mods || [];
+    const posts = gameData?.competitions || [];
     const [openPost, setOpenPost] = useState(null);
-    const isGrid = true;
+    const isGrid = false;
     
     const changePost = (post) => {
         transition(() => {
@@ -34,7 +33,7 @@ export default function Mods({gameData }){
             avatar: null,
         },
     };
-    
+
     let content = null
     if(openPost) {
         content = <>
@@ -52,13 +51,7 @@ export default function Mods({gameData }){
                     action={() => {changePost(null)}}
                 >
                     <Button onClick={(e) => { e.stopPropagation();}}>
-                        Intall
-                    </Button>
-                    <Button>
-                        <Icon name="thumbs-up" />
-                    </Button>
-                    <Button>
-                        <Icon name="thumbs-down" />
+                        Join
                     </Button>
                 </Entry>
                 {Array(5).fill(0).map((_, i) =>
@@ -108,17 +101,12 @@ export default function Mods({gameData }){
                             date={post.date}
                             image={post.image}
                             sender={post.sender}
-                            height={isGrid ? "100%" : null}
+                            height={'calc(var(--decade) * 13)'}
                             action={() => {changePost(post)}}
+                            special={true}
                         >
                             <Button onClick={(e) => { e.stopPropagation();}}>
-                                Intall
-                            </Button>
-                            <Button>
-                                <Icon name="thumbs-up" />
-                            </Button>
-                            <Button>
-                                <Icon name="thumbs-down" />
+                                Join
                             </Button>
                         </Entry>
                     )
@@ -133,8 +121,7 @@ export default function Mods({gameData }){
                 { content }
             </PostsPage>
             <WidgetsContainer>
-                <MultiplayerMod gameData={gameData}/>
-                <ModTags gameData={gameData}/>
+                <Rank gameData={gameData}/>
             </WidgetsContainer>
         </>
     )
