@@ -6,7 +6,7 @@ import Speedrun from "./speedrun";
 import Inventory from "./inventory";
 import Live from "./live";
 
-export default function Widgets({gameData, feedData}){
+export default function Widgets({gameData, feedData = {}}){
 
     const hasLive = true;
 
@@ -16,7 +16,7 @@ export default function Widgets({gameData, feedData}){
             {hasLive && <Live gameData={gameData} feedData={feedData} />}
             <Achievements gameData={gameData} feedData={feedData} />
             <Gallery gameData={gameData} feedData={feedData} />
-            <Speedrun gameData={gameData} feedData={feedData} />
+            <Speedrun gameData={gameData} />
             <Inventory gameData={gameData} feedData={feedData} />
         </WidgetsContainer>
     )

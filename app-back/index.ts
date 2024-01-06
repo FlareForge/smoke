@@ -192,6 +192,7 @@ ipcMain.handle("maximize-app", (_) => appWindow.isMaximized() ? appWindow.restor
 ipcMain.handle("fullscreen-app", (_) => appWindow.setFullScreen(!appWindow.isFullScreen()));
 ipcMain.handle("open-url", (_, arg) => openurl(arg));
 ipcMain.handle("get-app-path", (_, arg) => app.getPath(arg));
+ipcMain.handle("get-roaming-path", (_, arg) => path.join(app.getPath("userData"),"../", arg));
 ipcMain.handle("get-icon-path", (_, arg) => path.join(__dirname, "../Assets", arg));
 ipcMain.handle("get-bin-path", (_, __) => app.isPackaged ? path.join(process.resourcesPath, "../bin") : path.join(__dirname, "bin"));
 ipcMain.handle("open-file-dialog", async (_) => (await dialog.showOpenDialog({properties:["openFile"]})).filePaths[0]);

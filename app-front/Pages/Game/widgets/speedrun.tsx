@@ -2,10 +2,9 @@ import Avatar from "@Components/Avatar";
 import { Container } from "./container";
 import styled from "styled-components";
 
-export default function Speedrun({gameData, feedData}) {
+export default function Speedrun({gameData}) {
 
     const game = gameData;
-    const feed = feedData;
 
     return (
         <Container>

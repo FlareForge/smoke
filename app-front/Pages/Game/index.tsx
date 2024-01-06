@@ -18,17 +18,13 @@ export default function GamePage() {
     const navigate = useTransition();
     const contentTransition = useContentTransition();
     const [gameData, setGameData] = useState<Game>(null);
-    const [feedData, setFeedData] = useState<Game>(null);
     const [gameLoading, setGameLoading] = useState(false);
     const [gameRunning, setGameRunning] = useState(false);
     const [openPage, setOpenPage] = useState('feed');
     const hasDrops = true;
 
     useEffect(() => {
-        window.app.Services.Storage.getGame(id).then((game) => {
-            setGameData(game);
-            window.app.Services.Feed.getGameInformation(game).then(setFeedData);
-        });
+        updateData();
 
         const interval = setInterval(() => {
             if(document.hidden) return;
@@ -37,6 +33,10 @@ export default function GamePage() {
 
         return () => clearInterval(interval)
     }, []);
+
+    const updateData = async () => {
+        window.app.Services.Storage.getGame(id).then(setGameData);
+    }
 
     const setPage = (page) => {
         contentTransition(() => {
@@ -71,20 +71,18 @@ export default function GamePage() {
 
     let content = null;
     if(openPage === 'mods'){
-        content = <Mods gameData={gameData} feedData={feedData}/>
+        content = <Mods gameData={gameData}/>
     }else if(openPage === 'feed'){
-        content = <Posts gameData={gameData} feedData={feedData}/>
+        content = <Posts gameData={gameData}/>
     }else if(openPage === 'multiplayer'){
-        content = <Multiplayer gameData={gameData} feedData={feedData}/>
+        content = <Multiplayer gameData={gameData}/>
     }else if(openPage === 'wiki'){
-        content = <Wiki gameData={gameData} feedData={feedData}/>
+        content = <Wiki gameData={gameData}/>
     }else if(openPage === 'esport'){
-        content = <Esport gameData={gameData} feedData={feedData}/>
+        content = <Esport gameData={gameData}/>
     }else if(openPage === 'competition'){
-        content = <Competition gameData={gameData} feedData={feedData}/>
+        content = <Competition gameData={gameData}/>
     }
-
-    console.log(gameData, feedData)
 
     return (
         <Container>

@@ -4,6 +4,7 @@ export default function Loader({size = '80px'}){
     return (
         <LoaderContainer
             $size={size}
+            className="loader"
         >
             <div></div><div></div><div></div><div></div>
         </LoaderContainer>
@@ -22,9 +23,9 @@ const LoaderContainer = styled.div`
         position: absolute;
         width: ${(props: any) => props.$size};
         height: ${(props: any) => props.$size};
-        border: 4px solid #fff;
+        border: calc(var(--unit) * 4) solid #fff;
         border-radius: 50%;
-        animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        animation: ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
         border-color: #fff transparent transparent transparent;
     }
 
@@ -40,7 +41,7 @@ const LoaderContainer = styled.div`
         animation-delay: -0.15s;
     }
 
-    @keyframes lds-ring {
+    @keyframes ring {
         0% {
             transform: rotate(0deg);
         }

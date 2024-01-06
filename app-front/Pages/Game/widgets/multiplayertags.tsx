@@ -11,10 +11,9 @@ const TAGS = [
     "PVP",
 ]
 
-export default function MultiplayerTags({gameData, feedData}) {
+export default function MultiplayerTags({gameData}) {
 
     const game = gameData;
-    const feed = feedData;
 
     return (
         <Container>

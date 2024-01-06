@@ -13,10 +13,9 @@ const TAGS = [
     "Libraries / APIs",
 ]
 
-export default function ModTags({gameData, feedData}) {
+export default function ModTags({gameData}) {
 
     const game = gameData;
-    const feed = feedData;
 
     return (
         <Container>

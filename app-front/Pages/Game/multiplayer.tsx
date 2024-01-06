@@ -1,18 +1,21 @@
 import styled from "styled-components";
 import Entry from "./entry";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useContentTransition } from "@Components/Transition";
 import MultiplayerMod from "./widgets/multiplayermod";
 import ModTags from "./widgets/multiplayertags";
 import Button from "@Components/Button";
-import Icon from "@Components/Icon";
 
-export default function Multiplayer({gameData, feedData}){
+export default function Multiplayer({gameData}){
 
     const transition = useContentTransition();
-    const posts = feedData?.servers || [];
+    const [servers, setServers] = useState(null);
     const [openPost, setOpenPost] = useState(null);
     const isGrid = false;
+
+    useEffect(() => {
+        updateServers();
+    }, [gameData])
     
     const changePost = (post) => {
         transition(() => {
@@ -20,104 +23,99 @@ export default function Multiplayer({gameData, feedData}){
         })
     }
 
-    const fkComment = {
-        id: "2093I",
-        type: "comment",
-        title: "Comment",
-        description: "This is a comment",
-        date: "2021-05-20",
-        image: null,
-        sender: {
-            username: "Unknown player",
-            avatar: null,
-        },
-    };
+    const updateServers = () => {
+        window.app.Services.Multiplayer.getServers(gameData).then(setServers)
+    }
+
+    // const fkComment = {
+    //     id: "2093I",
+    //     type: "comment",
+    //     title: "Comment",
+    //     description: "This is a comment",
+    //     date: "2021-05-20",
+    //     image: null,
+    //     sender: {
+    //         username: "Unknown player",
+    //         avatar: null,
+    //     },
+    // };
 
     let content = null
-    if(openPost) {
-        content = <>
-            <PostsContainer>
-                <Entry
-                    open={true}
-                    id={openPost.id}
-                    type={openPost.type}
-                    title={openPost.title}
-                    description={openPost.description}
-                    date={openPost.date}
-                    image={openPost.image}
-                    sender={openPost.sender}
-                    height={"max-content"}
-                    action={() => {changePost(null)}}
-                >
-                    <Button>
-                        <Icon name="thumbs-up" />
-                    </Button>
-                    <Button>
-                        <Icon name="thumbs-down" />
-                    </Button>
-                    <Button onClick={(e) => { e.stopPropagation();}}>
-                        Connect
-                    </Button>
-                </Entry>
-                {Array(5).fill(0).map((_, i) =>
-                    <Entry
-                        key={i}
-                        id={fkComment.id+i}
-                        type={fkComment.type}
-                        title={fkComment.title}
-                        description={fkComment.description}
-                        date={fkComment.date}
-                        image={fkComment.image}
-                        sender={fkComment.sender}
-                        height={"calc(var(--decade) * 15)"}
-                        action={() => {}}
-                    />
-                )}
-            </PostsContainer>
-        </>
+    if(openPost && false) {
+        // content = <>
+        //     <PostsContainer>
+        //         <Entry
+        //             open={true}
+        //             id={openPost.id}
+        //             type={openPost.type}
+        //             title={openPost.title}
+        //             description={openPost.description}
+        //             date={openPost.date}
+        //             image={openPost.image}
+        //             sender={openPost.sender}
+        //             height={"max-content"}
+        //             action={() => {changePost(null)}}
+        //         >
+        //             <Button>
+        //                 <Icon name="thumbs-up" />
+        //             </Button>
+        //             <Button>
+        //                 <Icon name="thumbs-down" />
+        //             </Button>
+        //             <Button onClick={(e) => { e.stopPropagation();}}>
+        //                 Connect
+        //             </Button>
+        //         </Entry>
+        //         {Array(5).fill(0).map((_, i) =>
+        //             <Entry
+        //                 key={i}
+        //                 id={fkComment.id+i}
+        //                 type={fkComment.type}
+        //                 title={fkComment.title}
+        //                 description={fkComment.description}
+        //                 date={fkComment.date}
+        //                 image={fkComment.image}
+        //                 sender={fkComment.sender}
+        //                 height={"calc(var(--decade) * 15)"}
+        //                 action={() => {}}
+        //             />
+        //         )}
+        //     </PostsContainer>
+        // </>
     } else {
         content = <>
-            {/* <Special>
-                <Entry
-                    id={posts?.[0]?.id}
-                    special={true}
-                    type={posts?.[0]?.type}
-                    title={posts?.[0]?.title}
-                    description={posts?.[0]?.description}
-                    date={posts?.[0]?.date}
-                    image={posts?.[0]?.image}
-                    sender={posts?.[0]?.sender}
-                    height={"calc(var(--decade) * 10)"}
-                    action={() => {}}
-                />
-            </Special> */}
             <PostsContainer
                 $isGrid={isGrid}
             >
                 {
-                    !posts?.length ? <h2>No data available yet</h2> :
-                    posts.map((post: any, i: number) => 
+                    !servers?.length ? <h2>No data available yet</h2> :
+                    (servers || [])?.map((server: any, i: number) => 
                         <Entry
-                            type={post.type}
                             key={i}
-                            id={post.id}
-                            title={post.title}
-                            description={post.description}
-                            date={post.date}
-                            image={post.image}
-                            sender={post.sender}
+                            type={server.version}
+                            date={server.address}
+                            // id={server.id}
+                            title={server.name}
+                            description={(server.tags || []).join(", ")}
+                            image={server.icon}
+                            background={server.icon}
                             height={'calc(var(--decade) * 13)'}
-                            action={() => {changePost(post)}}
+                            action={() => {changePost(server)}}
                             special={true}
+                            square={true}
                         >
-                            <Button>
+                            {/* <Button>
                                 <Icon name="thumbs-up" />
                             </Button>
                             <Button>
                                 <Icon name="thumbs-down" />
-                            </Button>
-                            <Button onClick={(e) => { e.stopPropagation();}}>
-                                Connect
+                            </Button> */}
+                            <Button onClick={(e) => {
+                                e.stopPropagation();
+                                // window.app.Services.Multiplayer.playOnServer(gameData, server)
+                                navigator.clipboard.writeText(server.address);
+                            }}>
+                                Copy address
                             </Button>
                         </Entry>
                     )
@@ -132,8 +130,8 @@ export default function Multiplayer({gameData, feedData}){
                 { content }
             </PostsPage>
             <WidgetsContainer>
-                <MultiplayerMod gameData={gameData} feedData={feedData} />
-                <ModTags gameData={gameData} feedData={feedData} />
+                <MultiplayerMod gameData={gameData}/>
+                <ModTags gameData={gameData}/>
             </WidgetsContainer>
         </>
     )
@@ -146,13 +144,6 @@ const WidgetsContainer = styled.div`
     display: flex;
     flex-direction: column;
     gap: calc(var(--quintet) * 2.5) ;
-`;
-
-
-const Special = styled.div`
-    width: 100%;
-    height: max-content;
-    margin-bottom: calc(var(--quintet) * 2.5);
 `;
 
 const PostsContainer = styled.div`

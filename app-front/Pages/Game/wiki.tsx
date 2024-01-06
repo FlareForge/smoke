@@ -9,10 +9,10 @@ import Icon from "@Components/Icon";
 import Search from "./widgets/search";
 import WikiPages from "./widgets/wikipages";
 
-export default function Wiki({gameData, feedData}){
+export default function Wiki({gameData}){
 
     const transition = useContentTransition();
-    const wiki = feedData?.wiki || {};
+    const wiki = gameData?.wiki || {};
     const [openPage, setOpenPage] = useState(null);
     
     const changePage = (post) => {
@@ -43,7 +43,7 @@ export default function Wiki({gameData, feedData}){
                 </PostsContainer>
             </PostsPage>
             <WidgetsContainer>
-                <Search gameData={gameData} feedData={feedData} />
+                <Search gameData={gameData} />
                 <WikiPages pages={Object.keys(wiki)} onChangePage={changePage} />
             </WidgetsContainer>
         </>

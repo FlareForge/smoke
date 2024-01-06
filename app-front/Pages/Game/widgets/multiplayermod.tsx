@@ -2,10 +2,9 @@ import Button from "@Components/Button";
 import { Container } from "./container";
 import styled from "styled-components";
 
-export default function MultiplayerMod({gameData, feedData}) {
+export default function MultiplayerMod({gameData}) {
 
     const game = gameData;
-    const feed = feedData;
 
     return (
         <Container>

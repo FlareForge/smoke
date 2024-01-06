@@ -9,10 +9,10 @@ import ModTags from "./widgets/modtags";
 import Button from "@Components/Button";
 import Icon from "@Components/Icon";
 
-export default function Mods({gameData, feedData}){
+export default function Mods({gameData }){
 
     const transition = useContentTransition();
-    const posts = feedData?.mods || [];
+    const posts = gameData?.mods || [];
     const [openPost, setOpenPost] = useState(null);
     const isGrid = true;
     
@@ -133,8 +133,8 @@ export default function Mods({gameData, feedData}){
                 { content }
             </PostsPage>
             <WidgetsContainer>
-                <MultiplayerMod gameData={gameData} feedData={feedData} />
-                <ModTags gameData={gameData} feedData={feedData} />
+                <MultiplayerMod gameData={gameData}/>
+                <ModTags gameData={gameData}/>
             </WidgetsContainer>
         </>
     )

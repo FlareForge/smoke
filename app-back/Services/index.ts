@@ -13,7 +13,8 @@ import WindowsController from "./Controller/windows";
 import SmokeFriends from "./Friends/smoke";
 import SmokeMessages from "./Messages/smoke";
 import SmokeNotifications from "./Notifications/smoke";
-import SmokeFeed from "./Feed/smoke";
+import SmokeForum from "./Forum/smoke";
+import SmokeMultiplayer from "./Multiplayer/smoke";
 
 export const availableServices = {
     Account: {
@@ -56,10 +57,14 @@ export const availableServices = {
         abstract: abstractServices.Notifications,
         Smoke: SmokeNotifications,
     },
-    Feed: {
-        abstract: abstractServices.Feed,
-        Smoke: SmokeFeed,
-    }
+    Forum: {
+        abstract: abstractServices.Forum,
+        Smoke: SmokeForum,
+    },
+    Multiplayer: {
+        abstract: abstractServices.Multiplayer,
+        Smoke: SmokeMultiplayer,
+    },
 }
 
 export const defaultServices = {
@@ -73,7 +78,8 @@ export const defaultServices = {
     Friends: ['Smoke'],
     Messages: ['Smoke'],
     Notifications: ['Smoke'],
-    Feed: ['Smoke'],
+    Forum: ['Smoke'],
+    Multiplayer: ['Smoke'],
 }
 
 const store = new Store();
